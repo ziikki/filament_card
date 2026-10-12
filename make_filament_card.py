@@ -657,6 +657,126 @@ def render_preview_image(material, color, code, hex_color, swatch_d=7.0,
     return prev, fr.warnings, stroke_info
 
 
+def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
+                     base_hex="#B39B84", text_hex="#282828"):
+    """Render high-resolution 2D preview image of the ENTIRE card (75x36mm)."""
+    CARD_W, CARD_H = 75.0, 36.0
+    POCKET_W, POCKET_H = 40.4, 30.4
+    POCKET_CX, POCKET_CY = -6.3, 0.0
+
+    W_PX = int(CARD_W * ppm)
+    H_PX = int(CARD_H * ppm)
+    PADDING = int(4.0 * ppm)
+
+    TOTAL_W = W_PX + PADDING * 2
+    TOTAL_H = H_PX + PADDING * 2
+
+    img = Image.new('RGBA', (TOTAL_W, TOTAL_H), (255, 255, 255, 0))
+    draw = ImageDraw.Draw(img)
+
+    def to_px(x, y):
+        px = int(PADDING + (x + CARD_W / 2.0) * ppm)
+        py = int(PADDING + (CARD_H / 2.0 - y) * ppm)
+        return px, py
+
+    # 1. Drop shadow
+    shadow_offset = int(1.2 * ppm)
+    x0, y0 = to_px(-CARD_W/2, CARD_H/2)
+    x1, y1 = to_px(CARD_W/2, -CARD_H/2)
+    corner_r = int(4.0 * ppm)
+    draw.rounded_rectangle([x0 + shadow_offset, y0 + shadow_offset, x1 + shadow_offset, y1 + shadow_offset],
+                           radius=corner_r, fill=(0, 0, 0, 45))
+
+    # 2. Main card body
+    card_rgb = (235, 233, 228)  # Clean Bambu sample card body tone
+    draw.rounded_rectangle([x0, y0, x1, y1], radius=corner_r, fill=(*card_rgb, 255), outline=(195, 190, 182, 255), width=int(0.4*ppm))
+
+    # 3. Lanyard slot on the left
+    slot_cx, slot_cy = -32.5, 0.0
+    slot_w, slot_h = 3.6, 24.0
+    sx0, sy0 = to_px(slot_cx - slot_w/2, slot_cy + slot_h/2)
+    sx1, sy1 = to_px(slot_cx + slot_w/2, slot_cy - slot_h/2)
+    slot_r = int(slot_w/2 * ppm)
+    draw.rounded_rectangle([sx0, sy0, sx1, sy1], radius=slot_r, fill=(255, 255, 255, 0), outline=(180, 175, 168, 255), width=int(0.35*ppm))
+
+    # 4. Pocket outline and floor
+    px0, py0 = to_px(POCKET_CX - POCKET_W/2, POCKET_CY + POCKET_H/2)
+    px1, py1 = to_px(POCKET_CX + POCKET_W/2, POCKET_CY - POCKET_H/2)
+    p_radius = int(2.0 * ppm)
+    pocket_bg = (244, 242, 238)
+    draw.rounded_rectangle([px0, py0, px1, py1], radius=p_radius, fill=(*pocket_bg, 255), outline=(190, 185, 178, 255), width=int(0.4*ppm))
+
+    # 5. Stepped thickness swatches on the right
+    step_x0 = 16.0
+    step_x1 = 33.5
+    step_y_top = 14.5
+    step_y_bot = -14.5
+    step_w = (step_x1 - step_x0) / 5.0
+
+    hex_clean = normalize_hex(hex_color).lstrip('#')
+    h_rgb = tuple(int(hex_clean[i:i+2], 16) for i in (0, 2, 4))
+
+    lsx0, lsy0 = to_px(step_x0, step_y_top)
+    lsx1, lsy1 = to_px(step_x1, step_y_bot)
+    draw.rounded_rectangle([lsx0, lsy0, lsx1, lsy1], radius=int(1.5*ppm), fill=(225, 222, 216, 255), outline=(185, 180, 172, 255), width=int(0.3*ppm))
+
+    steps_info = [
+        ('0.8', 0.95),
+        ('0.6', 0.80),
+        ('0.4', 0.65),
+        ('0.2', 0.50),
+        ('0.1', 0.35)
+    ]
+
+    try:
+        font_num = ImageFont.truetype('/System/Library/Fonts/Supplemental/Arial Bold.ttf', int(1.8 * ppm))
+    except Exception:
+        font_num = ImageFont.load_default()
+
+    for idx, (label, opacity) in enumerate(steps_info):
+        sx_left = step_x0 + idx * step_w
+        sx_right = sx_left + step_w
+        bx0, by0 = to_px(sx_left + 0.2, step_y_top - 6.5)
+        bx1, by1 = to_px(sx_right - 0.2, step_y_bot + 0.8)
+        blended = tuple(int(h_rgb[c] * opacity + card_rgb[c] * (1.0 - opacity)) for c in range(3))
+        draw.rectangle([bx0, by0, bx1, by1], fill=(*blended, 255), outline=(190, 185, 178, 160), width=1)
+        tx, ty = to_px(sx_left + step_w/2, step_y_top - 3.2)
+        draw.text((tx, ty), label, font=font_num, fill=(120, 115, 108, 255), anchor='mm')
+
+    # 6. Render pocket text and swatch
+    font_path, font_idx = pick_font(None, 0)
+    fr = TextRenderer(font_path, font_idx)
+    args = ArgsWrapper(material=material, color=color, code=code, hex_val=hex_color, swatch_d=7.0)
+    raw_pocket, (sw_cx, sw_cy, sw_r) = build_layout(args, fr)
+
+    pocket_w_px = px1 - px0
+    pocket_h_px = py1 - py0
+    resized_pocket = cv2.resize(raw_pocket, (pocket_w_px, pocket_h_px), interpolation=cv2.INTER_AREA)
+
+    clean_t_hex = normalize_hex(text_hex).lstrip('#')
+    txt_rgb = tuple(int(clean_t_hex[i:i+2], 16) for i in (0, 2, 4))
+
+    for y in range(pocket_h_px):
+        for x in range(pocket_w_px):
+            alpha = resized_pocket[y, x]
+            if alpha > 0:
+                fg_a = alpha / 255.0
+                curr_px = img.getpixel((px0 + x, py0 + y))
+                out_r = int(txt_rgb[0] * fg_a + curr_px[0] * (1 - fg_a))
+                out_g = int(txt_rgb[1] * fg_a + curr_px[1] * (1 - fg_a))
+                out_b = int(txt_rgb[2] * fg_a + curr_px[2] * (1 - fg_a))
+                img.putpixel((px0 + x, py0 + y), (out_r, out_g, out_b, 255))
+
+    sw_px, sw_py = to_px(POCKET_CX + sw_cx, POCKET_CY + sw_cy)
+    sw_r_px = int(sw_r * ppm)
+    draw.ellipse([sw_px - sw_r_px, sw_py - sw_r_px, sw_px + sw_r_px, sw_py + sw_r_px],
+                 fill=(*h_rgb, 255), outline=(170, 165, 158, 255), width=int(0.35*ppm))
+
+    if out_path:
+        img.save(out_path)
+    return img
+
+
 def generate_card(material, color, code, hex_color, relief=0.5, out_path=None,
                   template_path=DEFAULT_TEMPLATE, thicken=False, min_stroke=0.8,
                   min_gap=0.5, swatch_d=7.0, font_path=None, font_index=0,
@@ -700,17 +820,8 @@ def generate_card(material, color, code, hex_color, relief=0.5, out_path=None,
 
     preview_path = None
     if preview:
-        base_rgb = tuple(int(base_hex[i:i + 2], 16) for i in (1, 3, 5))
-        text_rgb = tuple(int(text_hex[i:i + 2], 16) for i in (1, 3, 5))
-        prev = np.full(raw.shape + (3,), base_rgb[::-1], np.uint8)  # card colour (BGR)
-        prev[dark > 0] = text_rgb[::-1]                             # text colour (BGR)
-        if thicken:
-            prev[(dark > 0) & (raw == 0)] = (0, 0, 220)  # added material in red
-        cvs = Canvas()
-        rgb = tuple(int(hex_color[i:i + 2], 16) for i in (1, 3, 5))
-        cv2.circle(prev, (cvs.col(sw_cx), cvs.row(sw_cy)), int(sw_r * PPM), rgb[::-1], -1, cv2.LINE_AA)
         preview_path = os.path.splitext(out)[0] + "_preview.png"
-        cv2.imwrite(preview_path, prev)
+        render_full_card(material, color, code, hex_color, out_path=preview_path)
 
     return {
         "out_path": out,

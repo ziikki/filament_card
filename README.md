@@ -22,12 +22,24 @@ Runs **100% client-side** in your browser — zero backend required, free deploy
 
 ---
 
-## 🖼️ Card Showcase (生成效果展示)
+## 🖼️ Card Showcase (整卡渲染与效果展示)
 
-| PLA Wood - White Oak (13106) | PLA Wood - 白橡木 (13106) |
+### 1. Bambu Studio 3D 轴测切片效果 (3D Sliced Whole Card)
+> 真实 3D 打印切片模型效果，展示包含挂绳孔、0.5mm 平齐嵌色文字与 5 阶透光厚度色块的完整卡体：
+
+<div align="center">
+  <img src="examples/card_whole_preview_3d.png" alt="Bambu Studio 3D Whole Card Preview" width="560">
+</div>
+
+---
+
+### 2. 75mm × 36mm 完整卡片正面效果 (Whole Card Dimensions & Layout)
+> 包含标准挂绳孔、40.4×30.4mm 标签凹槽、圆特色样孔与 5 阶梯透光测试色样（0.8 / 0.6 / 0.4 / 0.2 / 0.1 mm）：
+
+| 🇺🇸 PLA Wood - White Oak (13106) | 🇨🇳 PLA Wood - 白橡木 (13106) |
 | :---: | :---: |
-| ![White Oak Preview](examples/耗材样本卡_White_Oak_preview.png) | ![白橡木 Preview](examples/耗材样本卡_白橡木_preview.png) |
-| 🪓 [Download 3MF](examples/耗材样本卡_White_Oak.3mf) | 🪓 [下载 3MF 文件](examples/耗材样本卡_白橡木.3mf) |
+| <img src="examples/card_whole_preview_white_oak.png" alt="White Oak Whole Card" width="460"> | <img src="examples/card_whole_preview_zh_white_oak.png" alt="白橡木 Whole Card" width="460"> |
+| 🪓 [Download 3MF (下载 3MF)](examples/耗材样本卡_White_Oak.3mf) | 🪓 [Download 3MF (下载 3MF)](examples/耗材样本卡_白橡木.3mf) |
 
 ---
 
@@ -155,6 +167,9 @@ filament_card/
 ├── requirements.txt              # Python dependencies
 ├── start_webtool.sh              # One-click start script
 ├── examples/                     # Pre-generated sample cards & preview images
+│   ├── card_whole_preview_3d.png         # 3D isometric sliced preview
+│   ├── card_whole_preview_white_oak.png  # English whole card 75x36mm render
+│   ├── card_whole_preview_zh_white_oak.png # Chinese whole card 75x36mm render
 │   ├── 耗材样本卡_White_Oak.3mf
 │   ├── 耗材样本卡_White_Oak_preview.png
 │   ├── 耗材样本卡_白橡木.3mf
