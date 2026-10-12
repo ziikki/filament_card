@@ -34,7 +34,7 @@ Runs **100% client-side** in your browser — zero backend required, free deploy
 ---
 
 ### 2. 75mm × 36mm 完整卡片正面效果 (Whole Card Dimensions & Layout)
-> 包含标准挂绳孔、40.4×30.4mm 标签凹槽、圆特色样孔与 5 阶梯透光测试色样（0.8 / 0.6 / 0.4 / 0.2 / 0.1 mm）：
+> 严格对齐 MakerWorld #70155 真实 3D 模型的几何规范：左侧为 6×26mm 圆角挂绳开孔，中间为 40.4×30.4mm 标签凹槽（含文字及色样观察孔），右侧自上而下分布 5 条横向透光测试色样（0.8 / 0.6 / 0.4 / 0.2 / 0.1 mm）及对应的 `.8`、`.6`、`.4`、`.2`、`.1` 刻度浮雕：
 
 | 🇺🇸 PLA Wood - White Oak (13106) | 🇨🇳 PLA Wood - 白橡木 (13106) |
 | :---: | :---: |
@@ -192,6 +192,22 @@ filament_card/
    - `Filament 2`: Text color (e.g., Black or Charcoal PLA)
    - `Filament 3`: Filament swatch sample (the target material being sampled)
 5. **Prime Tower (擦料塔)**: Supported and recommended.
+
+---
+
+## 🙏 Acknowledgements & Remix Attribution (致谢与原作者声明)
+
+本项目基于 MakerWorld 社区经典热门的耗材色卡设计进行 Remix 与参数化二次开发：
+
+- 🔗 **Original 3D Model**: [打印耗材色卡 Filament Sample Card](https://makerworld.com/en/models/70155-filament-sample-card#profileId-74478) (MakerWorld Model ID: **`#70155`**, Profile ID: **`#74478`**)
+- 👤 **Original Designer**: [喵喵mya](https://makerworld.com/en/@user_234900454) (@fenglyu)
+- 📐 **Design Specifications**: 
+  - 外轮廓：75 mm × 36 mm，厚度 2.0 mm
+  - 挂绳孔：左侧 6.0 mm × 26.0 mm 圆角通孔
+  - 标签凹槽：中间 40.4 mm × 30.4 mm 凹槽（深度 0.5 mm）
+  - 透光色梯：右侧 5 阶横向色梯（0.8 / 0.6 / 0.4 / 0.2 / 0.1 mm）及 `.8`、`.6`、`.4`、`.2`、`.1` 刻度
+
+非常感谢原作者 **喵喵mya** 贡献的经典卡体设计规范（并开源了 Fusion 360 F3D 模型文件）！本项目在此几何标准的基础上，实现了拓竹官网参数自动提取、浏览器纯前端实时 3MF 生成与 GitHub Pages 免服务器部署。
 
 ---
 

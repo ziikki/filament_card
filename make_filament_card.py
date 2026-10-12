@@ -659,122 +659,191 @@ def render_preview_image(material, color, code, hex_color, swatch_d=7.0,
 
 def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
                      base_hex="#B39B84", text_hex="#282828"):
-    """Render high-resolution 2D preview image of the ENTIRE card (75x36mm)."""
-    CARD_W, CARD_H = 75.0, 36.0
-    POCKET_W, POCKET_H = 40.4, 30.4
-    POCKET_CX, POCKET_CY = -6.3, 0.0
-
-    W_PX = int(CARD_W * ppm)
-    H_PX = int(CARD_H * ppm)
-    PADDING = int(4.0 * ppm)
-
-    TOTAL_W = W_PX + PADDING * 2
-    TOTAL_H = H_PX + PADDING * 2
-
-    img = Image.new('RGBA', (TOTAL_W, TOTAL_H), (255, 255, 255, 0))
-    draw = ImageDraw.Draw(img)
-
-    def to_px(x, y):
-        px = int(PADDING + (x + CARD_W / 2.0) * ppm)
-        py = int(PADDING + (CARD_H / 2.0 - y) * ppm)
-        return px, py
-
-    # 1. Drop shadow
-    shadow_offset = int(1.2 * ppm)
-    x0, y0 = to_px(-CARD_W/2, CARD_H/2)
-    x1, y1 = to_px(CARD_W/2, -CARD_H/2)
-    corner_r = int(4.0 * ppm)
-    draw.rounded_rectangle([x0 + shadow_offset, y0 + shadow_offset, x1 + shadow_offset, y1 + shadow_offset],
-                           radius=corner_r, fill=(0, 0, 0, 45))
-
-    # 2. Main card body
-    card_rgb = (235, 233, 228)  # Clean Bambu sample card body tone
-    draw.rounded_rectangle([x0, y0, x1, y1], radius=corner_r, fill=(*card_rgb, 255), outline=(195, 190, 182, 255), width=int(0.4*ppm))
-
-    # 3. Lanyard slot on the left
-    slot_cx, slot_cy = -32.5, 0.0
-    slot_w, slot_h = 3.6, 24.0
-    sx0, sy0 = to_px(slot_cx - slot_w/2, slot_cy + slot_h/2)
-    sx1, sy1 = to_px(slot_cx + slot_w/2, slot_cy - slot_h/2)
-    slot_r = int(slot_w/2 * ppm)
-    draw.rounded_rectangle([sx0, sy0, sx1, sy1], radius=slot_r, fill=(255, 255, 255, 0), outline=(180, 175, 168, 255), width=int(0.35*ppm))
-
-    # 4. Pocket outline and floor
-    px0, py0 = to_px(POCKET_CX - POCKET_W/2, POCKET_CY + POCKET_H/2)
-    px1, py1 = to_px(POCKET_CX + POCKET_W/2, POCKET_CY - POCKET_H/2)
-    p_radius = int(2.0 * ppm)
-    pocket_bg = (244, 242, 238)
-    draw.rounded_rectangle([px0, py0, px1, py1], radius=p_radius, fill=(*pocket_bg, 255), outline=(190, 185, 178, 255), width=int(0.4*ppm))
-
-    # 5. Stepped thickness swatches on the right
-    step_x0 = 16.0
-    step_x1 = 33.5
-    step_y_top = 14.5
-    step_y_bot = -14.5
-    step_w = (step_x1 - step_x0) / 5.0
-
+    """Render high-resolution 2D preview image of the ENTIRE card (75x36mm) matching MakerWorld #70155."""
     hex_clean = normalize_hex(hex_color).lstrip('#')
     h_rgb = tuple(int(hex_clean[i:i+2], 16) for i in (0, 2, 4))
 
-    lsx0, lsy0 = to_px(step_x0, step_y_top)
-    lsx1, lsy1 = to_px(step_x1, step_y_bot)
-    draw.rounded_rectangle([lsx0, lsy0, lsx1, lsy1], radius=int(1.5*ppm), fill=(225, 222, 216, 255), outline=(185, 180, 172, 255), width=int(0.3*ppm))
+    pad_mm = 4.0
+    W_mm = 75.0 + pad_mm * 2
+    H_mm = 36.0 + pad_mm * 2
+    W_px = int(W_mm * ppm)
+    H_px = int(H_mm * ppm)
+    ox = W_px // 2
+    oy = H_px // 2
 
-    steps_info = [
-        ('0.8', 0.95),
-        ('0.6', 0.80),
-        ('0.4', 0.65),
-        ('0.2', 0.50),
-        ('0.1', 0.35)
-    ]
+    card_base_rgb = (236, 233, 227)
+    clean_t_hex = normalize_hex(text_hex).lstrip('#')
+    txt_rgb = tuple(int(clean_t_hex[i:i+2], 16) for i in (0, 2, 4))
 
+    rendered_from_mesh = False
+    if os.path.exists(DEFAULT_TEMPLATE):
+        try:
+            import zipfile, xml.etree.ElementTree as ET
+            with zipfile.ZipFile(DEFAULT_TEMPLATE, 'r') as z:
+                m_xml = z.read('3D/Objects/object_2.model')
+                root = ET.fromstring(m_xml)
+                obj = root.find('.//{http://schemas.microsoft.com/3dmanufacturing/core/2015/02}object[@id="1"]')
+                m = obj.find('{http://schemas.microsoft.com/3dmanufacturing/core/2015/02}mesh')
+                verts = np.array([[float(v.get('x')), float(v.get('y')), float(v.get('z'))] for v in m.find('{http://schemas.microsoft.com/3dmanufacturing/core/2015/02}vertices')])
+                triangles = np.array([[int(t.get('v1')), int(t.get('v2')), int(t.get('v3'))] for t in m.find('{http://schemas.microsoft.com/3dmanufacturing/core/2015/02}triangles')])
+
+            card_img = np.zeros((H_px, W_px, 4), dtype=np.uint8)
+            tri_max_z = np.max(verts[triangles, 2], axis=1)
+            order = np.argsort(tri_max_z)
+
+            L = np.array([-0.35, 0.45, 0.82])
+            L /= np.linalg.norm(L)
+
+            for idx in order:
+                t = triangles[idx]
+                v = verts[t]
+                n = np.cross(v[1] - v[0], v[2] - v[0])
+                norm_len = np.linalg.norm(n)
+                if norm_len < 1e-6 or n[2] <= 0.05:
+                    continue
+                n /= norm_len
+                diff = max(0.0, np.dot(n, L))
+                shade = 0.60 + 0.40 * diff
+                pts = np.array([[int(ox + p[0] * ppm), int(oy - p[1] * ppm)] for p in v], dtype=np.int32)
+
+                z_mean = np.mean(v[:, 2])
+                if z_mean >= 0.95:
+                    c = card_base_rgb
+                elif z_mean >= 0.45:
+                    c = (245, 243, 240)
+                elif z_mean >= -0.05:
+                    c = (226, 222, 215)
+                elif z_mean >= -0.25:
+                    op = 0.92
+                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
+                elif z_mean >= -0.45:
+                    op = 0.76
+                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
+                elif z_mean >= -0.65:
+                    op = 0.58
+                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
+                elif z_mean >= -0.85:
+                    op = 0.42
+                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
+                else:
+                    op = 0.28
+                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
+
+                col_bgr = (int(c[2] * shade), int(c[1] * shade), int(c[0] * shade), 255)
+                cv2.fillConvexPoly(card_img, pts, col_bgr, lineType=cv2.LINE_AA)
+
+            pil_img = Image.fromarray(cv2.cvtColor(card_img, cv2.COLOR_BGRA2RGBA))
+            rendered_from_mesh = True
+        except Exception:
+            pass
+
+    if not rendered_from_mesh:
+        pil_img = Image.new('RGBA', (W_px, H_px), (255, 255, 255, 0))
+        d = ImageDraw.Draw(pil_img)
+        x0 = int(ox - 37.5 * ppm)
+        y0 = int(oy - 18.0 * ppm)
+        x1 = int(ox + 37.5 * ppm)
+        y1 = int(oy + 18.0 * ppm)
+        d.rounded_rectangle([x0, y0, x1, y1], radius=int(4.0 * ppm), fill=(*card_base_rgb, 255), outline=(195, 190, 182, 255), width=int(0.4*ppm))
+        px0 = int(ox + (-6.3 - 40.4/2) * ppm)
+        py0 = int(oy - 15.2 * ppm)
+        px1 = int(ox + (-6.3 + 40.4/2) * ppm)
+        py1 = int(oy + 15.2 * ppm)
+        d.rounded_rectangle([px0, py0, px1, py1], radius=int(2.0*ppm), fill=(245, 243, 240, 255), outline=(190, 185, 178, 255), width=int(0.4*ppm))
+
+    # Cut out lanyard slot hole cleanly: X in [-34.5, -28.5], Y in [-13.0, 13.0]
+    sx0 = int(ox - 34.5 * ppm)
+    sy0 = int(oy - 13.0 * ppm)
+    sx1 = int(ox - 28.5 * ppm)
+    sy1 = int(oy + 13.0 * ppm)
+    sr = int(3.0 * ppm)
+    
+    hole_mask = Image.new('L', pil_img.size, 255)
+    h_draw = ImageDraw.Draw(hole_mask)
+    h_draw.rounded_rectangle([sx0, sy0, sx1, sy1], radius=sr, fill=0)
+    
+    r, g, b, a = pil_img.split()
+    a = Image.fromarray(np.minimum(np.array(a), np.array(hole_mask)))
+    pil_img = Image.merge('RGBA', (r, g, b, a))
+
+    draw = ImageDraw.Draw(pil_img)
+    draw.rounded_rectangle([sx0, sy0, sx1, sy1], radius=sr, outline=(185, 180, 172, 220), width=int(0.35 * ppm))
+
+    # Clean number strip (.8, .6, .4, .2, .1)
+    ns_x0 = int(ox + 15.5 * ppm)
+    ns_x1 = int(ox + 21.5 * ppm)
+    ns_y0 = int(oy - 15.0 * ppm)
+    ns_y1 = int(oy + 15.0 * ppm)
+    draw.rectangle([ns_x0, ns_y0, ns_x1, ns_y1], fill=(225, 221, 214, 255))
+    draw.line([ns_x0, ns_y0, ns_x0, ns_y1], fill=(195, 190, 182, 255), width=1)
+    draw.line([ns_x1, ns_y0, ns_x1, ns_y1], fill=(205, 200, 192, 255), width=1)
+
+    num_x = int(ox + 18.5 * ppm)
+    step_ys = [12.0, 6.0, 0.0, -6.0, -12.0]
+    step_labels = ['.8', '.6', '.4', '.2', '.1']
     try:
-        font_num = ImageFont.truetype('/System/Library/Fonts/Supplemental/Arial Bold.ttf', int(1.8 * ppm))
+        font_num = ImageFont.truetype('/System/Library/Fonts/Supplemental/Arial Bold.ttf', int(3.2 * ppm))
     except Exception:
         font_num = ImageFont.load_default()
 
-    for idx, (label, opacity) in enumerate(steps_info):
-        sx_left = step_x0 + idx * step_w
-        sx_right = sx_left + step_w
-        bx0, by0 = to_px(sx_left + 0.2, step_y_top - 6.5)
-        bx1, by1 = to_px(sx_right - 0.2, step_y_bot + 0.8)
-        blended = tuple(int(h_rgb[c] * opacity + card_rgb[c] * (1.0 - opacity)) for c in range(3))
-        draw.rectangle([bx0, by0, bx1, by1], fill=(*blended, 255), outline=(190, 185, 178, 160), width=1)
-        tx, ty = to_px(sx_left + step_w/2, step_y_top - 3.2)
-        draw.text((tx, ty), label, font=font_num, fill=(120, 115, 108, 255), anchor='mm')
+    for y_mm, label in zip(step_ys, step_labels):
+        ny = int(oy - y_mm * ppm)
+        draw.text((num_x + 1, ny + 1), label, font=font_num, fill=(255, 255, 255, 200), anchor='mm')
+        draw.text((num_x, ny), label, font=font_num, fill=(115, 110, 102, 255), anchor='mm')
 
-    # 6. Render pocket text and swatch
+    for y_div in [9.0, 3.0, -3.0, -9.0]:
+        dy = int(oy - y_div * ppm)
+        step_x_start = int(ox + 21.5 * ppm)
+        step_x_end = int(ox + 34.5 * ppm)
+        draw.line([step_x_start, dy, step_x_end, dy], fill=(185, 180, 172, 180), width=1)
+
+    # Composite pocket text and swatch
     font_path, font_idx = pick_font(None, 0)
     fr = TextRenderer(font_path, font_idx)
     args = ArgsWrapper(material=material, color=color, code=code, hex_val=hex_color, swatch_d=7.0)
     raw_pocket, (sw_cx, sw_cy, sw_r) = build_layout(args, fr)
 
-    pocket_w_px = px1 - px0
-    pocket_h_px = py1 - py0
-    resized_pocket = cv2.resize(raw_pocket, (pocket_w_px, pocket_h_px), interpolation=cv2.INTER_AREA)
+    px0 = int(ox + (-6.3 - 40.4/2) * ppm)
+    py0 = int(oy - 15.2 * ppm)
+    pw = int(40.4 * ppm)
+    ph = int(30.4 * ppm)
 
-    clean_t_hex = normalize_hex(text_hex).lstrip('#')
-    txt_rgb = tuple(int(clean_t_hex[i:i+2], 16) for i in (0, 2, 4))
+    resized_pocket = cv2.resize(raw_pocket, (pw, ph), interpolation=cv2.INTER_AREA)
 
-    for y in range(pocket_h_px):
-        for x in range(pocket_w_px):
+    for y in range(ph):
+        for x in range(pw):
             alpha = resized_pocket[y, x]
             if alpha > 0:
                 fg_a = alpha / 255.0
-                curr_px = img.getpixel((px0 + x, py0 + y))
-                out_r = int(txt_rgb[0] * fg_a + curr_px[0] * (1 - fg_a))
-                out_g = int(txt_rgb[1] * fg_a + curr_px[1] * (1 - fg_a))
-                out_b = int(txt_rgb[2] * fg_a + curr_px[2] * (1 - fg_a))
-                img.putpixel((px0 + x, py0 + y), (out_r, out_g, out_b, 255))
+                curr = pil_img.getpixel((px0 + x, py0 + y))
+                out_r = int(txt_rgb[0] * fg_a + curr[0] * (1 - fg_a))
+                out_g = int(txt_rgb[1] * fg_a + curr[1] * (1 - fg_a))
+                out_b = int(txt_rgb[2] * fg_a + curr[2] * (1 - fg_a))
+                pil_img.putpixel((px0 + x, py0 + y), (out_r, out_g, out_b, 255))
 
-    sw_px, sw_py = to_px(POCKET_CX + sw_cx, POCKET_CY + sw_cy)
+    sw_px = int(ox + (-6.3 + sw_cx) * ppm)
+    sw_py = int(oy - (0.0 + sw_cy) * ppm)
     sw_r_px = int(sw_r * ppm)
     draw.ellipse([sw_px - sw_r_px, sw_py - sw_r_px, sw_px + sw_r_px, sw_py + sw_r_px],
-                 fill=(*h_rgb, 255), outline=(170, 165, 158, 255), width=int(0.35*ppm))
+                 fill=(*h_rgb, 255), outline=(175, 170, 162, 255), width=int(0.35 * ppm))
 
+    # Drop shadow
+    shadow_img = Image.new('RGBA', pil_img.size, (0, 0, 0, 0))
+    s_draw = ImageDraw.Draw(shadow_img)
+    cx0 = int(ox - 37.5 * ppm)
+    cy0 = int(oy - 18.0 * ppm)
+    cx1 = int(ox + 37.5 * ppm)
+    cy1 = int(oy + 18.0 * ppm)
+    s_offset = int(1.2 * ppm)
+    s_draw.rounded_rectangle([cx0 + s_offset, cy0 + s_offset, cx1 + s_offset, cy1 + s_offset],
+                             radius=int(4.0 * ppm), fill=(0, 0, 0, 45))
+    s_draw.rounded_rectangle([sx0 + s_offset, sy0 + s_offset, sx1 + s_offset, sy1 + s_offset],
+                             radius=sr, fill=(0, 0, 0, 0))
+
+    shadow_img.alpha_composite(pil_img)
     if out_path:
-        img.save(out_path)
-    return img
+        shadow_img.save(out_path)
+    return shadow_img
 
 
 def generate_card(material, color, code, hex_color, relief=0.5, out_path=None,
