@@ -1,0 +1,2514 @@
+[
+  {
+    "code": "10300",
+    "material": "PLA Basic",
+    "name_en": "Orange",
+    "name_zh": "橙色",
+    "hex": "#FF6A13",
+    "color_code": "A0"
+  },
+  {
+    "code": "10301",
+    "material": "PLA Basic",
+    "name_en": "Pumpkin Orange",
+    "name_zh": "南瓜橙",
+    "hex": "#FF9016",
+    "color_code": "A1"
+  },
+  {
+    "code": "10602",
+    "material": "PLA Basic",
+    "name_en": "Blue Gray",
+    "name_zh": "蓝灰",
+    "hex": "#5B6579",
+    "color_code": "B1"
+  },
+  {
+    "code": "10604",
+    "material": "PLA Basic",
+    "name_en": "Cobalt Blue",
+    "name_zh": "钴蓝色",
+    "hex": "#0056B8",
+    "color_code": "B3"
+  },
+  {
+    "code": "10605",
+    "material": "PLA Basic",
+    "name_en": "Turquoise",
+    "name_zh": "松石绿",
+    "hex": "#00B1B7",
+    "color_code": "B5"
+  },
+  {
+    "code": "10603",
+    "material": "PLA Basic",
+    "name_en": "Cyan",
+    "name_zh": "青色",
+    "hex": "#0086D6",
+    "color_code": "B8"
+  },
+  {
+    "code": "10601",
+    "material": "PLA Basic",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#0A2989",
+    "color_code": "B9"
+  },
+  {
+    "code": "10103",
+    "material": "PLA Basic",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#8E9089",
+    "color_code": "D0"
+  },
+  {
+    "code": "10102",
+    "material": "PLA Basic",
+    "name_en": "Silver",
+    "name_zh": "银色",
+    "hex": "#A6A9AA",
+    "color_code": "D1"
+  },
+  {
+    "code": "10104",
+    "material": "PLA Basic",
+    "name_en": "Light Gray",
+    "name_zh": "浅灰",
+    "hex": "#D1D3D5",
+    "color_code": "D2"
+  },
+  {
+    "code": "10105",
+    "material": "PLA Basic",
+    "name_en": "Dark Gray",
+    "name_zh": "深灰",
+    "hex": "#545454",
+    "color_code": "D3"
+  },
+  {
+    "code": "10502",
+    "material": "PLA Basic",
+    "name_en": "Mistletoe Green",
+    "name_zh": "圣诞绿",
+    "hex": "#3F8E43",
+    "color_code": "G2"
+  },
+  {
+    "code": "10503",
+    "material": "PLA Basic",
+    "name_en": "Bright Green",
+    "name_zh": "苹果绿",
+    "hex": "#BECF00",
+    "color_code": "G3"
+  },
+  {
+    "code": "10501",
+    "material": "PLA Basic",
+    "name_en": "Bambu Green",
+    "name_zh": "拓竹绿",
+    "hex": "#00AE42",
+    "color_code": "G6"
+  },
+  {
+    "code": "10101",
+    "material": "PLA Basic",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "10900",
+    "material": "PLA Basic",
+    "name_en": "Arctic Whisper",
+    "name_zh": "蓝白渐变",
+    "hex": "#9CDBD9",
+    "color_code": "M0"
+  },
+  {
+    "code": "10901",
+    "material": "PLA Basic",
+    "name_en": "Solar Breeze",
+    "name_zh": "红白渐变",
+    "hex": "#E94B3C",
+    "color_code": "M1"
+  },
+  {
+    "code": "10902",
+    "material": "PLA Basic",
+    "name_en": "Ocean to Meadow",
+    "name_zh": "蓝绿渐变",
+    "hex": "#307FE2",
+    "color_code": "M2"
+  },
+  {
+    "code": "10903",
+    "material": "PLA Basic",
+    "name_en": "Pink Citrus",
+    "name_zh": "霞光粉",
+    "hex": "#F78F77",
+    "color_code": "M3"
+  },
+  {
+    "code": "10904",
+    "material": "PLA Basic",
+    "name_en": "Mint Lime",
+    "name_zh": "青柠绿",
+    "hex": "#B6FF43",
+    "color_code": "M4"
+  },
+  {
+    "code": "10905",
+    "material": "PLA Basic",
+    "name_en": "Blueberry Bubblegum",
+    "name_zh": "泡泡紫",
+    "hex": "#6FCAEF",
+    "color_code": "M5"
+  },
+  {
+    "code": "10906",
+    "material": "PLA Basic",
+    "name_en": "Dusk Glare",
+    "name_zh": "日落橙",
+    "hex": "#CE4406",
+    "color_code": "M6"
+  },
+  {
+    "code": "10907",
+    "material": "PLA Basic",
+    "name_en": "Cotton Candy Cloud",
+    "name_zh": "多巴胺（粉蓝渐变）",
+    "hex": "#E7C1D5",
+    "color_code": "M7"
+  },
+  {
+    "code": "10800",
+    "material": "PLA Basic",
+    "name_en": "Brown",
+    "name_zh": "棕色",
+    "hex": "#9D432C",
+    "color_code": "N0"
+  },
+  {
+    "code": "10802",
+    "material": "PLA Basic",
+    "name_en": "Cocoa Brown",
+    "name_zh": "可可棕",
+    "hex": "#6F5034",
+    "color_code": "N1"
+  },
+  {
+    "code": "10201",
+    "material": "PLA Basic",
+    "name_en": "Beige",
+    "name_zh": "杏色",
+    "hex": "#F7E6DE",
+    "color_code": "P0"
+  },
+  {
+    "code": "10203",
+    "material": "PLA Basic",
+    "name_en": "Pink",
+    "name_zh": "粉色",
+    "hex": "#F55A74",
+    "color_code": "P1"
+  },
+  {
+    "code": "10701",
+    "material": "PLA Basic",
+    "name_en": "Indigo Purple",
+    "name_zh": "绀紫色",
+    "hex": "#482960",
+    "color_code": "P2"
+  },
+  {
+    "code": "10700",
+    "material": "PLA Basic",
+    "name_en": "Purple",
+    "name_zh": "紫色",
+    "hex": "#5E43B7",
+    "color_code": "P5"
+  },
+  {
+    "code": "10202",
+    "material": "PLA Basic",
+    "name_en": "Magenta",
+    "name_zh": "品红",
+    "hex": "#EC008C",
+    "color_code": "P6"
+  },
+  {
+    "code": "10200",
+    "material": "PLA Basic",
+    "name_en": "Red",
+    "name_zh": "红色",
+    "hex": "#C12E1F",
+    "color_code": "R0"
+  },
+  {
+    "code": "10205",
+    "material": "PLA Basic",
+    "name_en": "Maroon Red",
+    "name_zh": "胭脂红",
+    "hex": "#9D2235",
+    "color_code": "R2"
+  },
+  {
+    "code": "10204",
+    "material": "PLA Basic",
+    "name_en": "Hot Pink",
+    "name_zh": "桃红色",
+    "hex": "#F5547C",
+    "color_code": "R3"
+  },
+  {
+    "code": "10100",
+    "material": "PLA Basic",
+    "name_en": "Jade White",
+    "name_zh": "玉石白",
+    "hex": "#FFFFFF",
+    "color_code": "W1"
+  },
+  {
+    "code": "10400",
+    "material": "PLA Basic",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#F4EE2A",
+    "color_code": "Y0"
+  },
+  {
+    "code": "10402",
+    "material": "PLA Basic",
+    "name_en": "Sunflower Yellow",
+    "name_zh": "暖黄色",
+    "hex": "#FEC600",
+    "color_code": "Y2"
+  },
+  {
+    "code": "10801",
+    "material": "PLA Basic",
+    "name_en": "Bronze",
+    "name_zh": "青铜",
+    "hex": "#847D48",
+    "color_code": "Y3"
+  },
+  {
+    "code": "10401",
+    "material": "PLA Basic",
+    "name_en": "Gold",
+    "name_zh": "金色",
+    "hex": "#E4BD68",
+    "color_code": "Y4"
+  },
+  {
+    "code": "11300",
+    "material": "PLA Matte",
+    "name_en": "Mandarin Orange",
+    "name_zh": "橘橙",
+    "hex": "#F99963",
+    "color_code": "A2"
+  },
+  {
+    "code": "11603",
+    "material": "PLA Matte",
+    "name_en": "Sky Blue",
+    "name_zh": "天蓝色",
+    "hex": "#56B7E6",
+    "color_code": "B0"
+  },
+  {
+    "code": "11600",
+    "material": "PLA Matte",
+    "name_en": "Marine Blue",
+    "name_zh": "海蓝",
+    "hex": "#0078BF",
+    "color_code": "B3"
+  },
+  {
+    "code": "11601",
+    "material": "PLA Matte",
+    "name_en": "Ice Blue",
+    "name_zh": "冰蓝",
+    "hex": "#A3D8E1",
+    "color_code": "B4"
+  },
+  {
+    "code": "11602",
+    "material": "PLA Matte",
+    "name_en": "Dark Blue",
+    "name_zh": "暗夜蓝",
+    "hex": "#042F56",
+    "color_code": "B6"
+  },
+  {
+    "code": "11104",
+    "material": "PLA Matte",
+    "name_en": "Nardo Gray",
+    "name_zh": "枪灰色",
+    "hex": "#757575",
+    "color_code": "D0"
+  },
+  {
+    "code": "11102",
+    "material": "PLA Matte",
+    "name_en": "Ash Gray",
+    "name_zh": "岩石灰",
+    "hex": "#9B9EA0",
+    "color_code": "D3"
+  },
+  {
+    "code": "11502",
+    "material": "PLA Matte",
+    "name_en": "Apple Green",
+    "name_zh": "果绿色",
+    "hex": "#C2E189",
+    "color_code": "G0"
+  },
+  {
+    "code": "11500",
+    "material": "PLA Matte",
+    "name_en": "Grass Green",
+    "name_zh": "草绿",
+    "hex": "#61C680",
+    "color_code": "G1"
+  },
+  {
+    "code": "11501",
+    "material": "PLA Matte",
+    "name_en": "Dark Green",
+    "name_zh": "暗夜绿",
+    "hex": "#68724D",
+    "color_code": "G7"
+  },
+  {
+    "code": "11101",
+    "material": "PLA Matte",
+    "name_en": "Charcoal",
+    "name_zh": "炭黑",
+    "hex": "#000000",
+    "color_code": "K1"
+  },
+  {
+    "code": "11802",
+    "material": "PLA Matte",
+    "name_en": "Dark Chocolate",
+    "name_zh": "深棕色",
+    "hex": "#4D3324",
+    "color_code": "N0"
+  },
+  {
+    "code": "11800",
+    "material": "PLA Matte",
+    "name_en": "Latte Brown",
+    "name_zh": "拿铁褐",
+    "hex": "#D3B7A7",
+    "color_code": "N1"
+  },
+  {
+    "code": "11801",
+    "material": "PLA Matte",
+    "name_en": "Dark Brown",
+    "name_zh": "暗夜棕",
+    "hex": "#7D6556",
+    "color_code": "N2"
+  },
+  {
+    "code": "11803",
+    "material": "PLA Matte",
+    "name_en": "Caramel",
+    "name_zh": "沙棕色",
+    "hex": "#AE835B",
+    "color_code": "N3"
+  },
+  {
+    "code": "11201",
+    "material": "PLA Matte",
+    "name_en": "Sakura Pink",
+    "name_zh": "樱花粉",
+    "hex": "#E8AFCF",
+    "color_code": "P3"
+  },
+  {
+    "code": "11700",
+    "material": "PLA Matte",
+    "name_en": "Lilac Purple",
+    "name_zh": "丁香紫",
+    "hex": "#AE96D4",
+    "color_code": "P4"
+  },
+  {
+    "code": "11200",
+    "material": "PLA Matte",
+    "name_en": "Scarlet Red",
+    "name_zh": "猩红",
+    "hex": "#DE4343",
+    "color_code": "R1"
+  },
+  {
+    "code": "11203",
+    "material": "PLA Matte",
+    "name_en": "Terracotta",
+    "name_zh": "砖红色",
+    "hex": "#B15533",
+    "color_code": "R2"
+  },
+  {
+    "code": "11204",
+    "material": "PLA Matte",
+    "name_en": "Plum",
+    "name_zh": "莓果紫",
+    "hex": "#950051",
+    "color_code": "R3"
+  },
+  {
+    "code": "11202",
+    "material": "PLA Matte",
+    "name_en": "Dark Red",
+    "name_zh": "暗夜红",
+    "hex": "#BB3D43",
+    "color_code": "R4"
+  },
+  {
+    "code": "11100",
+    "material": "PLA Matte",
+    "name_en": "Ivory White",
+    "name_zh": "象牙白",
+    "hex": "#FFFFFF",
+    "color_code": "W2"
+  },
+  {
+    "code": "11103",
+    "material": "PLA Matte",
+    "name_en": "Bone White",
+    "name_zh": "骨白",
+    "hex": "#CBC6B8",
+    "color_code": "W3"
+  },
+  {
+    "code": "11400",
+    "material": "PLA Matte",
+    "name_en": "Lemon Yellow",
+    "name_zh": "柠檬黄",
+    "hex": "#F7D959",
+    "color_code": "Y2"
+  },
+  {
+    "code": "11401",
+    "material": "PLA Matte",
+    "name_en": "Desert Tan",
+    "name_zh": "沙漠黄",
+    "hex": "#E8DBB7",
+    "color_code": "Y3"
+  },
+  {
+    "code": "13601",
+    "material": "PLA Silk",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#147BD1",
+    "color_code": "B0"
+  },
+  {
+    "code": "13104",
+    "material": "PLA Silk",
+    "name_en": "Silver",
+    "name_zh": "银色",
+    "hex": "#EAECEB",
+    "color_code": "D1"
+  },
+  {
+    "code": "13502",
+    "material": "PLA Silk",
+    "name_en": "Green",
+    "name_zh": "绿色",
+    "hex": "#4CE4A0",
+    "color_code": "G1"
+  },
+  {
+    "code": "13300",
+    "material": "PLA Silk",
+    "name_en": "Copper",
+    "name_zh": "铜色",
+    "hex": "#5E4B3C",
+    "color_code": "N4"
+  },
+  {
+    "code": "13202",
+    "material": "PLA Silk",
+    "name_en": "Pink",
+    "name_zh": "粉色",
+    "hex": "#EEB1C1",
+    "color_code": "P3"
+  },
+  {
+    "code": "13701",
+    "material": "PLA Silk",
+    "name_en": "Purple",
+    "name_zh": "紫色",
+    "hex": "#854CE4",
+    "color_code": "P5"
+  },
+  {
+    "code": "13901",
+    "material": "PLA Silk",
+    "name_en": "Gilded Rose",
+    "name_zh": "金粉双色",
+    "hex": "#FF9425",
+    "color_code": "T1"
+  },
+  {
+    "code": "13902",
+    "material": "PLA Silk",
+    "name_en": "Midnight Blaze",
+    "name_zh": "蓝红双色",
+    "hex": "#0047BB",
+    "color_code": "T2"
+  },
+  {
+    "code": "13903",
+    "material": "PLA Silk",
+    "name_en": "Neon City",
+    "name_zh": "蓝粉双色",
+    "hex": "#0047BB",
+    "color_code": "T3"
+  },
+  {
+    "code": "13904",
+    "material": "PLA Silk",
+    "name_en": "Blue Hawaii",
+    "name_zh": "蓝绿双色",
+    "hex": "#418FDE",
+    "color_code": "T4"
+  },
+  {
+    "code": "13905",
+    "material": "PLA Silk",
+    "name_en": "Velvet Eclipse (Black-Red)",
+    "name_zh": "灰烬红",
+    "hex": "#000000",
+    "color_code": "T5"
+  },
+  {
+    "code": "13105",
+    "material": "PLA Silk",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "13401",
+    "material": "PLA Silk",
+    "name_en": "Gold",
+    "name_zh": "金色",
+    "hex": "#E5B03D",
+    "color_code": "Y4"
+  },
+  {
+    "code": "13603",
+    "material": "PLA Silk+",
+    "name_en": "Baby Blue",
+    "name_zh": "天空蓝",
+    "hex": "#A8C6EE",
+    "color_code": "B0"
+  },
+  {
+    "code": "13604",
+    "material": "PLA Silk+",
+    "name_en": "Blue",
+    "name_zh": "丝绸蓝",
+    "hex": "#008BDA",
+    "color_code": "B1"
+  },
+  {
+    "code": "13108",
+    "material": "PLA Silk+",
+    "name_en": "Titan Gray",
+    "name_zh": "钛灰色",
+    "hex": "#5F6367",
+    "color_code": "D0"
+  },
+  {
+    "code": "13109",
+    "material": "PLA Silk+",
+    "name_en": "Silver",
+    "name_zh": "丝绸银",
+    "hex": "#C8C8C8",
+    "color_code": "D1"
+  },
+  {
+    "code": "13506",
+    "material": "PLA Silk+",
+    "name_en": "Candy Green",
+    "name_zh": "糖果绿",
+    "hex": "#018814",
+    "color_code": "G0"
+  },
+  {
+    "code": "13507",
+    "material": "PLA Silk+",
+    "name_en": "Mint",
+    "name_zh": "薄荷绿",
+    "hex": "#96DCB9",
+    "color_code": "G1"
+  },
+  {
+    "code": "13702",
+    "material": "PLA Silk+",
+    "name_en": "Purple",
+    "name_zh": "丝绸紫",
+    "hex": "#8671CB",
+    "color_code": "P0"
+  },
+  {
+    "code": "13205",
+    "material": "PLA Silk+",
+    "name_en": "Candy Red",
+    "name_zh": "糖果红",
+    "hex": "#D02727",
+    "color_code": "R0"
+  },
+  {
+    "code": "13206",
+    "material": "PLA Silk+",
+    "name_en": "Rose Gold",
+    "name_zh": "烟粉色",
+    "hex": "#BA9594",
+    "color_code": "R1"
+  },
+  {
+    "code": "13207",
+    "material": "PLA Silk+",
+    "name_en": "Pink",
+    "name_zh": "丝绸粉",
+    "hex": "#F7ADA6",
+    "color_code": "R2"
+  },
+  {
+    "code": "13110",
+    "material": "PLA Silk+",
+    "name_en": "White",
+    "name_zh": "丝绸白",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "13404",
+    "material": "PLA Silk+",
+    "name_en": "Champagne",
+    "name_zh": "香槟色",
+    "hex": "#F3CFB2",
+    "color_code": "Y0"
+  },
+  {
+    "code": "13405",
+    "material": "PLA Silk+",
+    "name_en": "Gold",
+    "name_zh": "丝绸金",
+    "hex": "#F4A925",
+    "color_code": "Y1"
+  },
+  {
+    "code": "13103",
+    "material": "PLA Marble",
+    "name_en": "White Marble",
+    "name_zh": "大理石",
+    "hex": "#F7F3F0",
+    "color_code": "D4"
+  },
+  {
+    "code": "13201",
+    "material": "PLA Marble",
+    "name_en": "Red Granite",
+    "name_zh": "砖红",
+    "hex": "#AD4E38",
+    "color_code": "R5"
+  },
+  {
+    "code": "13700",
+    "material": "PLA Sparkle",
+    "name_en": "Royal Purple Sparkle",
+    "name_zh": "深蓝",
+    "hex": "#483D8B",
+    "color_code": "B7"
+  },
+  {
+    "code": "13102",
+    "material": "PLA Sparkle",
+    "name_en": "Slate Gray Sparkle",
+    "name_zh": "灰色",
+    "hex": "#8E9089",
+    "color_code": "D5"
+  },
+  {
+    "code": "13501",
+    "material": "PLA Sparkle",
+    "name_en": "Alpine Green Sparkle",
+    "name_zh": "绿色",
+    "hex": "#3F5443",
+    "color_code": "G3"
+  },
+  {
+    "code": "13101",
+    "material": "PLA Sparkle",
+    "name_en": "Onyx Black Sparkle",
+    "name_zh": "黑色",
+    "hex": "#2D2B28",
+    "color_code": "K2"
+  },
+  {
+    "code": "13200",
+    "material": "PLA Sparkle",
+    "name_en": "Crimson Red Sparkle",
+    "name_zh": "红色",
+    "hex": "#792B36",
+    "color_code": "R2"
+  },
+  {
+    "code": "13402",
+    "material": "PLA Sparkle",
+    "name_en": "Classic Gold Sparkle",
+    "name_zh": "金色",
+    "hex": "#CEA629",
+    "color_code": "Y1"
+  },
+  {
+    "code": "12300",
+    "material": "PLA Tough",
+    "name_en": "Orange",
+    "name_zh": "橙色",
+    "hex": "#FF7F41",
+    "color_code": "A0"
+  },
+  {
+    "code": "12600",
+    "material": "PLA Tough",
+    "name_en": "Light Blue",
+    "name_zh": "浅蓝",
+    "hex": "#0085AD",
+    "color_code": "B4"
+  },
+  {
+    "code": "12700",
+    "material": "PLA Tough",
+    "name_en": "Lavender Blue",
+    "name_zh": "薰衣草紫",
+    "hex": "#6667AB",
+    "color_code": "B5"
+  },
+  {
+    "code": "12102",
+    "material": "PLA Tough",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#515A6C",
+    "color_code": "D0"
+  },
+  {
+    "code": "12103",
+    "material": "PLA Tough",
+    "name_en": "Silver",
+    "name_zh": "银色",
+    "hex": "#898D8D",
+    "color_code": "D1"
+  },
+  {
+    "code": "12500",
+    "material": "PLA Tough",
+    "name_en": "Pine Green",
+    "name_zh": "松绿",
+    "hex": "#00482B",
+    "color_code": "G4"
+  },
+  {
+    "code": "12101",
+    "material": "PLA Tough",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#25282A",
+    "color_code": "K0"
+  },
+  {
+    "code": "12200",
+    "material": "PLA Tough",
+    "name_en": "Vermilion Red",
+    "name_zh": "朱砂红",
+    "hex": "#DD3C22",
+    "color_code": "R3"
+  },
+  {
+    "code": "12100",
+    "material": "PLA Tough",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#F9F7F4",
+    "color_code": "W3"
+  },
+  {
+    "code": "12400",
+    "material": "PLA Tough",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#FEDB00",
+    "color_code": "Y0"
+  },
+  {
+    "code": "14104",
+    "material": "PLA Aero",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#CDCECA",
+    "color_code": "D0"
+  },
+  {
+    "code": "14103",
+    "material": "PLA Aero",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "14102",
+    "material": "PLA Aero",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "15300",
+    "material": "PLA Glow",
+    "name_en": "Glow Orange",
+    "name_zh": "夜光橙",
+    "hex": "#FF9D5B",
+    "color_code": "A0"
+  },
+  {
+    "code": "15600",
+    "material": "PLA Glow",
+    "name_en": "Glow Blue",
+    "name_zh": "夜光蓝",
+    "hex": "#7AC0E9",
+    "color_code": "B0"
+  },
+  {
+    "code": "15500",
+    "material": "PLA Glow",
+    "name_en": "Glow Green",
+    "name_zh": "夜光绿",
+    "hex": "#A1FFAC",
+    "color_code": "G0"
+  },
+  {
+    "code": "15200",
+    "material": "PLA Glow",
+    "name_en": "Glow Pink",
+    "name_zh": "夜光粉",
+    "hex": "#F17B8F",
+    "color_code": "R0"
+  },
+  {
+    "code": "15400",
+    "material": "PLA Glow",
+    "name_en": "Glow Yellow",
+    "name_zh": "夜光黄",
+    "hex": "#F8FF80",
+    "color_code": "Y0"
+  },
+  {
+    "code": "15100",
+    "material": "PLA Dynamic",
+    "name_en": "UV Color Changing - White to Coral",
+    "name_zh": "光变-白变粉",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "13602",
+    "material": "PLA Galaxy",
+    "name_en": "Purple",
+    "name_zh": "星河紫",
+    "hex": "#594177",
+    "color_code": "B0"
+  },
+  {
+    "code": "13503",
+    "material": "PLA Galaxy",
+    "name_en": "Green",
+    "name_zh": "星河绿",
+    "hex": "#3B665E",
+    "color_code": "G0"
+  },
+  {
+    "code": "13504",
+    "material": "PLA Galaxy",
+    "name_en": "Nebulae",
+    "name_zh": "星云色",
+    "hex": "#424379",
+    "color_code": "G1"
+  },
+  {
+    "code": "13203",
+    "material": "PLA Galaxy",
+    "name_en": "Brown",
+    "name_zh": "星河棕",
+    "hex": "#684A43",
+    "color_code": "R0"
+  },
+  {
+    "code": "13505",
+    "material": "PLA Wood",
+    "name_en": "Classic Birch",
+    "name_zh": "经典桦木",
+    "hex": "#918669",
+    "color_code": "G0"
+  },
+  {
+    "code": "13107",
+    "material": "PLA Wood",
+    "name_en": "Black Walnut",
+    "name_zh": "黑胡桃",
+    "hex": "#4F3F24",
+    "color_code": "K0"
+  },
+  {
+    "code": "13801",
+    "material": "PLA Wood",
+    "name_en": "Clay Brown",
+    "name_zh": "陶土褐",
+    "hex": "#995F11",
+    "color_code": "N0"
+  },
+  {
+    "code": "13204",
+    "material": "PLA Wood",
+    "name_en": "Rosewood",
+    "name_zh": "红木",
+    "hex": "#4C241C",
+    "color_code": "R0"
+  },
+  {
+    "code": "13106",
+    "material": "PLA Wood",
+    "name_en": "White Oak",
+    "name_zh": "白橡木",
+    "hex": "#D6CCA3",
+    "color_code": "W0"
+  },
+  {
+    "code": "13403",
+    "material": "PLA Wood",
+    "name_en": "Ochre Yellow",
+    "name_zh": "赭石黄",
+    "hex": "#C98935",
+    "color_code": "Y0"
+  },
+  {
+    "code": "14601",
+    "material": "PLA-CF",
+    "name_en": "Royal Blue",
+    "name_zh": "皇家蓝",
+    "hex": "#2842AD",
+    "color_code": "B6"
+  },
+  {
+    "code": "14600",
+    "material": "PLA-CF",
+    "name_en": "Jeans Blue",
+    "name_zh": "牛仔蓝",
+    "hex": "#6e88bc",
+    "color_code": "B9"
+  },
+  {
+    "code": "14101",
+    "material": "PLA-CF",
+    "name_en": "Lava Gray",
+    "name_zh": "熔岩灰",
+    "hex": "#4d5054",
+    "color_code": "D6"
+  },
+  {
+    "code": "14500",
+    "material": "PLA-CF",
+    "name_en": "Matcha Green",
+    "name_zh": "抹茶绿",
+    "hex": "#5c9748",
+    "color_code": "G7"
+  },
+  {
+    "code": "14100",
+    "material": "PLA-CF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "14700",
+    "material": "PLA-CF",
+    "name_en": "Iris Purple",
+    "name_zh": "鸢尾花紫",
+    "hex": "#69398E",
+    "color_code": "P7"
+  },
+  {
+    "code": "14200",
+    "material": "PLA-CF",
+    "name_en": "Burgundy Red",
+    "name_zh": "勃艮第红",
+    "hex": "#951e23",
+    "color_code": "R4"
+  },
+  {
+    "code": "40300",
+    "material": "ABS",
+    "name_en": "Orange",
+    "name_zh": "橙色",
+    "hex": "#FF6A13",
+    "color_code": "A0"
+  },
+  {
+    "code": "40600",
+    "material": "ABS",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#0A2CA5",
+    "color_code": "B0"
+  },
+  {
+    "code": "40601",
+    "material": "ABS",
+    "name_en": "Azure",
+    "name_zh": "天蓝色",
+    "hex": "#489FDF",
+    "color_code": "B4"
+  },
+  {
+    "code": "40602",
+    "material": "ABS",
+    "name_en": "Navy Blue",
+    "name_zh": "藏青色",
+    "hex": "#0C2340",
+    "color_code": "B6"
+  },
+  {
+    "code": "40501",
+    "material": "ABS",
+    "name_en": "Mint",
+    "name_zh": "青色",
+    "hex": "#7AE1BF",
+    "color_code": "B8"
+  },
+  {
+    "code": "40102",
+    "material": "ABS",
+    "name_en": "Silver",
+    "name_zh": "银色",
+    "hex": "#87909A",
+    "color_code": "D1"
+  },
+  {
+    "code": "40500",
+    "material": "ABS",
+    "name_en": "Bambu Green",
+    "name_zh": "拓竹绿",
+    "hex": "#00AE42",
+    "color_code": "G6"
+  },
+  {
+    "code": "40502",
+    "material": "ABS",
+    "name_en": "Olive",
+    "name_zh": "橄榄绿",
+    "hex": "#789D4A",
+    "color_code": "G7"
+  },
+  {
+    "code": "40101",
+    "material": "ABS",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "40701",
+    "material": "ABS",
+    "name_en": "Lavender",
+    "name_zh": "薰衣草紫",
+    "hex": "#7248BD",
+    "color_code": "P4"
+  },
+  {
+    "code": "40700",
+    "material": "ABS",
+    "name_en": "Purple",
+    "name_zh": "紫色",
+    "hex": "#AF1685",
+    "color_code": "P6"
+  },
+  {
+    "code": "40200",
+    "material": "ABS",
+    "name_en": "Red",
+    "name_zh": "红色",
+    "hex": "#D32941",
+    "color_code": "R0"
+  },
+  {
+    "code": "40100",
+    "material": "ABS",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "40400",
+    "material": "ABS",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#FCE900",
+    "color_code": "Y0"
+  },
+  {
+    "code": "40402",
+    "material": "ABS",
+    "name_en": "Tangerine Yellow",
+    "name_zh": "橘黄",
+    "hex": "#FFC72C",
+    "color_code": "Y1"
+  },
+  {
+    "code": "40401",
+    "material": "ABS",
+    "name_en": "Beige",
+    "name_zh": "卡其色",
+    "hex": "#DFD1A7",
+    "color_code": "Y2"
+  },
+  {
+    "code": "45600",
+    "material": "ASA",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#2140B4",
+    "color_code": "B0"
+  },
+  {
+    "code": "45102",
+    "material": "ASA",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#8A949E",
+    "color_code": "D0"
+  },
+  {
+    "code": "45500",
+    "material": "ASA",
+    "name_en": "Green",
+    "name_zh": "绿色",
+    "hex": "#00A6A0",
+    "color_code": "G0"
+  },
+  {
+    "code": "45101",
+    "material": "ASA",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "45200",
+    "material": "ASA",
+    "name_en": "Red",
+    "name_zh": "红色",
+    "hex": "#E02928",
+    "color_code": "R0"
+  },
+  {
+    "code": "45100",
+    "material": "ASA",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFAF2",
+    "color_code": "W0"
+  },
+  {
+    "code": "46100",
+    "material": "ASA Aero",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#F5F1DD",
+    "color_code": "W0"
+  },
+  {
+    "code": "41300",
+    "material": "ABS-GF",
+    "name_en": "Orange",
+    "name_zh": "橙色",
+    "hex": "#F48438",
+    "color_code": "A0"
+  },
+  {
+    "code": "41600",
+    "material": "ABS-GF",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#0C3B95",
+    "color_code": "B0"
+  },
+  {
+    "code": "41102",
+    "material": "ABS-GF",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#C6C6C6",
+    "color_code": "D0"
+  },
+  {
+    "code": "41500",
+    "material": "ABS-GF",
+    "name_en": "Green",
+    "name_zh": "绿色",
+    "hex": "#61BF36",
+    "color_code": "G0"
+  },
+  {
+    "code": "41101",
+    "material": "ABS-GF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "41200",
+    "material": "ABS-GF",
+    "name_en": "Red",
+    "name_zh": "红色",
+    "hex": "#E83100",
+    "color_code": "R0"
+  },
+  {
+    "code": "41100",
+    "material": "ABS-GF",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "41400",
+    "material": "ABS-GF",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#FFE133",
+    "color_code": "Y0"
+  },
+  {
+    "code": "46101",
+    "material": "ASA-CF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "60102",
+    "material": "PC",
+    "name_en": "Clear Black",
+    "name_zh": "透明黑",
+    "hex": "#686865",
+    "color_code": "C0"
+  },
+  {
+    "code": "60103",
+    "material": "PC",
+    "name_en": "Transparent",
+    "name_zh": "透明",
+    "hex": "#000000",
+    "color_code": "C1"
+  },
+  {
+    "code": "60101",
+    "material": "PC",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "60100",
+    "material": "PC",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "63102",
+    "material": "PC FR",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#A8A8AA",
+    "color_code": "D0"
+  },
+  {
+    "code": "63100",
+    "material": "PC FR",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "63101",
+    "material": "PC FR",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "32300",
+    "material": "PETG Translucent",
+    "name_en": "Translucent Orange",
+    "name_zh": "透明橘",
+    "hex": "#FF911A",
+    "color_code": "A0"
+  },
+  {
+    "code": "32600",
+    "material": "PETG Translucent",
+    "name_en": "Translucent Light Blue",
+    "name_zh": "透明浅蓝",
+    "hex": "#61B0FF",
+    "color_code": "B0"
+  },
+  {
+    "code": "32101",
+    "material": "PETG Translucent",
+    "name_en": "Clear",
+    "name_zh": "透明",
+    "hex": "#000000",
+    "color_code": "C0"
+  },
+  {
+    "code": "32100",
+    "material": "PETG Translucent",
+    "name_en": "Translucent Gray",
+    "name_zh": "透明灰",
+    "hex": "#8E8E8E",
+    "color_code": "D0"
+  },
+  {
+    "code": "32500",
+    "material": "PETG Translucent",
+    "name_en": "Translucent Olive",
+    "name_zh": "透明橄榄绿",
+    "hex": "#748C45",
+    "color_code": "G0"
+  },
+  {
+    "code": "32501",
+    "material": "PETG Translucent",
+    "name_en": "Translucent Teal",
+    "name_zh": "透明浅绿",
+    "hex": "#77EDD7",
+    "color_code": "G1"
+  },
+  {
+    "code": "32800",
+    "material": "PETG Translucent",
+    "name_en": "Translucent Brown",
+    "name_zh": "透明茶色",
+    "hex": "#C9A381",
+    "color_code": "N0"
+  },
+  {
+    "code": "32700",
+    "material": "PETG Translucent",
+    "name_en": "Translucent Purple",
+    "name_zh": "透明紫",
+    "hex": "#D6ABFF",
+    "color_code": "P0"
+  },
+  {
+    "code": "32200",
+    "material": "PETG Translucent",
+    "name_en": "Translucent Pink",
+    "name_zh": "透明粉",
+    "hex": "#F9C1BD",
+    "color_code": "P1"
+  },
+  {
+    "code": "33300",
+    "material": "PETG HF",
+    "name_en": "Orange",
+    "name_zh": "橙色",
+    "hex": "#F75403",
+    "color_code": "A0"
+  },
+  {
+    "code": "33600",
+    "material": "PETG HF",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#002E96",
+    "color_code": "B0"
+  },
+  {
+    "code": "33601",
+    "material": "PETG HF",
+    "name_en": "Lake Blue",
+    "name_zh": "湖蓝",
+    "hex": "#1F79E5",
+    "color_code": "B1"
+  },
+  {
+    "code": "33101",
+    "material": "PETG HF",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#ADB1B2",
+    "color_code": "D0"
+  },
+  {
+    "code": "33103",
+    "material": "PETG HF",
+    "name_en": "Dark Gray",
+    "name_zh": "深灰",
+    "hex": "#515151",
+    "color_code": "D1"
+  },
+  {
+    "code": "33500",
+    "material": "PETG HF",
+    "name_en": "Green",
+    "name_zh": "绿色",
+    "hex": "#00AE42",
+    "color_code": "G0"
+  },
+  {
+    "code": "33501",
+    "material": "PETG HF",
+    "name_en": "Lime Green",
+    "name_zh": "柠檬绿",
+    "hex": "#6EE53C",
+    "color_code": "G1"
+  },
+  {
+    "code": "33502",
+    "material": "PETG HF",
+    "name_en": "Forest Green",
+    "name_zh": "丛林绿",
+    "hex": "#39541A",
+    "color_code": "G2"
+  },
+  {
+    "code": "33102",
+    "material": "PETG HF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "33801",
+    "material": "PETG HF",
+    "name_en": "Peanut Brown",
+    "name_zh": "花生棕",
+    "hex": "#875718",
+    "color_code": "N1"
+  },
+  {
+    "code": "33200",
+    "material": "PETG HF",
+    "name_en": "Red",
+    "name_zh": "红色",
+    "hex": "#BC0900",
+    "color_code": "R0"
+  },
+  {
+    "code": "33100",
+    "material": "PETG HF",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "33400",
+    "material": "PETG HF",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#FFD00B",
+    "color_code": "Y0"
+  },
+  {
+    "code": "33401",
+    "material": "PETG HF",
+    "name_en": "Cream",
+    "name_zh": "奶油白",
+    "hex": "#F9DFB9",
+    "color_code": "Y1"
+  },
+  {
+    "code": "31600",
+    "material": "PETG-CF",
+    "name_en": "Indigo Blue",
+    "name_zh": "靛蓝色",
+    "hex": "#324585",
+    "color_code": "B6"
+  },
+  {
+    "code": "31101",
+    "material": "PETG-CF",
+    "name_en": "Titan Gray",
+    "name_zh": "钛灰色",
+    "hex": "#565656",
+    "color_code": "D6"
+  },
+  {
+    "code": "31500",
+    "material": "PETG-CF",
+    "name_en": "Malachite Green",
+    "name_zh": "孔雀绿",
+    "hex": "#16b08e",
+    "color_code": "G7"
+  },
+  {
+    "code": "31100",
+    "material": "PETG-CF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "31700",
+    "material": "PETG-CF",
+    "name_en": "Violet Purple",
+    "name_zh": "紫罗兰色",
+    "hex": "#583061",
+    "color_code": "P7"
+  },
+  {
+    "code": "31200",
+    "material": "PETG-CF",
+    "name_en": "Brick Red",
+    "name_zh": "砖红色",
+    "hex": "#9f332a",
+    "color_code": "R4"
+  },
+  {
+    "code": "70100",
+    "material": "PAHT-CF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "72100",
+    "material": "PA6-CF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "73100",
+    "material": "PPA-CF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "72600",
+    "material": "PA6-GF",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#75AED8",
+    "color_code": "B0"
+  },
+  {
+    "code": "72102",
+    "material": "PA6-GF",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#EAEAE4",
+    "color_code": "D0"
+  },
+  {
+    "code": "72103",
+    "material": "PA6-GF",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#353533",
+    "color_code": "D1"
+  },
+  {
+    "code": "72500",
+    "material": "PA6-GF",
+    "name_en": "Lime",
+    "name_zh": "柠檬绿",
+    "hex": "#C5ED48",
+    "color_code": "G0"
+  },
+  {
+    "code": "72104",
+    "material": "PA6-GF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "72800",
+    "material": "PA6-GF",
+    "name_en": "Brown",
+    "name_zh": "棕色",
+    "hex": "#5B492F",
+    "color_code": "N0"
+  },
+  {
+    "code": "72200",
+    "material": "PA6-GF",
+    "name_en": "Orange",
+    "name_zh": "橙色",
+    "hex": "#FF4800",
+    "color_code": "R0"
+  },
+  {
+    "code": "72400",
+    "material": "PA6-GF",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#FFCE00",
+    "color_code": "Y0"
+  },
+  {
+    "code": "65500",
+    "material": "Support for PA/PET",
+    "name_en": "Green",
+    "name_zh": "绿色",
+    "hex": "#C0DF16",
+    "color_code": "G1"
+  },
+  {
+    "code": "66400",
+    "material": "PVA",
+    "name_en": "Clear",
+    "name_zh": "透明浅黄色",
+    "hex": "#F0F1A8",
+    "color_code": "Y0"
+  },
+  {
+    "code": "65102",
+    "material": "Support for PLA/PETG",
+    "name_en": "Nature",
+    "name_zh": "半透明",
+    "hex": "#000000",
+    "color_code": "C0"
+  },
+  {
+    "code": "65103",
+    "material": "Support for PLA/PETG",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "66100",
+    "material": "Support for ABS",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "71100",
+    "material": "PET-CF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "76100",
+    "material": "PPS-CF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "51600",
+    "material": "TPU 95A HF",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#0072CE",
+    "color_code": "B0"
+  },
+  {
+    "code": "51101",
+    "material": "TPU 95A HF",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#898D8D",
+    "color_code": "D0"
+  },
+  {
+    "code": "51100",
+    "material": "TPU 95A HF",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#101820",
+    "color_code": "K0"
+  },
+  {
+    "code": "51200",
+    "material": "TPU 95A HF",
+    "name_en": "Red",
+    "name_zh": "红色",
+    "hex": "#C8102E",
+    "color_code": "R0"
+  },
+  {
+    "code": "51102",
+    "material": "TPU 95A HF",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "51400",
+    "material": "TPU 95A HF",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#F3E600",
+    "color_code": "Y0"
+  },
+  {
+    "code": "50101",
+    "material": "TPU 95A",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "50100",
+    "material": "TPU 95A",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "53600",
+    "material": "TPU for AMS",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#5898DD",
+    "color_code": "B0"
+  },
+  {
+    "code": "53102",
+    "material": "TPU for AMS",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#939393",
+    "color_code": "D0"
+  },
+  {
+    "code": "53500",
+    "material": "TPU for AMS",
+    "name_en": "Neon Green",
+    "name_zh": "荧光绿",
+    "hex": "#90FF1A",
+    "color_code": "G0"
+  },
+  {
+    "code": "53101",
+    "material": "TPU for AMS",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "53200",
+    "material": "TPU for AMS",
+    "name_en": "Red",
+    "name_zh": "红色",
+    "hex": "#ED0000",
+    "color_code": "R0"
+  },
+  {
+    "code": "53100",
+    "material": "TPU for AMS",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "53400",
+    "material": "TPU for AMS",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#F9EF41",
+    "color_code": "Y0"
+  },
+  {
+    "code": "16100",
+    "material": "PLA Lite",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "16400",
+    "material": "PLA Lite",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#EFE255",
+    "color_code": "Y0"
+  },
+  {
+    "code": "16103",
+    "material": "PLA Lite",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "16600",
+    "material": "PLA Lite",
+    "name_en": "Cyan",
+    "name_zh": "天蓝色",
+    "hex": "#4DAFDA",
+    "color_code": "B0"
+  },
+  {
+    "code": "16200",
+    "material": "PLA Lite",
+    "name_en": "Red",
+    "name_zh": "深红色",
+    "hex": "#C6001A",
+    "color_code": "R0"
+  },
+  {
+    "code": "16101",
+    "material": "PLA Lite",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#999D9D",
+    "color_code": "D0"
+  },
+  {
+    "code": "13210",
+    "material": "PLA Translucent",
+    "name_en": "Red",
+    "name_zh": "透明红",
+    "hex": "#B50011",
+    "color_code": "R0"
+  },
+  {
+    "code": "13211",
+    "material": "PLA Translucent",
+    "name_en": "Cherry Pink",
+    "name_zh": "果冻粉",
+    "hex": "#F5B6CD",
+    "color_code": "R1"
+  },
+  {
+    "code": "13301",
+    "material": "PLA Translucent",
+    "name_en": "Orange",
+    "name_zh": "透明橙",
+    "hex": "#F74E02",
+    "color_code": "A0"
+  },
+  {
+    "code": "13410",
+    "material": "PLA Translucent",
+    "name_en": "Mellow Yellow",
+    "name_zh": "黄水晶",
+    "hex": "#F5DBAB",
+    "color_code": "Y0"
+  },
+  {
+    "code": "13510",
+    "material": "PLA Translucent",
+    "name_en": "Light Jade",
+    "name_zh": "浅青玉",
+    "hex": "#96D8AF",
+    "color_code": "G0"
+  },
+  {
+    "code": "13610",
+    "material": "PLA Translucent",
+    "name_en": "Ice Blue",
+    "name_zh": "冰蓝",
+    "hex": "#B8CDE9",
+    "color_code": "B0"
+  },
+  {
+    "code": "13611",
+    "material": "PLA Translucent",
+    "name_en": "Blue",
+    "name_zh": "透明蓝",
+    "hex": "#0047BB",
+    "color_code": "B1"
+  },
+  {
+    "code": "13612",
+    "material": "PLA Translucent",
+    "name_en": "Teal",
+    "name_zh": "蓝绿色",
+    "hex": "#009FA1",
+    "color_code": "B2"
+  },
+  {
+    "code": "13710",
+    "material": "PLA Translucent",
+    "name_en": "Purple",
+    "name_zh": "透明紫",
+    "hex": "#8344B0",
+    "color_code": "P0"
+  },
+  {
+    "code": "13711",
+    "material": "PLA Translucent",
+    "name_en": "Lavender",
+    "name_zh": "紫罗兰",
+    "hex": "#B8ACD6",
+    "color_code": "P1"
+  },
+  {
+    "code": "13906",
+    "material": "PLA Silk",
+    "name_en": "South Beach",
+    "name_zh": "马卡龙",
+    "hex": "#F772A4",
+    "color_code": "M1"
+  },
+  {
+    "code": "13909",
+    "material": "PLA Silk",
+    "name_en": "Aurora Purple",
+    "name_zh": "星云紫",
+    "hex": "#7F3696",
+    "color_code": "M4"
+  },
+  {
+    "code": "13912",
+    "material": "PLA Silk",
+    "name_en": "Dawn Radiance",
+    "name_zh": "浅彩虹",
+    "hex": "#EC984C",
+    "color_code": "M8"
+  },
+  {
+    "code": "51103",
+    "material": "TPU 90A",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "51105",
+    "material": "TPU 90A",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W1"
+  },
+  {
+    "code": "51305",
+    "material": "TPU 85A",
+    "name_en": "Neon Orange",
+    "name_zh": "暖橙色",
+    "hex": "#F68B1B",
+    "color_code": "A1"
+  },
+  {
+    "code": "51500",
+    "material": "TPU 85A",
+    "name_en": "Light Cyan",
+    "name_zh": "苍青色",
+    "hex": "#C3E2D6",
+    "color_code": "G0"
+  },
+  {
+    "code": "51900",
+    "material": "TPU 90A",
+    "name_en": "Frozen",
+    "name_zh": "冰封蓝",
+    "hex": "#40B6E4",
+    "color_code": "M0"
+  },
+  {
+    "code": "51901",
+    "material": "TPU 90A",
+    "name_en": "Blaze",
+    "name_zh": "西瓜红",
+    "hex": "#D21B3C",
+    "color_code": "M1"
+  },
+  {
+    "code": "65104",
+    "material": "Support for PLA",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W1"
+  },
+  {
+    "code": "12104",
+    "material": "PLA Tough+",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "12105",
+    "material": "PLA Tough+",
+    "name_en": "Gray",
+    "name_zh": "浅灰色",
+    "hex": "#AFB1AE",
+    "color_code": "D0"
+  },
+  {
+    "code": "12106",
+    "material": "PLA Tough+",
+    "name_en": "Silver",
+    "name_zh": "银色",
+    "hex": "#959698",
+    "color_code": "D1"
+  },
+  {
+    "code": "12107",
+    "material": "PLA Tough+",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W0"
+  },
+  {
+    "code": "12301",
+    "material": "PLA Tough+",
+    "name_en": "Orange",
+    "name_zh": "橙色",
+    "hex": "#DC3A27",
+    "color_code": "A0"
+  },
+  {
+    "code": "12401",
+    "material": "PLA Tough+",
+    "name_en": "Yellow",
+    "name_zh": "亮黄色",
+    "hex": "#F4D53F",
+    "color_code": "Y0"
+  },
+  {
+    "code": "12601",
+    "material": "PLA Tough+",
+    "name_en": "Cyan",
+    "name_zh": "天蓝色",
+    "hex": "#009BD8",
+    "color_code": "B0"
+  },
+  {
+    "code": "13100",
+    "material": "PLA Metal",
+    "name_en": "Iron Gray Metallic",
+    "name_zh": "深空灰",
+    "hex": "#43403D",
+    "color_code": "D2"
+  },
+  {
+    "code": "13400",
+    "material": "PLA Metal",
+    "name_en": "Iridium Gold Metallic",
+    "name_zh": "香槟金",
+    "hex": "#B39B84",
+    "color_code": "Y1"
+  },
+  {
+    "code": "13500",
+    "material": "PLA Metal",
+    "name_en": "Oxide Green Metallic",
+    "name_zh": "极光绿",
+    "hex": "#1D7C6A",
+    "color_code": "G2"
+  },
+  {
+    "code": "13600",
+    "material": "PLA Metal",
+    "name_en": "Cobalt Blue Metallic",
+    "name_zh": "典雅蓝",
+    "hex": "#39699E",
+    "color_code": "B2"
+  },
+  {
+    "code": "13800",
+    "material": "PLA Metal",
+    "name_en": "Copper Brown Metallic",
+    "name_zh": "咖啡金",
+    "hex": "#AA6443",
+    "color_code": "N3"
+  },
+  {
+    "code": "16601",
+    "material": "PLA Lite",
+    "name_en": "Blue",
+    "name_zh": "蓝色",
+    "hex": "#004EA8",
+    "color_code": "B1"
+  },
+  {
+    "code": "16401",
+    "material": "PLA Lite",
+    "name_en": "Sunflower Yellow",
+    "name_zh": "橙黄色",
+    "hex": "#FFB549",
+    "color_code": "Y1"
+  },
+  {
+    "code": "16501",
+    "material": "PLA Lite",
+    "name_en": "Green",
+    "name_zh": "绿色",
+    "hex": "#00BB31",
+    "color_code": "G1"
+  },
+  {
+    "code": "16301",
+    "material": "PLA Lite",
+    "name_en": "Orange",
+    "name_zh": "橙色",
+    "hex": "#FF671F",
+    "color_code": "A1"
+  },
+  {
+    "code": "16700",
+    "material": "PLA Lite",
+    "name_en": "Matte Beige",
+    "name_zh": "浅肤色",
+    "hex": "#ECC3B2",
+    "color_code": "P0"
+  },
+  {
+    "code": "16800",
+    "material": "PLA Lite",
+    "name_en": "Cocoa Brown",
+    "name_zh": "棕色",
+    "hex": "#745335",
+    "color_code": "N0"
+  },
+  {
+    "code": "16102",
+    "material": "PLA Lite",
+    "name_en": "Dark Gray",
+    "name_zh": "深灰",
+    "hex": "#8c8b8c",
+    "color_code": "D1"
+  },
+  {
+    "code": "13913",
+    "material": "PLA Silk",
+    "name_en": "Mystic Magenta",
+    "name_zh": "北极光",
+    "hex": "#720062",
+    "color_code": "T7"
+  },
+  {
+    "code": "13916",
+    "material": "PLA Silk",
+    "name_en": "Phantom Blue",
+    "name_zh": "幻影蓝",
+    "hex": "#00629b",
+    "color_code": "T9"
+  },
+  {
+    "code": "51601",
+    "material": "TPU 90A",
+    "name_en": "Crystal Blue",
+    "name_zh": "水晶蓝",
+    "hex": "#7eb4e1",
+    "color_code": "B1"
+  },
+  {
+    "code": "51106",
+    "material": "TPU 90A",
+    "name_en": "Quicksilver",
+    "name_zh": "水银色",
+    "hex": "#9ea2a2",
+    "color_code": "D0"
+  },
+  {
+    "code": "51201",
+    "material": "TPU 85A",
+    "name_en": "Rose Beige/Flesh",
+    "name_zh": "肤色",
+    "hex": "#F3CFB2",
+    "color_code": "P0"
+  },
+  {
+    "code": "51700",
+    "material": "TPU 90A",
+    "name_en": "Grape Jelly",
+    "name_zh": "果冻紫",
+    "hex": "#D6ABFF",
+    "color_code": "P1"
+  },
+  {
+    "code": "51107",
+    "material": "TPU 85A",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K0"
+  },
+  {
+    "code": "51501",
+    "material": "TPU 85A",
+    "name_en": "Lime Green",
+    "name_zh": "苹果绿",
+    "hex": "#CDEA80",
+    "color_code": "G1"
+  },
+  {
+    "code": "51800",
+    "material": "TPU 90A",
+    "name_en": "Cocoa Brown",
+    "name_zh": "皮革棕",
+    "hex": "#5C4738",
+    "color_code": "N0"
+  },
+  {
+    "code": "30105",
+    "material": "PETG Basic",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K00"
+  },
+  {
+    "code": "30106",
+    "material": "PETG Basic",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W00"
+  },
+  {
+    "code": "30107",
+    "material": "PETG Basic",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#7F7E83",
+    "color_code": "D00"
+  },
+  {
+    "code": "30402",
+    "material": "PETG Basic",
+    "name_en": "Yellow",
+    "name_zh": "黄色",
+    "hex": "#FCE300",
+    "color_code": "Y00"
+  },
+  {
+    "code": "30201",
+    "material": "PETG Basic",
+    "name_en": "Red",
+    "name_zh": "红色",
+    "hex": "#D6001C",
+    "color_code": "R00"
+  },
+  {
+    "code": "30603",
+    "material": "PETG Basic",
+    "name_en": "Reflex Blue",
+    "name_zh": "深蓝色",
+    "hex": "#001489",
+    "color_code": "B00"
+  },
+  {
+    "code": "30800",
+    "material": "PETG Basic",
+    "name_en": "Dark Brown",
+    "name_zh": "深棕色",
+    "hex": "#4f2c1d",
+    "color_code": "N00"
+  },
+  {
+    "code": "30502",
+    "material": "PETG Basic",
+    "name_en": "Green",
+    "name_zh": "绿色",
+    "hex": "#009639",
+    "color_code": "G00"
+  },
+  {
+    "code": "30301",
+    "material": "PETG Basic",
+    "name_en": "Orange",
+    "name_zh": "橙色",
+    "hex": "#FF671F",
+    "color_code": "A00"
+  },
+  {
+    "code": "30503",
+    "material": "PETG Basic",
+    "name_en": "Pine Green",
+    "name_zh": "墨绿色",
+    "hex": "#034638",
+    "color_code": "G01"
+  },
+  {
+    "code": "30604",
+    "material": "PETG Basic",
+    "name_en": "Navy Blue",
+    "name_zh": "湖蓝色",
+    "hex": "#0086d6",
+    "color_code": "B01"
+  },
+  {
+    "code": "30108",
+    "material": "PETG Basic",
+    "name_en": "Misty Blue",
+    "name_zh": "蓝灰色",
+    "hex": "#688197",
+    "color_code": "D01"
+  },
+  {
+    "code": "30403",
+    "material": "PETG Basic",
+    "name_en": "Dark Beige",
+    "name_zh": "深米色",
+    "hex": "#dbc8b6",
+    "color_code": "Y01"
+  },
+  {
+    "code": "17100",
+    "material": "PLA Pure",
+    "name_en": "Pure White",
+    "name_zh": "纯净白",
+    "hex": "#FFFFFF",
+    "color_code": "W00"
+  },
+  {
+    "code": "17101",
+    "material": "PLA Pure",
+    "name_en": "Absolute Black",
+    "name_zh": "纯净黑",
+    "hex": "#000000",
+    "color_code": "K00"
+  },
+  {
+    "code": "17200",
+    "material": "PLA Pure",
+    "name_en": "Milky Pink",
+    "name_zh": "水玉粉",
+    "hex": "#f7ced7",
+    "color_code": "P00"
+  },
+  {
+    "code": "17600",
+    "material": "PLA Pure",
+    "name_en": "Baby Blue",
+    "name_zh": "雪山蓝",
+    "hex": "#a4dbe8",
+    "color_code": "B00"
+  },
+  {
+    "code": "17300",
+    "material": "PLA Pure",
+    "name_en": "Apricot",
+    "name_zh": "杏子黄",
+    "hex": "#ffb673",
+    "color_code": "A00"
+  },
+  {
+    "code": "35100",
+    "material": "PETG Matte",
+    "name_en": "White",
+    "name_zh": "白色",
+    "hex": "#FFFFFF",
+    "color_code": "W00"
+  },
+  {
+    "code": "35101",
+    "material": "PETG Matte",
+    "name_en": "Black",
+    "name_zh": "黑色",
+    "hex": "#000000",
+    "color_code": "K00"
+  },
+  {
+    "code": "35500",
+    "material": "PETG Matte",
+    "name_en": "Lime",
+    "name_zh": "黄绿色",
+    "hex": "#c0df16",
+    "color_code": "G00"
+  },
+  {
+    "code": "35102",
+    "material": "PETG Matte",
+    "name_en": "Gray",
+    "name_zh": "灰色",
+    "hex": "#7F7E83",
+    "color_code": "D00"
+  },
+  {
+    "code": "35700",
+    "material": "PETG Matte",
+    "name_en": "Pink",
+    "name_zh": "粉色",
+    "hex": "#FABBCB",
+    "color_code": "P00"
+  },
+  {
+    "code": "35600",
+    "material": "PETG Matte",
+    "name_en": "Baby Blue",
+    "name_zh": "浅蓝色",
+    "hex": "#B9D9EB",
+    "color_code": "B00"
+  },
+  {
+    "code": "35702",
+    "material": "PETG Matte",
+    "name_en": "Violet",
+    "name_zh": "紫罗兰",
+    "hex": "#A7A4E0",
+    "color_code": "P02"
+  },
+  {
+    "code": "35501",
+    "material": "PETG Matte",
+    "name_en": "Avocado Green",
+    "name_zh": "牛油果绿",
+    "hex": "#bce194",
+    "color_code": "G01"
+  }
+]

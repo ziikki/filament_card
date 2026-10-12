@@ -1,0 +1,15 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test outputs
+*.stl
+temp_test.3mf
+test_*.3mf
+slice_*/
+result.json
