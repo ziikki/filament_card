@@ -2,12 +2,19 @@
 
 专为 Bambu Lab 3D 打印机打造的耗材样本卡生成工具与 Web 静态应用，已支持 **GitHub Pages 纯前端免服务器部署**！
 
-🌐 **在线体验 (GitHub Pages)**: [https://ziikki.github.io/filament_card/](https://ziikki.github.io/filament_card/)
+- 🌐 **English Page**: [https://ziikki.github.io/filament_card/](https://ziikki.github.io/filament_card/)
+- 🇨🇳 **中文页面**: [https://ziikki.github.io/filament_card/zh.html](https://ziikki.github.io/filament_card/zh.html)
 
 ---
 
 ## 🌟 核心特性
 
+- **清爽高雅的浅色主题设计 (Light Color Scheme)**：
+  - 采用极简浅色系 UI 风格（Slate & Clean White），搭配 Bambu 品牌绿，视觉质感与 3D 打印实物卡片完美契合。
+  - 右上角同时提供主题切换按钮（☀️ / 🌙），兼顾深色模式偏好。
+- **全站中英文双语独立页面与实时切换**：
+  - 提供默认英文页面 (`index.html`) 与中文独立页面 (`zh.html`)。
+  - 页面右上角集成快捷双语切换按钮（`[ 🇨🇳 中文 / 🇺🇸 English ]`），随时一键热切换全站语言，无需重刷页面。
 - **100% 浏览器纯前端运行 (GitHub Pages)**：
   - 无需安装 Python 或任何运行环境，直接在浏览器里读取模板、实时剖分网格、打包生成并下载 `.3mf` 文件。
   - 零服务器成本，手机与电脑浏览器即开即用。
@@ -18,7 +25,6 @@
   - 粘贴任何 Bambu Lab 耗材页面链接（如 `https://us.store.bambulab.com/products/pla-wood?id=43075832086664`），自动识别产品类型与目标颜色，并列出全系列颜色药丸供一键切换。
 - **内置 314 款官方耗材库**：
   - 无需联网抓取，直接搜索编号（如 `13106`）、中文名（如 `白橡木`）或英文名（如 `White Oak`）快速填入。
-- **即时中英文切换**：一键切换中英文排版。
 - **Bambu Studio 深度兼容**：
   - 卡体与浮雕文字组合为单个复合对象，统一层高，完美支持擦料塔（Prime Tower）。
   - 100% Watertight 封闭网格，官方 0.4mm 喷嘴优化。
@@ -44,7 +50,9 @@ git push -u origin main
 2. 在 **Build and deployment** 下的 **Source**：
    - 选择 **GitHub Actions**（本仓库已配置自动构建工作流 `.github/workflows/deploy.yml`，每次 push 自动发布），
    - 或者选择 **Deploy from a branch** -> 分支选择 `main` -> 目录选择 `/ (root)` -> 点击 **Save**。
-3. 等待约 1 分钟，即可直接通过 **https://ziikki.github.io/filament_card/** 在线使用！
+3. 等待约 1 分钟，即可直接通过在线地址访问：
+   - 英文主页：**https://ziikki.github.io/filament_card/**
+   - 中文主页：**https://ziikki.github.io/filament_card/zh.html**
 
 ---
 
@@ -58,7 +66,9 @@ git push -u origin main
 # 或
 python3 app.py
 ```
-在浏览器中打开：**`http://localhost:8088`**
+在浏览器中打开：
+- 英文版：**`http://localhost:8088`**
+- 中文版：**`http://localhost:8088/zh.html`**
 
 ### 命令行直接生成 (CLI)
 ```bash

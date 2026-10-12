@@ -919,10 +919,24 @@ class FilamentStudioHandler(BaseHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
-        if path == "/" or path == "/index.html":
+        if path in ["/", "/index.html", "/en.html", "/en"]:
             idx_file = os.path.join(HERE, "index.html")
             if os.path.exists(idx_file):
                 with open(idx_file, "rb") as f:
+                    content = f.read()
+            else:
+                content = HTML_TEMPLATE.encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(content)))
+            self.end_headers()
+            self.wfile.write(content)
+            return
+
+        elif path in ["/zh.html", "/zh"]:
+            zh_file = os.path.join(HERE, "zh.html")
+            if os.path.exists(zh_file):
+                with open(zh_file, "rb") as f:
                     content = f.read()
             else:
                 content = HTML_TEMPLATE.encode("utf-8")

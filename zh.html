@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bambu Lab Filament Card Studio | Swatch & 3MF Generator</title>
+  <meta name="description" content="Online parametric filament card swatch generator for Bambu Lab printers. Live preview, Bambu store extraction, and 100% in-browser 3MF download.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- JSZip for 100% in-browser 3MF file generation -->
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <style>
+    :root, [data-theme="light"] {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --bambu-green: #00ae42;
+      --bambu-green-hover: #009337;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --focus-ring: rgba(0, 174, 66, 0.25);
+      --badge-bg: #ecfdf5;
+      --badge-text: #059669;
+      --badge-border: #a7f3d0;
+      --preview-bg: #f1f5f9;
+      --chip-bg: #ffffff;
+      --chip-border: #e2e8f0;
+      --chip-hover: #f8fafc;
+      --cli-bg: #f1f5f9;
+      --cli-border: #e2e8f0;
+      --cli-text: #0369a1;
+      --toast-bg: #1e293b;
+      --header-bg: rgba(255, 255, 255, 0.88);
+      --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f1117;
+      --card-bg: #181b24;
+      --card-border: #262a36;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --bambu-green: #00ae42;
+      --bambu-green-hover: #009337;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --input-bg: #11131a;
+      --input-border: #2e3444;
+      --focus-ring: rgba(0, 174, 66, 0.35);
+      --badge-bg: #222734;
+      --badge-text: #10b981;
+      --badge-border: rgba(16, 185, 129, 0.2);
+      --preview-bg: #0d0f14;
+      --chip-bg: #181b24;
+      --chip-border: #262a36;
+      --chip-hover: #222734;
+      --cli-bg: #0d0f14;
+      --cli-border: #2e3444;
+      --cli-text: #93c5fd;
+      --toast-bg: #1f2937;
+      --header-bg: rgba(24, 27, 36, 0.88);
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s, color 0.25s;
+    }
+
+    header {
+      background-color: var(--header-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 0.85rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.25s, border-color 0.25s;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #00ae42, #10b981);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.15rem;
+      box-shadow: 0 4px 12px rgba(0, 174, 66, 0.25);
+    }
+
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    .badge {
+      background-color: var(--badge-bg);
+      color: var(--badge-text);
+      border: 1px solid var(--badge-border);
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .pill-btn {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.35rem 0.65rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pill-btn:hover {
+      border-color: var(--bambu-green);
+      color: var(--bambu-green);
+    }
+
+    .github-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      transition: all 0.15s;
+    }
+
+    .github-link:hover {
+      color: var(--text-main);
+      border-color: var(--text-muted);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 960px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: background-color 0.25s, border-color 0.25s;
+    }
+
+    .panel-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-box {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.45rem;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      background-color: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--bambu-green);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+
+    button {
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.2rem;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background-color: var(--bambu-green);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(0, 174, 66, 0.25);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--bambu-green-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--chip-hover);
+      border-color: var(--bambu-green);
+    }
+
+    .btn-small {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.8rem;
+    }
+
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.65rem;
+    }
+
+    .tag-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tag-btn:hover {
+      color: var(--bambu-green);
+      border-color: var(--bambu-green);
+    }
+
+    .variants-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      max-height: 180px;
+      overflow-y: auto;
+      padding: 0.5rem;
+      background: var(--input-bg);
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+    }
+
+    .variant-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      padding: 0.35rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .variant-chip:hover {
+      border-color: var(--bambu-green);
+      transform: translateY(-1px);
+    }
+
+    .variant-chip.active {
+      border-color: var(--bambu-green);
+      background: rgba(0, 174, 66, 0.08);
+      font-weight: 600;
+      box-shadow: 0 0 0 2px var(--focus-ring);
+    }
+
+    .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      flex-shrink: 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .color-input-wrapper {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 44px;
+      height: 38px;
+      border-radius: 8px;
+      cursor: pointer;
+      background: none;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+    }
+
+    .preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--preview-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--input-border);
+      position: relative;
+      min-height: 320px;
+      transition: background-color 0.25s, border-color 0.25s;
+    }
+
+    #previewCanvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+      display: block;
+    }
+
+    .specs-list {
+      margin-top: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    .spec-card {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      padding: 0.65rem 0.8rem;
+      text-align: center;
+    }
+
+    .spec-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .spec-lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .download-section {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+    }
+
+    .download-section button {
+      flex: 1;
+      padding: 0.95rem;
+      font-size: 1rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--toast-bg);
+      color: #fff;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      border-left: 4px solid var(--bambu-green);
+      font-size: 0.9rem;
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cli-box {
+      margin-top: 1rem;
+      background: var(--cli-bg);
+      border: 1px solid var(--cli-border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.75rem;
+      color: var(--cli-text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-icon">B</div>
+      <div>
+        <div class="brand-title" id="t_brandTitle">Bambu Lab Filament Card Studio</div>
+        <div class="brand-subtitle" id="t_brandSubtitle">Parametric Swatch & 3MF Generator (GitHub Pages)</div>
+      </div>
+    </div>
+    <div class="header-controls">
+      <span class="badge" id="t_badgeFlush">● 0.5mm Flush Inlay</span>
+      <span class="badge" id="t_badgeTower">● Prime Tower Ready</span>
+      
+      <!-- Language Switcher Pill -->
+      <button class="pill-btn" onclick="toggleSiteLanguage()" id="langSwitchBtn" title="Switch between English and 中文">
+        <span id="langFlag">🇨🇳</span>
+        <span id="langSwitchText">中文</span>
+      </button>
+
+      <!-- Theme Switcher Pill -->
+      <button class="pill-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle Light/Dark Theme">
+        <span id="themeIcon">☀️</span>
+      </button>
+
+      <a href="https://github.com/ziikki/filament_card" target="_blank" class="github-link">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left panel: URL extractor and card settings -->
+    <div class="panel">
+      <!-- 1. URL Extractor -->
+      <div class="section-box">
+        <label for="bambuUrl" id="t_urlLabel">1. Paste Bambu Lab Store URL (Auto Extract)</label>
+        <div class="input-group">
+          <input type="text" id="bambuUrl" placeholder="https://us.store.bambulab.com/products/pla-wood?id=43075832086664" />
+          <button id="extractBtn" class="btn-primary">
+            <span id="extractSpinner" style="display:none;">⏳</span>
+            <span id="t_extractBtn">Extract URL</span>
+          </button>
+        </div>
+        <div class="quick-tags">
+          <span style="font-size:0.75rem; color:var(--text-muted); align-self:center;" id="t_quickFill">Quick fill:</span>
+          <button class="tag-btn" onclick="loadPreset('pla-wood')">PLA Wood (White Oak 13106)</button>
+          <button class="tag-btn" onclick="loadPreset('pla-matte-gold')">PLA Matte (Iridium Gold 13008)</button>
+          <button class="tag-btn" onclick="loadPreset('petg-hf-black')">PETG HF (Black 30101)</button>
+        </div>
+      </div>
+
+      <!-- 2. Local database search -->
+      <div class="section-box">
+        <label for="dbSearch" id="t_dbLabel">Or Search Official Bambu Filament Database (314 Colors)</label>
+        <div class="input-group">
+          <input type="text" id="dbSearch" placeholder="Enter code like 13106 or color like White Oak, Clay Brown, 白橡木..." oninput="filterDatabase()" />
+        </div>
+      </div>
+
+      <!-- 3. Variants list (chips) -->
+      <div class="section-box" id="variantsBox" style="display: none;">
+        <label id="t_variantsLabel">Detected Color Variants (Click to select):</label>
+        <div class="variants-container" id="variantsContainer"></div>
+      </div>
+
+      <hr style="border:0; border-top:1px solid var(--card-border); margin: 1.5rem 0;" />
+
+      <!-- 4. Card text details -->
+      <div class="panel-title">
+        <span id="t_cardConfigTitle">Card Typography & Parameters</span>
+        <button class="btn-secondary btn-small" onclick="toggleCardTextLang()">
+          <span id="langToggleCardText">Card Text: Chinese (白橡木)</span>
+        </button>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <label for="matInput" id="t_matLabel">Material Type (Row 1)</label>
+          <input type="text" id="matInput" value="PLA WOOD" oninput="renderCardPreview()" />
+        </div>
+        <div>
+          <label for="colorInput" id="t_colorLabel">Color Name (Row 2)</label>
+          <input type="text" id="colorInput" value="White Oak" oninput="renderCardPreview()" />
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <label for="codeInput" id="t_codeLabel">Code (Row 3 Left)</label>
+          <input type="text" id="codeInput" value="(13106)" oninput="renderCardPreview()" />
+        </div>
+        <div>
+          <label for="hexInput" id="t_hexLabel">HEX Color (Row 3 Right & Swatch)</label>
+          <div class="color-input-wrapper">
+            <input type="color" id="colorPicker" value="#D6CCA3" oninput="onColorPickerChange(this.value)" />
+            <input type="text" id="hexInput" value="#D6CCA3" oninput="onHexInputChange(this.value)" />
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <label for="reliefInput" id="t_reliefLabel">Relief Height (Default 0.5 mm flush; 1.2 mm raised)</label>
+          <input type="number" id="reliefInput" value="0.5" step="0.1" min="0.2" max="3.0" oninput="renderCardPreview()" />
+        </div>
+        <div>
+          <label for="swatchDia" id="t_swatchLabel">Swatch Diameter (Default 7.0 mm)</label>
+          <input type="number" id="swatchDia" value="7.0" step="0.5" min="4.0" max="10.0" oninput="renderCardPreview()" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel: Live Preview & 3MF Generation -->
+    <div class="panel" style="display:flex; flex-direction:column;">
+      <div class="panel-title">
+        <span id="t_previewTitle">Real-Time Vector Preview (Pocket Layout)</span>
+        <span class="badge" id="strokeBadge">Relief: 0.50 mm (Flush)</span>
+      </div>
+
+      <div class="preview-container">
+        <canvas id="previewCanvas" width="808" height="608"></canvas>
+      </div>
+
+      <div class="specs-list">
+        <div class="spec-card">
+          <div class="spec-val">40.4 × 30.4</div>
+          <div class="spec-lbl" id="t_specPocket">Pocket Size (mm)</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-val" id="specTopZ">2.00 mm</div>
+          <div class="spec-lbl" id="t_specTopZ">Top Surface Z (Flush)</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-val" style="color:#059669;" id="t_specWatertight">100% Watertight</div>
+          <div class="spec-lbl">Mesh Structure</div>
+        </div>
+      </div>
+
+      <div class="download-section">
+        <button id="downloadBtn" class="btn-primary" onclick="generateAndDownload()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span id="t_downloadBtn">Generate & Download .3MF</span>
+        </button>
+      </div>
+
+      <div class="cli-box" id="cliBox">
+        <span id="cliText">python3 make_filament_card.py "PLA WOOD" "White Oak" "(13106)" "#D6CCA3" 0.5</span>
+        <button class="btn-secondary btn-small" onclick="copyCli()" style="padding:0.2rem 0.5rem; font-size:0.7rem;" id="t_copyCliBtn">Copy CLI</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">Message</div>
+
+  <!-- Inlined Mapbox Earcut for 100% Client-Side Polygon Triangulation -->
+  <script>
+    function earcut(data, holeIndices, dim) {
+      dim = dim || 2;
+      var hasHoles = holeIndices && holeIndices.length,
+          outerLen = hasHoles ? holeIndices[0] * dim : data.length,
+          outerNode = linkedList(data, 0, outerLen, dim, true),
+          triangles = [];
+      if (!outerNode || outerNode.next === outerNode.prev) return triangles;
+      var minX, minY, maxX, maxY, x, y, invSize;
+      if (hasHoles) outerNode = eliminateHoles(data, holeIndices, outerNode, dim);
+      if (data.length > 80 * dim) {
+        minX = maxX = data[0]; minY = maxY = data[1];
+        for (var i = dim; i < outerLen; i += dim) {
+          x = data[i]; y = data[i + 1];
+          if (x < minX) minX = x; if (y < minY) minY = y;
+          if (x > maxX) maxX = x; if (y > maxY) maxY = y;
+        }
+        invSize = Math.max(maxX - minX, maxY - minY);
+        invSize = invSize !== 0 ? 32767 / invSize : 0;
+      }
+      earcutLinked(outerNode, triangles, dim, minX, minY, invSize, 0);
+      return triangles;
+    }
+    function Node(i, x, y) { this.i = i; this.x = x; this.y = y; this.prev = null; this.next = null; this.z = 0; this.prevZ = null; this.nextZ = null; this.steiner = false; }
+    function linkedList(data, start, end, dim, clockwise) {
+      var i, last;
+      if (clockwise === (signedArea(data, start, end, dim) > 0)) {
+        for (i = start; i < end; i += dim) last = insertNode(i, data[i], data[i + 1], last);
+      } else {
+        for (i = end - dim; i >= start; i -= dim) last = insertNode(i, data[i], data[i + 1], last);
+      }
+      if (last && equals(last, last.next)) { removeNode(last); last = last.next; }
+      return last;
+    }
+    function filterPoints(start, end) {
+      if (!start) return start; if (!end) end = start;
+      var p = start, again;
+      do {
+        again = false;
+        if (!p.steiner && (equals(p, p.next) || area(p.prev, p, p.next) === 0)) {
+          removeNode(p); p = end = p.prev; if (p === p.next) break; again = true;
+        } else p = p.next;
+      } while (again || p !== end);
+      return end;
+    }
+    function earcutLinked(ear, triangles, dim, minX, minY, invSize, pass) {
+      if (!ear) return;
+      if (!pass && invSize) indexCurve(ear, minX, minY, invSize);
+      var stop = ear, prev, next;
+      while (ear.prev !== ear.next) {
+        prev = ear.prev; next = ear.next;
+        if (invSize ? isEarHashed(ear, minX, minY, invSize) : isEar(ear)) {
+          triangles.push(prev.i / dim | 0); triangles.push(ear.i / dim | 0); triangles.push(next.i / dim | 0);
+          removeNode(ear); ear = next.next; stop = next.next; continue;
+        }
+        ear = next;
+        if (ear === stop) {
+          if (!pass) earcutLinked(filterPoints(ear), triangles, dim, minX, minY, invSize, 1);
+          else if (pass === 1) { ear = cureLocalIntersections(filterPoints(ear), triangles, dim); earcutLinked(ear, triangles, dim, minX, minY, invSize, 2); }
+          else if (pass === 2) splitEarcut(ear, triangles, dim, minX, minY, invSize);
+          break;
+        }
+      }
+    }
+    function isEar(ear) {
+      var a = ear.prev, b = ear, c = ear.next;
+      if (area(a, b, c) >= 0) return false;
+      var p = ear.next.next;
+      while (p !== ear.prev) {
+        if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
+        p = p.next;
+      }
+      return true;
+    }
+    function isEarHashed(ear, minX, minY, invSize) {
+      var a = ear.prev, b = ear, c = ear.next;
+      if (area(a, b, c) >= 0) return false;
+      var minTX = Math.min(a.x, b.x, c.x), minTY = Math.min(a.y, b.y, c.y),
+          maxTX = Math.max(a.x, b.x, c.x), maxTY = Math.max(a.y, b.y, c.y);
+      var minZ = zOrder(minTX, minTY, minX, minY, invSize), maxZ = zOrder(maxTX, maxTY, minX, minY, invSize);
+      var p = ear.prevZ, n = ear.nextZ;
+      while (p && p.z >= minZ && n && n.z <= maxZ) {
+        if (p.x >= minTX && p.x <= maxTX && p.y >= minTY && p.y <= maxTY && p !== a && p !== c && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
+        p = p.prevZ;
+        if (n.x >= minTX && n.x <= maxTX && n.y >= minTY && n.y <= maxTY && n !== a && n !== c && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) && area(n.prev, n, n.next) >= 0) return false;
+        n = n.nextZ;
+      }
+      while (p && p.z >= minZ) {
+        if (p.x >= minTX && p.x <= maxTX && p.y >= minTY && p.y <= maxTY && p !== a && p !== c && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
+        p = p.prevZ;
+      }
+      while (n && n.z <= maxZ) {
+        if (n.x >= minTX && n.x <= maxTX && n.y >= minTY && n.y <= maxTY && n !== a && n !== c && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) && area(n.prev, n, n.next) >= 0) return false;
+        n = n.nextZ;
+      }
+      return true;
+    }
+    function cureLocalIntersections(start, triangles, dim) {
+      var p = start;
+      do {
+        var a = p.prev, b = p.next.next;
+        if (!equals(a, b) && intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
+          triangles.push(a.i / dim | 0); triangles.push(p.i / dim | 0); triangles.push(b.i / dim | 0);
+          removeNode(p); removeNode(p.next); p = start = b;
+        }
+        p = p.next;
+      } while (p !== start);
+      return filterPoints(p);
+    }
+    function splitEarcut(start, triangles, dim, minX, minY, invSize) {
+      var a = start;
+      do {
+        var b = a.next.next;
+        while (b !== a.prev) {
+          if (a.i !== b.i && isValidDiagonal(a, b)) {
+            var c = splitPolygon(a, b);
+            a = filterPoints(a, a.next); c = filterPoints(c, c.next);
+            earcutLinked(a, triangles, dim, minX, minY, invSize, 0);
+            earcutLinked(c, triangles, dim, minX, minY, invSize, 0);
+            return;
+          }
+          b = b.next;
+        }
+        a = a.next;
+      } while (a !== start);
+    }
+    function eliminateHoles(data, holeIndices, outerNode, dim) {
+      var queue = [], i, len, start, end, list;
+      for (i = 0, len = holeIndices.length; i < len; i++) {
+        start = holeIndices[i] * dim;
+        end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
+        list = linkedList(data, start, end, dim, false);
+        if (list === list.next) list.steiner = true;
+        queue.push(getLeftmost(list));
+      }
+      queue.sort(function (a, b) { return a.x - b.x; });
+      for (i = 0; i < queue.length; i++) outerNode = eliminateHole(queue[i], outerNode);
+      return outerNode;
+    }
+    function eliminateHole(hole, outerNode) {
+      var bridge = findHoleBridge(hole, outerNode);
+      if (!bridge) return outerNode;
+      var bridgeReverse = splitPolygon(bridge, hole);
+      filterPoints(bridgeReverse, bridgeReverse.next);
+      return filterPoints(bridge, bridge.next);
+    }
+    function findHoleBridge(hole, outerNode) {
+      var p = outerNode, hx = hole.x, hy = hole.y, qx = -Infinity, m;
+      do {
+        if (hy <= p.y && hy >= p.next.y && p.next.y !== p.y) {
+          var x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
+          if (x <= hx && x > qx) { qx = x; m = p.x < p.next.x ? p : p.next; if (x === hx) return m; }
+        }
+        p = p.next;
+      } while (p !== outerNode);
+      if (!m) return null; if (hx === qx) return m;
+      var stop = m, mx = m.x, my = m.y, tanMin = Infinity, tan;
+      p = m;
+      do {
+        if (hx >= p.x && p.x >= mx && hx !== p.x && pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y)) {
+          tan = Math.abs(hy - p.y) / (hx - p.x);
+          if (locallyInside(p, hole) && (tan < tanMin || (tan === tanMin && (p.x > m.x || (p.x === m.x && sectorContainsSector(m, p)))))) {
+            m = p; tanMin = tan;
+          }
+        }
+        p = p.next;
+      } while (p !== stop);
+      return m;
+    }
+    function sectorContainsSector(m, p) { return area(m.prev, m, p.prev) < 0 && area(p.next, m, m.next) < 0; }
+    function indexCurve(start, minX, minY, invSize) {
+      var p = start;
+      do { if (p.z === 0) p.z = zOrder(p.x, p.y, minX, minY, invSize); p.prevZ = p.prev; p.nextZ = p.next; p = p.next; } while (p !== start);
+      p.prevZ.nextZ = null; p.prevZ = null; sortLinked(p);
+    }
+    function sortLinked(list) {
+      var i, p, q, e, tail, numMerges, pSize, qSize, inSize = 1;
+      do {
+        p = list; list = null; tail = null; numMerges = 0;
+        while (p) {
+          numMerges++; q = p; pSize = 0;
+          for (i = 0; i < inSize; i++) { pSize++; q = q.nextZ; if (!q) break; }
+          qSize = inSize;
+          while (pSize > 0 || (qSize > 0 && q)) {
+            if (pSize !== 0 && (qSize === 0 || !q || p.z <= q.z)) { e = p; p = p.nextZ; pSize--; }
+            else { e = q; q = q.nextZ; qSize--; }
+            if (tail) tail.nextZ = e; else list = e;
+            e.prevZ = tail; tail = e;
+          }
+          p = q;
+        }
+        tail.nextZ = null; inSize *= 2;
+      } while (numMerges > 1);
+      return list;
+    }
+    function zOrder(x, y, minX, minY, invSize) {
+      x = (x - minX) * invSize | 0; y = (y - minY) * invSize | 0;
+      x = (x | (x << 8)) & 0x00FF00FF; x = (x | (x << 4)) & 0x0F0F0F0F; x = (x | (x << 2)) & 0x33333333; x = (x | (x << 1)) & 0x55555555;
+      y = (y | (y << 8)) & 0x00FF00FF; y = (y | (y << 4)) & 0x0F0F0F0F; y = (y | (y << 2)) & 0x33333333; y = (y | (y << 1)) & 0x55555555;
+      return x | (y << 1);
+    }
+    function getLeftmost(start) {
+      var p = start, leftmost = start;
+      do { if (p.x < leftmost.x || (p.x === leftmost.x && p.y < leftmost.y)) leftmost = p; p = p.next; } while (p !== start);
+      return leftmost;
+    }
+    function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
+      return (cx - px) * (ay - py) >= (ax - px) * (cy - py) && (ax - px) * (by - py) >= (bx - px) * (ay - py) && (bx - px) * (cy - py) >= (cx - px) * (by - py);
+    }
+    function isValidDiagonal(a, b) {
+      return a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) &&
+        (locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b) && (area(a.prev, a, b.prev) || area(a, b.prev, b)) ||
+        equals(a, b) && area(a.prev, a, a.next) > 0 && area(b.prev, b, b.next) > 0);
+    }
+    function area(p, q, r) { return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y); }
+    function equals(p1, p2) { return p1.x === p2.x && p1.y === p2.y; }
+    function intersects(p1, q1, p2, q2) {
+      var o1 = sign(area(p1, q1, p2)), o2 = sign(area(p1, q1, q2)), o3 = sign(area(p2, q2, p1)), o4 = sign(area(p2, q2, q1));
+      if (o1 !== o2 && o3 !== o4) return true;
+      if (o1 === 0 && onSegment(p1, p2, q1)) return true; if (o2 === 0 && onSegment(p1, q2, q1)) return true;
+      if (o3 === 0 && onSegment(p2, p1, q2)) return true; if (o4 === 0 && onSegment(p2, q1, q2)) return true;
+      return false;
+    }
+    function onSegment(p, q, r) { return q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y); }
+    function sign(num) { return num > 0 ? 1 : num < 0 ? -1 : 0; }
+    function intersectsPolygon(a, b) {
+      var p = a;
+      do { if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i && intersects(p, p.next, a, b)) return true; p = p.next; } while (p !== a);
+      return false;
+    }
+    function locallyInside(a, b) { return area(a.prev, a, a.next) < 0 ? area(a, b, a.next) >= 0 && area(a, a.prev, b) >= 0 : area(a, b, a.prev) < 0 || area(a, a.next, b) < 0; }
+    function middleInside(a, b) {
+      var p = a, inside = false, px = (a.x + b.x) / 2, py = (a.y + b.y) / 2;
+      do { if (((p.y > py) !== (p.next.y > py)) && p.next.y !== p.y && (px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x)) inside = !inside; p = p.next; } while (p !== a);
+      return inside;
+    }
+    function splitPolygon(a, b) {
+      var a2 = new Node(a.i, a.x, a.y), b2 = new Node(b.i, b.x, b.y), an = a.next, bp = b.prev;
+      a.next = b; b.prev = a; a2.next = an; an.prev = a2; b2.next = a2; a2.prev = b2; bp.next = b2; b2.prev = bp;
+      return b2;
+    }
+    function insertNode(i, x, y, last) {
+      var p = new Node(i, x, y);
+      if (!last) { p.prev = p; p.next = p; }
+      else { p.next = last.next; p.prev = last; last.next.prev = p; last.next = p; }
+      return p;
+    }
+    function removeNode(p) { p.next.prev = p.prev; p.prev.next = p.next; if (p.prevZ) p.prevZ.nextZ = p.nextZ; if (p.nextZ) p.nextZ.prevZ = p.prevZ; }
+    function signedArea(data, start, end, dim) {
+      var sum = 0;
+      for (var i = start, j = end - dim; i < end; i += dim) { sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1]); j = i; }
+      return sum;
+    }
+  </script>
+
+  <!-- Internationalization & Core App Logic -->
+  <script>
+    const I18N = {
+      en: {
+        pageTitle: "Bambu Lab Filament Card Studio | Swatch & 3MF Generator",
+        brandTitle: "Bambu Lab Filament Card Studio",
+        brandSubtitle: "Parametric Swatch & 3MF Generator (GitHub Pages)",
+        badgeFlush: "● 0.5mm Flush Inlay",
+        badgeTower: "● Prime Tower Ready",
+        urlLabel: "1. Paste Bambu Lab Store URL (Auto Extract)",
+        urlPlaceholder: "https://us.store.bambulab.com/products/pla-wood?id=43075832086664",
+        extractBtn: "Extract URL",
+        quickFill: "Quick fill:",
+        dbLabel: "Or Search Official Bambu Filament Database (314 Colors)",
+        dbPlaceholder: "Enter code like 13106 or color like White Oak, Clay Brown, 白橡木...",
+        variantsLabel: "Detected Color Variants (Click to select):",
+        cardConfigTitle: "Card Typography & Parameters",
+        toggleCardText: (zh) => `Card Text: Chinese (${zh})`,
+        matLabel: "Material Type (Row 1)",
+        colorLabel: "Color Name (Row 2)",
+        codeLabel: "Code (Row 3 Left)",
+        hexLabel: "HEX Color (Row 3 Right & Swatch)",
+        reliefLabel: "Relief Height (Default 0.5 mm flush; 1.2 mm raised)",
+        swatchLabel: "Swatch Diameter (Default 7.0 mm)",
+        previewTitle: "Real-Time Vector Preview (Pocket Layout)",
+        badgeReliefFlush: (h) => `Relief: ${h} mm (Flush)`,
+        badgeReliefRaised: (h) => `Relief: ${h} mm (Raised)`,
+        specPocket: "Pocket Size (mm)",
+        specTopZ: "Top Surface Z (Flush)",
+        specWatertight: "100% Watertight",
+        downloadBtn: "Generate & Download .3MF",
+        downloadingBtn: "⚡ Generating 3MF Mesh...",
+        copyCliBtn: "Copy CLI",
+        toastCopied: "CLI command copied to clipboard!",
+        toastSuccess: "🎉 3MF swatch card generated and downloaded!",
+        toastNoUrl: "Please enter a Bambu Lab store product URL first",
+        toastVariantsFound: (n) => `Successfully parsed ${n} color variants!`,
+        toastMatchedDb: (n) => `Matched ${n} official colors from database!`,
+        toastNoVariants: "Could not auto-detect variants. Please use search below."
+      },
+      zh: {
+        pageTitle: "Bambu Lab 耗材样本卡生成器 | 3MF 在线生成工具",
+        brandTitle: "Bambu Lab 耗材样本卡生成器",
+        brandSubtitle: "参数化色卡与 3MF 在线生成工具 (GitHub Pages 纯静态版)",
+        badgeFlush: "● 0.5mm 表面平齐嵌色",
+        badgeTower: "● Prime Tower 擦料塔兼容",
+        urlLabel: "1. 粘贴 Bambu Lab 商城链接 (自动解析提取)",
+        urlPlaceholder: "https://us.store.bambulab.com/products/pla-wood?id=43075832086664",
+        extractBtn: "解析链接",
+        quickFill: "快速填充:",
+        dbLabel: "或直接搜索 Bambu 官方耗材库 (314种官方颜色)",
+        dbPlaceholder: "输入编号如 13106 或颜色名如 白橡木, 黑胡桃, White Oak...",
+        variantsLabel: "检测到的颜色变体 (点击快速切换):",
+        cardConfigTitle: "样本卡文字与参数配置",
+        toggleCardText: (en) => `切换卡片名称为英文 (${en})`,
+        matLabel: "材料类型 (第1行)",
+        colorLabel: "颜色名称 (第2行)",
+        codeLabel: "编号 (第3行左侧)",
+        hexLabel: "HEX 色号 (第3行右侧与色块)",
+        reliefLabel: "浮雕高度 (默认 0.5 mm 表面平齐嵌色; 1.2 mm 突出)",
+        swatchLabel: "色块直径 (默认 7.0 mm)",
+        previewTitle: "实时矢量渲染 (卡片凹槽排版)",
+        badgeReliefFlush: (h) => `浮雕: ${h} mm (齐平)`,
+        badgeReliefRaised: (h) => `浮雕: ${h} mm (突出)`,
+        specPocket: "凹槽尺寸 (mm)",
+        specTopZ: "卡面顶层 Z (齐平)",
+        specWatertight: "100% 封闭网格",
+        downloadBtn: "生成并下载 .3MF 文件",
+        downloadingBtn: "⚡ 正在生成 3MF 模型...",
+        copyCliBtn: "复制命令",
+        toastCopied: "已复制 CLI 执行命令到剪贴板！",
+        toastSuccess: "🎉 3MF 样本卡已生成并开始下载！",
+        toastNoUrl: "请先输入 Bambu Lab 商城网页链接",
+        toastVariantsFound: (n) => `成功解析 ${n} 个颜色变体！`,
+        toastMatchedDb: (n) => `匹配到 ${n} 款官方预设颜色！`,
+        toastNoVariants: "未能直接识别，您可在下方搜索框直接输入颜色或色号快速选定！"
+      }
+    };
+
+    const POCKET_W = 40.4;
+    const POCKET_H = 30.4;
+    const POCKET_CX = -6.3;
+    const POCKET_CY = 0.0;
+    const POCKET_FLOOR_Z = 0.5;
+    const MARGIN = 2.2;
+
+    let currentLang = 'zh'; // default English
+    let filamentDb = [];
+    let currentZhName = "白橡木";
+    let currentEnName = "White Oak";
+    let isCardZh = false;
+    let cachedTemplateBuffer = null;
+
+    // Detect language preference from URL param or storage
+    const urlParams = new URLSearchParams(window.location.search);
+    const hash = window.location.hash.toLowerCase();
+    if (urlParams.get('lang') === 'zh' || hash === '#zh' || window.location.pathname.endsWith('zh.html')) {
+      currentLang = 'zh';
+    } else if (urlParams.get('lang') === 'en' || hash === '#en') {
+      currentLang = 'en';
+    } else {
+      const savedLang = localStorage.getItem('bambu_card_lang');
+      if (savedLang) currentLang = savedLang;
+    }
+
+    // Theme initialization (Light is default)
+    const savedTheme = localStorage.getItem('bambu_card_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      applyLanguage(currentLang);
+      updateThemeUI(savedTheme);
+      await loadDatabase();
+      renderCardPreview();
+      preloadTemplate();
+    });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('bambu_card_theme', next);
+      updateThemeUI(next);
+      renderCardPreview();
+    }
+
+    function updateThemeUI(theme) {
+      const icon = document.getElementById('themeIcon');
+      icon.textContent = theme === 'light' ? '☀️' : '🌙';
+    }
+
+    function toggleSiteLanguage() {
+      currentLang = currentLang === 'en' ? 'zh' : 'en';
+      localStorage.setItem('bambu_card_lang', currentLang);
+      applyLanguage(currentLang);
+
+      // Auto update card color name to match selected site language
+      const colInput = document.getElementById('colorInput');
+      if (currentLang === 'zh') {
+        colInput.value = currentZhName || colInput.value;
+        isCardZh = true;
+      } else {
+        colInput.value = currentEnName || colInput.value;
+        isCardZh = false;
+      }
+      renderCardPreview();
+    }
+
+    function applyLanguage(lang) {
+      const t = I18N[lang];
+      document.title = t.pageTitle;
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+      document.getElementById('t_brandTitle').textContent = t.brandTitle;
+      document.getElementById('t_brandSubtitle').textContent = t.brandSubtitle;
+      document.getElementById('t_badgeFlush').textContent = t.badgeFlush;
+      document.getElementById('t_badgeTower').textContent = t.badgeTower;
+
+      document.getElementById('t_urlLabel').textContent = t.urlLabel;
+      document.getElementById('bambuUrl').placeholder = t.urlPlaceholder;
+      document.getElementById('t_extractBtn').textContent = t.extractBtn;
+      document.getElementById('t_quickFill').textContent = t.quickFill;
+
+      document.getElementById('t_dbLabel').textContent = t.dbLabel;
+      document.getElementById('dbSearch').placeholder = t.dbPlaceholder;
+      document.getElementById('t_variantsLabel').textContent = t.variantsLabel;
+
+      document.getElementById('t_cardConfigTitle').textContent = t.cardConfigTitle;
+      document.getElementById('t_matLabel').textContent = t.matLabel;
+      document.getElementById('t_colorLabel').textContent = t.colorLabel;
+      document.getElementById('t_codeLabel').textContent = t.codeLabel;
+      document.getElementById('t_hexLabel').textContent = t.hexLabel;
+      document.getElementById('t_reliefLabel').textContent = t.reliefLabel;
+      document.getElementById('t_swatchLabel').textContent = t.swatchLabel;
+
+      document.getElementById('t_previewTitle').textContent = t.previewTitle;
+      document.getElementById('t_specPocket').textContent = t.specPocket;
+      document.getElementById('t_specTopZ').textContent = t.specTopZ;
+      document.getElementById('t_specWatertight').textContent = t.specWatertight;
+      document.getElementById('t_downloadBtn').textContent = t.downloadBtn;
+      document.getElementById('t_copyCliBtn').textContent = t.copyCliBtn;
+
+      // Header language button appearance
+      document.getElementById('langFlag').textContent = lang === 'en' ? '🇨🇳' : '🇺🇸';
+      document.getElementById('langSwitchText').textContent = lang === 'en' ? '中文' : 'English';
+
+      updateCardTextToggleBtn();
+    }
+
+    function updateCardTextToggleBtn() {
+      const t = I18N[currentLang];
+      const btn = document.getElementById('langToggleCardText');
+      btn.textContent = isCardZh ? t.toggleCardText(currentEnName) : t.toggleCardText(currentZhName);
+    }
+
+    function toggleCardTextLang() {
+      isCardZh = !isCardZh;
+      const colInput = document.getElementById('colorInput');
+      colInput.value = isCardZh ? (currentZhName || colInput.value) : (currentEnName || colInput.value);
+      updateCardTextToggleBtn();
+      renderCardPreview();
+    }
+
+    async function loadDatabase() {
+      try {
+        const resp = await fetch('filament_db.json');
+        if (resp.ok) filamentDb = await resp.json();
+      } catch (e) {
+        console.warn('Could not load filament_db.json directly, fallback available.');
+      }
+    }
+
+    async function preloadTemplate() {
+      try {
+        const resp = await fetch('card_template.3mf');
+        if (resp.ok) cachedTemplateBuffer = await resp.arrayBuffer();
+      } catch (e) {
+        console.warn('Template preload pending.');
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function onColorPickerChange(val) {
+      document.getElementById('hexInput').value = val.toUpperCase();
+      renderCardPreview();
+    }
+
+    function onHexInputChange(val) {
+      let h = val.trim();
+      if (!h.startsWith('#')) h = '#' + h;
+      if (/^#[0-9A-Fa-f]{6}$/.test(h)) {
+        document.getElementById('colorPicker').value = h;
+      }
+      renderCardPreview();
+    }
+
+    function updateCliBox() {
+      const mat = document.getElementById('matInput').value;
+      const col = document.getElementById('colorInput').value;
+      const code = document.getElementById('codeInput').value;
+      const hex = document.getElementById('hexInput').value;
+      const relief = document.getElementById('reliefInput').value;
+      let cmd = `python3 make_filament_card.py "${mat}" "${col}" "${code}" "${hex}" ${relief}`;
+      document.getElementById('cliText').textContent = cmd;
+    }
+
+    function copyCli() {
+      navigator.clipboard.writeText(document.getElementById('cliText').textContent);
+      showToast(I18N[currentLang].toastCopied);
+    }
+
+    // High fidelity 2D Canvas layout renderer
+    function renderCardPreview() {
+      updateCliBox();
+      const canvas = document.getElementById('previewCanvas');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+      const ppm = w / POCKET_W; // ~20 px/mm
+
+      const mat = document.getElementById('matInput').value.toUpperCase();
+      const col = document.getElementById('colorInput').value;
+      const code = document.getElementById('codeInput').value;
+      let hex = document.getElementById('hexInput').value.trim();
+      if (!hex.startsWith('#')) hex = '#' + hex;
+      const relief = parseFloat(document.getElementById('reliefInput').value) || 0.5;
+      const swatchD = parseFloat(document.getElementById('swatchDia').value) || 7.0;
+
+      // Card pocket floor background
+      ctx.fillStyle = '#B39B84'; // Default card body tone
+      ctx.fillRect(0, 0, w, h);
+
+      function colX(x) { return Math.round((x + POCKET_W / 2) * ppm); }
+      function rowY(y) { return Math.round((POCKET_H / 2 - y) * ppm); }
+
+      const x0 = -POCKET_W / 2 + MARGIN;
+      const x1 = POCKET_W / 2 - MARGIN;
+      const y_top = POCKET_H / 2 - MARGIN;
+      const y_bot = -POCKET_H / 2 + MARGIN;
+      const usable = x1 - x0;
+
+      // Swatch circle (Top-Right)
+      const sw_r = swatchD / 2;
+      const sw_cx = x1 - sw_r;
+      const sw_cy = y_top - sw_r;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(colX(sw_cx), rowY(sw_cy), sw_r * ppm, 0, Math.PI * 2);
+      ctx.fillStyle = hex;
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+      ctx.stroke();
+      ctx.restore();
+
+      // Text drawing in dark relief
+      ctx.fillStyle = '#262626';
+
+      // Row 1: Material (Top-Left)
+      const matSizePx = Math.round(3.2 * ppm);
+      ctx.font = `bold ${matSizePx}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.fillText(mat, colX(x0), rowY(sw_cy - 0.2));
+
+      // Row 3: Separator Line + Meta (Code & Hex)
+      const metaSizePx = Math.round(2.9 * ppm);
+      const metaBaseY = y_bot + 0.6;
+      const sepT = 0.8;
+      const sepY = metaBaseY + 2.8 + 1.6;
+
+      ctx.fillRect(colX(x0), rowY(sepY + sepT), usable * ppm, sepT * ppm);
+
+      ctx.font = `bold ${metaSizePx}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      ctx.textBaseline = 'alphabetic';
+      ctx.textAlign = 'left';
+      ctx.fillText(code, colX(x0), rowY(metaBaseY));
+
+      ctx.textAlign = 'right';
+      ctx.fillText(hex.toUpperCase(), colX(x1), rowY(metaBaseY));
+
+      // Row 2: Color Name
+      const bandTop = sw_cy - sw_r - 0.8;
+      const bandBot = sepY + sepT + 1.4;
+      const bandH = bandTop - bandBot;
+      const nameY = bandBot + bandH / 2;
+
+      let nameFontSize = Math.min(6.2 * ppm, bandH * ppm * 0.75);
+      ctx.font = `bold ${nameFontSize}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+
+      const measured = ctx.measureText(col).width;
+      if (measured > usable * ppm) {
+        const scale = (usable * ppm) / measured;
+        nameFontSize = Math.round(nameFontSize * scale);
+        ctx.font = `bold ${nameFontSize}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      }
+      ctx.fillText(col, colX(x0), rowY(nameY));
+
+      // Status indicator update
+      const topZ = (POCKET_FLOOR_Z + relief + 1.0).toFixed(2);
+      document.getElementById('specTopZ').textContent = `${topZ} mm`;
+      const t = I18N[currentLang];
+      document.getElementById('strokeBadge').textContent = relief <= 0.5 ?
+        t.badgeReliefFlush(relief.toFixed(2)) : t.badgeReliefRaised(relief.toFixed(2));
+    }
+
+    // URL Extractor
+    document.getElementById('extractBtn').addEventListener('click', async () => {
+      const url = document.getElementById('bambuUrl').value.trim();
+      const t = I18N[currentLang];
+      if (!url) {
+        showToast(t.toastNoUrl);
+        return;
+      }
+
+      const btn = document.getElementById('extractBtn');
+      const spinner = document.getElementById('extractSpinner');
+      btn.disabled = true;
+      spinner.style.display = 'inline';
+
+      try {
+        let extracted = false;
+        // 1. Try local backend if running
+        try {
+          const resp = await fetch('/api/extract', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: url })
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data.success && data.variants && data.variants.length > 0) {
+              renderVariants(data.variants, data.selected_index || 0);
+              showToast(t.toastVariantsFound(data.variants.length));
+              extracted = true;
+            }
+          }
+        } catch (e) {}
+
+        // 2. Client-side URL & database matching
+        if (!extracted) {
+          let matchedVariants = [];
+          if (url.includes('pla-wood')) {
+            matchedVariants = filamentDb.filter(f => f.material.toLowerCase().includes('wood'));
+          } else if (url.includes('pla-matte')) {
+            matchedVariants = filamentDb.filter(f => f.material.toLowerCase().includes('matte'));
+          } else if (url.includes('petg-hf')) {
+            matchedVariants = filamentDb.filter(f => f.material.toLowerCase().includes('petg'));
+          } else if (url.includes('pla-basic')) {
+            matchedVariants = filamentDb.filter(f => f.material.toLowerCase().includes('basic'));
+          }
+
+          if (matchedVariants.length > 0) {
+            const variants = matchedVariants.map((m) => ({
+              material: m.material.toUpperCase(),
+              name: currentLang === 'zh' ? (m.name_zh || m.name_en) : m.name_en,
+              name_en: m.name_en,
+              name_zh: m.name_zh,
+              code: `(${m.code})`,
+              hex: m.hex
+            }));
+            renderVariants(variants, 0);
+            showToast(t.toastMatchedDb(variants.length));
+            extracted = true;
+          }
+        }
+
+        if (!extracted) {
+          showToast(t.toastNoVariants);
+        }
+      } catch (err) {
+        showToast('Error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+      }
+    });
+
+    function renderVariants(variants, selectIdx) {
+      const box = document.getElementById('variantsBox');
+      const container = document.getElementById('variantsContainer');
+      container.innerHTML = '';
+      box.style.display = 'block';
+
+      variants.forEach((v, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'variant-chip' + (idx === selectIdx ? ' active' : '');
+        const displayName = currentLang === 'zh' ? (v.name_zh || v.name_en || v.name) : (v.name_en || v.name);
+        chip.innerHTML = `
+          <span class="color-dot" style="background-color: ${v.hex};"></span>
+          <span>${displayName}</span>
+          <span style="opacity:0.6; font-size:0.75rem;">${v.code}</span>
+        `;
+        chip.onclick = () => selectVariant(v, chip);
+        container.appendChild(chip);
+      });
+
+      if (variants[selectIdx]) {
+        selectVariant(variants[selectIdx], container.children[selectIdx]);
+      }
+    }
+
+    function selectVariant(v, chipElem) {
+      document.querySelectorAll('.variant-chip').forEach(c => c.classList.remove('active'));
+      if (chipElem) chipElem.classList.add('active');
+
+      currentEnName = v.name_en || v.name;
+      currentZhName = v.name_zh || v.name;
+
+      document.getElementById('matInput').value = v.material || 'PLA';
+      document.getElementById('colorInput').value = currentLang === 'zh' ? (currentZhName || currentEnName) : (currentEnName || currentZhName);
+      isCardZh = (currentLang === 'zh');
+      updateCardTextToggleBtn();
+
+      document.getElementById('codeInput').value = v.code.startsWith('(') ? v.code : `(${v.code})`;
+      document.getElementById('hexInput').value = v.hex;
+      document.getElementById('colorPicker').value = v.hex;
+
+      renderCardPreview();
+    }
+
+    function loadPreset(key) {
+      if (key === 'pla-wood') {
+        selectVariant({
+          material: 'PLA WOOD',
+          name: 'White Oak',
+          name_en: 'White Oak',
+          name_zh: '白橡木',
+          code: '(13106)',
+          hex: '#D6CCA3'
+        }, null);
+      } else if (key === 'pla-matte-gold') {
+        selectVariant({
+          material: 'PLA MATTE',
+          name: 'Iridium Gold',
+          name_en: 'Iridium Gold',
+          name_zh: '铱金',
+          code: '(13008)',
+          hex: '#A2D312'
+        }, null);
+      } else if (key === 'petg-hf-black') {
+        selectVariant({
+          material: 'PETG HF',
+          name: 'Black',
+          name_en: 'Black',
+          name_zh: '黑色',
+          code: '(30101)',
+          hex: '#000000'
+        }, null);
+      }
+    }
+
+    function filterDatabase() {
+      const q = document.getElementById('dbSearch').value.trim().toLowerCase();
+      if (!q || !filamentDb.length) return;
+
+      const matches = filamentDb.filter(item => {
+        return item.code.includes(q) ||
+               item.name_en.toLowerCase().includes(q) ||
+               item.name_zh.includes(q) ||
+               item.material.toLowerCase().includes(q);
+      }).slice(0, 15);
+
+      if (matches.length > 0) {
+        renderVariants(matches.map(m => ({
+          material: m.material.toUpperCase(),
+          name: currentLang === 'zh' ? (m.name_zh || m.name_en) : m.name_en,
+          name_en: m.name_en,
+          name_zh: m.name_zh,
+          code: `(${m.code})`,
+          hex: m.hex
+        })), 0);
+      }
+    }
+
+    // 100% In-Browser 3MF Generation & Download
+    async function generateAndDownload() {
+      const mat = document.getElementById('matInput').value;
+      const col = document.getElementById('colorInput').value;
+      const code = document.getElementById('codeInput').value;
+      let hex = document.getElementById('hexInput').value.trim();
+      if (!hex.startsWith('#')) hex = '#' + hex;
+      const relief = parseFloat(document.getElementById('reliefInput').value) || 0.5;
+      const swatchD = parseFloat(document.getElementById('swatchDia').value) || 7.0;
+
+      const btn = document.getElementById('downloadBtn');
+      const origText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span>${I18N[currentLang].downloadingBtn}</span>`;
+
+      try {
+        let downloaded = false;
+        try {
+          const resp = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              material: mat,
+              color: col,
+              code: code,
+              hex: hex,
+              relief: relief,
+              swatch_d: swatchD
+            })
+          });
+          if (resp.ok) {
+            const blob = await resp.blob();
+            saveBlob(blob, `耗材样本卡_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
+            downloaded = true;
+          }
+        } catch (e) {}
+
+        if (!downloaded) {
+          if (typeof JSZip === 'undefined') {
+            throw new Error('JSZip library loading, please wait or refresh.');
+          }
+
+          if (!cachedTemplateBuffer) {
+            const resp = await fetch('card_template.3mf');
+            if (!resp.ok) throw new Error('Could not load template card_template.3mf');
+            cachedTemplateBuffer = await resp.arrayBuffer();
+          }
+
+          const blob = await generateClientSide3mf(mat, col, code, hex, relief, swatchD, cachedTemplateBuffer);
+          saveBlob(blob, `耗材样本卡_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
+        }
+
+        showToast(I18N[currentLang].toastSuccess);
+      } catch (e) {
+        showToast('Error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origText;
+      }
+    }
+
+    function saveBlob(blob, filename) {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+
+    // Client-side 3MF mesh generator
+    async function generateClientSide3mf(material, color, code, hexColor, relief, swatchD, templateBuffer) {
+      const ppm = 30; // Resolution px per mm
+      const W = Math.round(POCKET_W * ppm);
+      const H = Math.round(POCKET_H * ppm);
+
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = W;
+      offCanvas.height = H;
+      const ctx = offCanvas.getContext('2d');
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, W, H);
+
+      function colX(x) { return Math.round((x + POCKET_W / 2) * ppm); }
+      function rowY(y) { return Math.round((POCKET_H / 2 - y) * ppm); }
+
+      const x0 = -POCKET_W / 2 + MARGIN;
+      const x1 = POCKET_W / 2 - MARGIN;
+      const y_top = POCKET_H / 2 - MARGIN;
+      const y_bot = -POCKET_H / 2 + MARGIN;
+      const usable = x1 - x0;
+      const sw_r = swatchD / 2;
+      const sw_cx = x1 - sw_r;
+      const sw_cy = y_top - sw_r;
+
+      ctx.fillStyle = '#FFFFFF';
+
+      // Row 1: Material
+      const matSizePx = Math.round(3.2 * ppm);
+      ctx.font = `bold ${matSizePx}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.fillText(material.toUpperCase(), colX(x0), rowY(sw_cy - 0.2));
+
+      // Row 3: Meta & Separator
+      const metaSizePx = Math.round(2.9 * ppm);
+      const metaBaseY = y_bot + 0.6;
+      const sepT = 0.8;
+      const sepY = metaBaseY + 2.8 + 1.6;
+      ctx.fillRect(colX(x0), rowY(sepY + sepT), usable * ppm, sepT * ppm);
+
+      ctx.font = `bold ${metaSizePx}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      ctx.textBaseline = 'alphabetic';
+      ctx.textAlign = 'left';
+      ctx.fillText(code, colX(x0), rowY(metaBaseY));
+      ctx.textAlign = 'right';
+      ctx.fillText(hexColor.toUpperCase(), colX(x1), rowY(metaBaseY));
+
+      // Row 2: Color Name
+      const bandTop = sw_cy - sw_r - 0.8;
+      const bandBot = sepY + sepT + 1.4;
+      const bandH = bandTop - bandBot;
+      const nameY = bandBot + bandH / 2;
+
+      let nameFontSize = Math.min(6.2 * ppm, bandH * ppm * 0.75);
+      ctx.font = `bold ${nameFontSize}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      const measured = ctx.measureText(color).width;
+      if (measured > usable * ppm) {
+        nameFontSize = Math.round(nameFontSize * (usable * ppm) / measured);
+        ctx.font = `bold ${nameFontSize}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      }
+      ctx.fillText(color, colX(x0), rowY(nameY));
+
+      const imgData = ctx.getImageData(0, 0, W, H);
+      const pixels = imgData.data;
+      const grid = new Uint8Array(W * H);
+      for (let i = 0; i < grid.length; i++) {
+        grid[i] = pixels[i * 4] > 128 ? 1 : 0;
+      }
+
+      const polygons = extractPolygons(grid, W, H, ppm);
+      const z0 = POCKET_FLOOR_Z;
+      const z1 = POCKET_FLOOR_Z + relief;
+      const textMesh = extrudePolygons(polygons, z0, z1, POCKET_CX, POCKET_CY);
+
+      const swatchCircle = [makeCircle(sw_cx, sw_cy, sw_r, 96)];
+      const swatchMesh = extrudePolygons([{ outer: swatchCircle[0], holes: [] }], z0, z1, POCKET_CX, POCKET_CY);
+
+      const zip = await JSZip.loadAsync(templateBuffer);
+      const centeredText = centerMesh(textMesh.vertices);
+      const centeredSwatch = centerMesh(swatchMesh.vertices);
+
+      const objModelXml = buildObject18Xml(centeredText.vertices, textMesh.triangles, centeredSwatch.vertices, swatchMesh.triangles);
+      zip.file('3D/Objects/object_18.model', objModelXml);
+
+      let model3d = await zip.file('3D/3dmodel.model').async('string');
+      model3d = model3d.replace(/(<component p:path="\/3D\/Objects\/object_18\.model" objectid="3"[^>]*transform=")[^"]*(")/,
+        `$11 0 0 0 1 0 0 0 1 ${fmt(centeredText.center[0])} ${fmt(centeredText.center[1])} ${fmt(centeredText.center[2])}$2`);
+      model3d = model3d.replace(/(<component p:path="\/3D\/Objects\/object_18\.model" objectid="4"[^>]*transform=")[^"]*(")/,
+        `$11 0 0 0 1 0 0 0 1 ${fmt(centeredSwatch.center[0])} ${fmt(centeredSwatch.center[1])} ${fmt(centeredSwatch.center[2])}$2`);
+      zip.file('3D/3dmodel.model', model3d);
+
+      let modelCfg = await zip.file('Metadata/model_settings.config').async('string');
+      modelCfg = modelCfg.replace(/<part id="3"[\s\S]*?<\/part>/, (m) => {
+        let p = m.replace(/(<metadata key="matrix" value=")[^"]*(")/,
+          `$11 0 0 ${fmt(centeredText.center[0])} 0 1 0 ${fmt(centeredText.center[1])} 0 0 1 ${fmt(centeredText.center[2])} 0 0 0 1$2`);
+        return p.replace(/(<mesh_stat face_count=")\d+/, `$1${textMesh.triangles.length}`);
+      });
+      modelCfg = modelCfg.replace(/<part id="4"[\s\S]*?<\/part>/, (m) => {
+        let p = m.replace(/(<metadata key="matrix" value=")[^"]*(")/,
+          `$11 0 0 ${fmt(centeredSwatch.center[0])} 0 1 0 ${fmt(centeredSwatch.center[1])} 0 0 1 ${fmt(centeredSwatch.center[2])} 0 0 0 1$2`);
+        return p.replace(/(<mesh_stat face_count=")\d+/, `$1${swatchMesh.triangles.length}`);
+      });
+      modelCfg = modelCfg.replace(/(<assemble_item object_id="2" volume_id="1" transform=")[^"]*(")/,
+        `$11 0 0 0 1 0 0 0 1 ${fmt(centeredText.center[0])} ${fmt(centeredText.center[1])} ${fmt(centeredText.center[2])}$2`);
+      modelCfg = modelCfg.replace(/(<assemble_item object_id="2" volume_id="2" transform=")[^"]*(")/,
+        `$11 0 0 0 1 0 0 0 1 ${fmt(centeredSwatch.center[0])} ${fmt(centeredSwatch.center[1])} ${fmt(centeredSwatch.center[2])}$2`);
+      modelCfg = modelCfg.replace(/(<object id="2">[\s\S]*?<metadata face_count=")\d+/,
+        `$1${3472 + textMesh.triangles.length + swatchMesh.triangles.length}`);
+      zip.file('Metadata/model_settings.config', modelCfg);
+
+      let projCfgStr = await zip.file('Metadata/project_settings.config').async('string');
+      let projCfg = JSON.parse(projCfgStr);
+      if (projCfg.filament_colour && projCfg.filament_colour.length >= 3) {
+        projCfg.filament_colour[2] = hexColor.toUpperCase();
+      }
+      zip.file('Metadata/project_settings.config', JSON.stringify(projCfg, null, 4));
+
+      return await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+    }
+
+    function fmt(n) { return Number(n).toFixed(6); }
+
+    function makeCircle(cx, cy, r, seg) {
+      const pts = [];
+      for (let i = 0; i < seg; i++) {
+        const a = (i / seg) * Math.PI * 2;
+        pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+      }
+      return pts;
+    }
+
+    function extractPolygons(grid, w, h, ppm) {
+      const segments = [];
+      function getVal(x, y) {
+        if (x < 0 || x >= w || y < 0 || y >= h) return 0;
+        return grid[y * w + x];
+      }
+
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const tl = getVal(x, y);
+          const tr = getVal(x + 1, y);
+          const br = getVal(x + 1, y + 1);
+          const bl = getVal(x, y + 1);
+          const code = (tl << 3) | (tr << 2) | (br << 1) | bl;
+          if (code === 0 || code === 15) continue;
+
+          const top = [x + 0.5, y];
+          const right = [x + 1, y + 0.5];
+          const bottom = [x + 0.5, y + 1];
+          const left = [x, y + 0.5];
+
+          switch (code) {
+            case 1: segments.push([bottom, left]); break;
+            case 2: segments.push([right, bottom]); break;
+            case 3: segments.push([right, left]); break;
+            case 4: segments.push([top, right]); break;
+            case 5: segments.push([top, left]); segments.push([bottom, right]); break;
+            case 6: segments.push([top, bottom]); break;
+            case 7: segments.push([top, left]); break;
+            case 8: segments.push([left, top]); break;
+            case 9: segments.push([bottom, top]); break;
+            case 10: segments.push([left, bottom]); segments.push([right, top]); break;
+            case 11: segments.push([right, top]); break;
+            case 12: segments.push([left, right]); break;
+            case 13: segments.push([bottom, right]); break;
+            case 14: segments.push([left, bottom]); break;
+          }
+        }
+      }
+
+      const map = new Map();
+      function ptKey(p) { return `${Math.round(p[0] * 2)},${Math.round(p[1] * 2)}`; }
+
+      for (const [p1, p2] of segments) {
+        const k1 = ptKey(p1);
+        if (!map.has(k1)) map.set(k1, []);
+        map.get(k1).push({ p1, p2, used: false });
+      }
+
+      const rings = [];
+      for (const list of map.values()) {
+        for (const seg of list) {
+          if (seg.used) continue;
+          seg.used = true;
+          const ring = [seg.p1];
+          let curr = seg.p2;
+          let guard = 0;
+          while (guard++ < 25000) {
+            ring.push(curr);
+            const k = ptKey(curr);
+            const nextList = map.get(k);
+            if (!nextList) break;
+            let found = null;
+            for (const next of nextList) {
+              if (!next.used) { found = next; break; }
+            }
+            if (!found) break;
+            found.used = true;
+            curr = found.p2;
+            if (ptKey(curr) === ptKey(ring[0])) break;
+          }
+          if (ring.length >= 4) {
+            const simplified = rdp(ring, 0.7);
+            if (simplified.length >= 3) {
+              const mmRing = simplified.map(p => [
+                p[0] / ppm - POCKET_W / 2,
+                POCKET_H / 2 - p[1] / ppm
+              ]);
+              rings.push(mmRing);
+            }
+          }
+        }
+      }
+
+      const outers = [];
+      const holes = [];
+      for (const r of rings) {
+        const sa = polygonSignedArea(r);
+        if (Math.abs(sa) < 0.02) continue;
+        if (sa > 0) outers.push(r);
+        else holes.push(r);
+      }
+
+      const result = outers.map(outer => ({ outer: outer, holes: [] }));
+      for (const hole of holes) {
+        const pt = hole[0];
+        for (const poly of result) {
+          if (pointInPoly(pt[0], pt[1], poly.outer)) {
+            poly.holes.push(hole);
+            break;
+          }
+        }
+      }
+      return result;
+    }
+
+    function polygonSignedArea(pts) {
+      let sum = 0;
+      for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+        sum += (pts[j][0] - pts[i][0]) * (pts[i][1] + pts[j][1]);
+      }
+      return sum * 0.5;
+    }
+
+    function pointInPoly(x, y, vs) {
+      let inside = false;
+      for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        const xi = vs[i][0], yi = vs[i][1];
+        const xj = vs[j][0], yj = vs[j][1];
+        const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    function rdp(points, epsilon) {
+      if (points.length <= 2) return points;
+      let dmax = 0, index = 0;
+      const end = points.length - 1;
+      for (let i = 1; i < end; i++) {
+        const d = distToSegment(points[i], points[0], points[end]);
+        if (d > dmax) { index = i; dmax = d; }
+      }
+      if (dmax > epsilon) {
+        const rec1 = rdp(points.slice(0, index + 1), epsilon);
+        const rec2 = rdp(points.slice(index), epsilon);
+        return rec1.slice(0, rec1.length - 1).concat(rec2);
+      } else {
+        return [points[0], points[end]];
+      }
+    }
+
+    function distToSegment(p, v, w) {
+      const l2 = (v[0] - w[0])**2 + (v[1] - w[1])**2;
+      if (l2 === 0) return Math.hypot(p[0] - v[0], p[1] - v[1]);
+      let t = ((p[0] - v[0]) * (w[0] - v[0]) + (p[1] - v[1]) * (w[1] - v[1])) / l2;
+      t = Math.max(0, Math.min(1, t));
+      return Math.hypot(p[0] - (v[0] + t * (w[0] - v[0])), p[1] - (v[1] + t * (w[1] - v[1])));
+    }
+
+    function extrudePolygons(polygons, z0, z1, dx, dy) {
+      const verts = [];
+      const tris = [];
+
+      for (const { outer, holes } of polygons) {
+        const flat = [];
+        const holeIndices = [];
+        const base = verts.length;
+
+        for (const [x, y] of outer) flat.push(x, y);
+        let count = outer.length;
+        for (const h of holes) {
+          holeIndices.push(count);
+          for (const [x, y] of h) flat.push(x, y);
+          count += h.length;
+        }
+
+        const rings = [outer, ...holes];
+        const n = count;
+
+        const earcutTris = earcut(flat, holeIndices, 2);
+
+        for (let i = 0; i < flat.length; i += 2) {
+          verts.push([flat[i] + dx, flat[i + 1] + dy, z0]);
+        }
+        for (let i = 0; i < flat.length; i += 2) {
+          verts.push([flat[i] + dx, flat[i + 1] + dy, z1]);
+        }
+
+        for (let i = 0; i < earcutTris.length; i += 3) {
+          tris.push([base + n + earcutTris[i], base + n + earcutTris[i + 1], base + n + earcutTris[i + 2]]);
+          tris.push([base + earcutTris[i], base + earcutTris[i + 2], base + earcutTris[i + 1]]);
+        }
+
+        let rOffset = 0;
+        for (const ring of rings) {
+          const m = ring.length;
+          for (let k = 0; k < m; k++) {
+            const i = rOffset + k;
+            const j = rOffset + ((k + 1) % m);
+            const bi = base + i, bj = base + j;
+            const ti = base + n + i, tj = base + n + j;
+            tris.push([bi, bj, tj]);
+            tris.push([bi, tj, ti]);
+          }
+          rOffset += m;
+        }
+      }
+      return { vertices: verts, triangles: tris };
+    }
+
+    function centerMesh(verts) {
+      let minX = Infinity, minY = Infinity, minZ = Infinity;
+      let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+      for (const [x, y, z] of verts) {
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
+        if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+      }
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+      const cz = (minZ + maxZ) / 2;
+      const centered = verts.map(([x, y, z]) => [x - cx, y - cy, z - cz]);
+      return { vertices: centered, center: [cx, cy, cz] };
+    }
+
+    function buildObject18Xml(textVerts, textTris, swatchVerts, swatchTris) {
+      let out = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02" xmlns:BambuStudio="http://schemas.bambulab.com/package/2021" xmlns:p="http://schemas.microsoft.com/3dmanufacturing/production/2015/06" requiredextensions="p">\n' +
+        ' <metadata name="BambuStudio:3mfVersion">1</metadata>\n' +
+        ' <resources>\n' +
+        '  <object id="3" p:UUID="00120000-81cb-4c03-9d28-80fed5dfa1dc" type="model">\n' +
+        '   <mesh>\n    <vertices>\n';
+      for (const [x, y, z] of textVerts) {
+        out += `     <vertex x="${x.toFixed(5)}" y="${y.toFixed(5)}" z="${z.toFixed(5)}"/>\n`;
+      }
+      out += '    </vertices>\n    <triangles>\n';
+      for (const [a, b, c] of textTris) {
+        out += `     <triangle v1="${a}" v2="${b}" v3="${c}"/>\n`;
+      }
+      out += '    </triangles>\n   </mesh>\n  </object>\n' +
+        '  <object id="4" p:UUID="00120001-81cb-4c03-9d28-80fed5dfa1dc" type="model">\n' +
+        '   <mesh>\n    <vertices>\n';
+      for (const [x, y, z] of swatchVerts) {
+        out += `     <vertex x="${x.toFixed(5)}" y="${y.toFixed(5)}" z="${z.toFixed(5)}"/>\n`;
+      }
+      out += '    </triangles>\n   </mesh>\n  </object>\n </resources>\n <build/>\n</model>\n';
+      return out;
+    }
+  </script>
+</body>
+</html>

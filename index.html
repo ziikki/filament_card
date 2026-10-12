@@ -1,17 +1,45 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bambu Lab Filament Card Studio | 耗材样本卡生成器</title>
-  <meta name="description" content="专为 Bambu Lab 打造的耗材样本卡 3MF 在线生成器，支持商城链接解析、高保真实时预览、一键生成 3MF 打印文件。">
+  <title>Bambu Lab Filament Card Studio | Swatch & 3MF Generator</title>
+  <meta name="description" content="Online parametric filament card swatch generator for Bambu Lab printers. Live preview, Bambu store extraction, and 100% in-browser 3MF download.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- JSZip for 100% in-browser 3MF file generation -->
   <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <style>
-    :root {
+    :root, [data-theme="light"] {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --bambu-green: #00ae42;
+      --bambu-green-hover: #009337;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --focus-ring: rgba(0, 174, 66, 0.25);
+      --badge-bg: #ecfdf5;
+      --badge-text: #059669;
+      --badge-border: #a7f3d0;
+      --preview-bg: #f1f5f9;
+      --chip-bg: #ffffff;
+      --chip-border: #e2e8f0;
+      --chip-hover: #f8fafc;
+      --cli-bg: #f1f5f9;
+      --cli-border: #e2e8f0;
+      --cli-text: #0369a1;
+      --toast-bg: #1e293b;
+      --header-bg: rgba(255, 255, 255, 0.88);
+      --shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    [data-theme="dark"] {
       --bg: #0f1117;
       --card-bg: #181b24;
       --card-border: #262a36;
@@ -25,6 +53,18 @@
       --input-border: #2e3444;
       --focus-ring: rgba(0, 174, 66, 0.35);
       --badge-bg: #222734;
+      --badge-text: #10b981;
+      --badge-border: rgba(16, 185, 129, 0.2);
+      --preview-bg: #0d0f14;
+      --chip-bg: #181b24;
+      --chip-border: #262a36;
+      --chip-hover: #222734;
+      --cli-bg: #0d0f14;
+      --cli-border: #2e3444;
+      --cli-text: #93c5fd;
+      --toast-bg: #1f2937;
+      --header-bg: rgba(24, 27, 36, 0.88);
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,19 +75,21 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      transition: background-color 0.25s, color 0.25s;
     }
 
     header {
-      background-color: rgba(24, 27, 36, 0.85);
+      background-color: var(--header-bg);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--card-border);
-      padding: 1rem 2rem;
+      padding: 0.85rem 2rem;
       position: sticky;
       top: 0;
       z-index: 50;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: background-color 0.25s, border-color 0.25s;
     }
 
     .brand {
@@ -57,44 +99,64 @@
     }
 
     .brand-icon {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       background: linear-gradient(135deg, #00ae42, #10b981);
-      border-radius: 8px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
       font-weight: 700;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 12px rgba(0, 174, 66, 0.3);
+      font-size: 1.15rem;
+      box-shadow: 0 4px 12px rgba(0, 174, 66, 0.25);
     }
 
     .brand-title {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       letter-spacing: -0.01em;
     }
 
     .brand-subtitle {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
     }
 
-    .header-links {
+    .header-controls {
       display: flex;
-      gap: 0.75rem;
+      gap: 0.6rem;
       align-items: center;
     }
 
     .badge {
       background-color: var(--badge-bg);
-      color: #10b981;
-      padding: 0.25rem 0.6rem;
+      color: var(--badge-text);
+      border: 1px solid var(--badge-border);
+      padding: 0.25rem 0.65rem;
       border-radius: 9999px;
       font-size: 0.75rem;
       font-weight: 600;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .pill-btn {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.35rem 0.65rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pill-btn:hover {
+      border-color: var(--bambu-green);
+      color: var(--bambu-green);
     }
 
     .github-link {
@@ -103,11 +165,11 @@
       font-size: 0.85rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.3rem;
-      padding: 0.3rem 0.6rem;
-      border-radius: 6px;
+      gap: 0.35rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 8px;
       border: 1px solid var(--card-border);
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
 
     .github-link:hover {
@@ -135,7 +197,8 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 1.5rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      box-shadow: var(--shadow);
+      transition: background-color 0.25s, border-color 0.25s;
     }
 
     .panel-title {
@@ -154,9 +217,9 @@
     label {
       display: block;
       font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 0.4rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.45rem;
     }
 
     .input-group {
@@ -199,7 +262,7 @@
     .btn-primary {
       background-color: var(--bambu-green);
       color: #fff;
-      box-shadow: 0 4px 14px rgba(0, 174, 66, 0.35);
+      box-shadow: 0 4px 14px rgba(0, 174, 66, 0.25);
     }
 
     .btn-primary:hover {
@@ -208,13 +271,14 @@
     }
 
     .btn-secondary {
-      background-color: var(--badge-bg);
+      background-color: var(--card-bg);
       color: var(--text-main);
       border: 1px solid var(--card-border);
     }
 
     .btn-secondary:hover {
-      background-color: #2b3242;
+      background-color: var(--chip-hover);
+      border-color: var(--bambu-green);
     }
 
     .btn-small {
@@ -226,22 +290,23 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.4rem;
-      margin-top: 0.6rem;
+      margin-top: 0.65rem;
     }
 
     .tag-btn {
-      background: #11131a;
+      background: var(--input-bg);
       border: 1px solid var(--input-border);
       color: var(--text-muted);
       font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
+      padding: 0.25rem 0.55rem;
       border-radius: 6px;
       cursor: pointer;
+      transition: all 0.15s;
     }
 
     .tag-btn:hover {
-      color: var(--text-main);
-      border-color: var(--accent);
+      color: var(--bambu-green);
+      border-color: var(--bambu-green);
     }
 
     .variants-container {
@@ -261,9 +326,9 @@
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      padding: 0.3rem 0.6rem;
+      background: var(--chip-bg);
+      border: 1px solid var(--chip-border);
+      padding: 0.35rem 0.65rem;
       border-radius: 9999px;
       font-size: 0.8rem;
       cursor: pointer;
@@ -277,15 +342,16 @@
 
     .variant-chip.active {
       border-color: var(--bambu-green);
-      background: rgba(0, 174, 66, 0.15);
-      color: #fff;
+      background: rgba(0, 174, 66, 0.08);
+      font-weight: 600;
+      box-shadow: 0 0 0 2px var(--focus-ring);
     }
 
     .color-dot {
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(0, 0, 0, 0.15);
       flex-shrink: 0;
     }
 
@@ -305,7 +371,7 @@
     input[type="color"] {
       -webkit-appearance: none;
       border: none;
-      width: 42px;
+      width: 44px;
       height: 38px;
       border-radius: 8px;
       cursor: pointer;
@@ -326,19 +392,20 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #0d0f14;
+      background: var(--preview-bg);
       border-radius: 12px;
       padding: 1.5rem;
       border: 1px solid var(--input-border);
       position: relative;
       min-height: 320px;
+      transition: background-color 0.25s, border-color 0.25s;
     }
 
     #previewCanvas {
       max-width: 100%;
       height: auto;
       border-radius: 10px;
-      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
       display: block;
     }
 
@@ -354,7 +421,7 @@
       background: var(--input-bg);
       border: 1px solid var(--input-border);
       border-radius: 8px;
-      padding: 0.6rem 0.8rem;
+      padding: 0.65rem 0.8rem;
       text-align: center;
     }
 
@@ -365,9 +432,9 @@
     }
 
     .spec-lbl {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
-      margin-top: 0.15rem;
+      margin-top: 0.2rem;
     }
 
     .download-section {
@@ -378,7 +445,7 @@
 
     .download-section button {
       flex: 1;
-      padding: 0.9rem;
+      padding: 0.95rem;
       font-size: 1rem;
     }
 
@@ -386,11 +453,11 @@
       position: fixed;
       bottom: 2rem;
       right: 2rem;
-      background: #1f2937;
+      background: var(--toast-bg);
       color: #fff;
       padding: 0.75rem 1.25rem;
       border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       border-left: 4px solid var(--bambu-green);
       font-size: 0.9rem;
       z-index: 100;
@@ -407,13 +474,13 @@
 
     .cli-box {
       margin-top: 1rem;
-      background: #0d0f14;
-      border: 1px solid var(--input-border);
+      background: var(--cli-bg);
+      border: 1px solid var(--cli-border);
       border-radius: 8px;
-      padding: 0.6rem 0.8rem;
-      font-family: monospace;
+      padding: 0.65rem 0.85rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 0.75rem;
-      color: #93c5fd;
+      color: var(--cli-text);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -426,13 +493,25 @@
     <div class="brand">
       <div class="brand-icon">B</div>
       <div>
-        <div class="brand-title">Bambu Lab Filament Card Studio</div>
-        <div class="brand-subtitle">耗材样本卡生成器 (GitHub Pages 纯静态版)</div>
+        <div class="brand-title" id="t_brandTitle">Bambu Lab Filament Card Studio</div>
+        <div class="brand-subtitle" id="t_brandSubtitle">Parametric Swatch & 3MF Generator (GitHub Pages)</div>
       </div>
     </div>
-    <div class="header-links">
-      <span class="badge">● 0.5mm 表面平齐嵌色</span>
-      <span class="badge">● Prime Tower Ready</span>
+    <div class="header-controls">
+      <span class="badge" id="t_badgeFlush">● 0.5mm Flush Inlay</span>
+      <span class="badge" id="t_badgeTower">● Prime Tower Ready</span>
+      
+      <!-- Language Switcher Pill -->
+      <button class="pill-btn" onclick="toggleSiteLanguage()" id="langSwitchBtn" title="Switch between English and 中文">
+        <span id="langFlag">🇨🇳</span>
+        <span id="langSwitchText">中文</span>
+      </button>
+
+      <!-- Theme Switcher Pill -->
+      <button class="pill-btn" onclick="toggleTheme()" id="themeBtn" title="Toggle Light/Dark Theme">
+        <span id="themeIcon">☀️</span>
+      </button>
+
       <a href="https://github.com/ziikki/filament_card" target="_blank" class="github-link">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         GitHub
@@ -445,16 +524,16 @@
     <div class="panel">
       <!-- 1. URL Extractor -->
       <div class="section-box">
-        <label for="bambuUrl">1. 粘贴 Bambu Lab 商城链接 (自动解析提取)</label>
+        <label for="bambuUrl" id="t_urlLabel">1. Paste Bambu Lab Store URL (Auto Extract)</label>
         <div class="input-group">
           <input type="text" id="bambuUrl" placeholder="https://us.store.bambulab.com/products/pla-wood?id=43075832086664" />
           <button id="extractBtn" class="btn-primary">
             <span id="extractSpinner" style="display:none;">⏳</span>
-            <span>解析链接</span>
+            <span id="t_extractBtn">Extract URL</span>
           </button>
         </div>
         <div class="quick-tags">
-          <span style="font-size:0.75rem; color:var(--text-muted); align-self:center;">快速填充:</span>
+          <span style="font-size:0.75rem; color:var(--text-muted); align-self:center;" id="t_quickFill">Quick fill:</span>
           <button class="tag-btn" onclick="loadPreset('pla-wood')">PLA Wood (White Oak 13106)</button>
           <button class="tag-btn" onclick="loadPreset('pla-matte-gold')">PLA Matte (Iridium Gold 13008)</button>
           <button class="tag-btn" onclick="loadPreset('petg-hf-black')">PETG HF (Black 30101)</button>
@@ -463,15 +542,15 @@
 
       <!-- 2. Local database search -->
       <div class="section-box">
-        <label for="dbSearch">或直接搜索 Bambu 官方耗材库 (314种官方颜色)</label>
+        <label for="dbSearch" id="t_dbLabel">Or Search Official Bambu Filament Database (314 Colors)</label>
         <div class="input-group">
-          <input type="text" id="dbSearch" placeholder="输入编号如 13106 或颜色名如 White Oak, 白橡木, 黑胡桃..." oninput="filterDatabase()" />
+          <input type="text" id="dbSearch" placeholder="Enter code like 13106 or color like White Oak, Clay Brown, 白橡木..." oninput="filterDatabase()" />
         </div>
       </div>
 
       <!-- 3. Variants list (chips) -->
       <div class="section-box" id="variantsBox" style="display: none;">
-        <label id="variantsLabel">检测到的颜色变体 (点击快速切换):</label>
+        <label id="t_variantsLabel">Detected Color Variants (Click to select):</label>
         <div class="variants-container" id="variantsContainer"></div>
       </div>
 
@@ -479,30 +558,30 @@
 
       <!-- 4. Card text details -->
       <div class="panel-title">
-        <span>样本卡文字与参数配置</span>
-        <button class="btn-secondary btn-small" onclick="toggleLanguage()">
-          <span id="langToggleText">切换为中文 (白橡木)</span>
+        <span id="t_cardConfigTitle">Card Typography & Parameters</span>
+        <button class="btn-secondary btn-small" onclick="toggleCardTextLang()">
+          <span id="langToggleCardText">Card Text: Chinese (白橡木)</span>
         </button>
       </div>
 
       <div class="grid-2">
         <div>
-          <label for="matInput">材料类型 (第1行)</label>
+          <label for="matInput" id="t_matLabel">Material Type (Row 1)</label>
           <input type="text" id="matInput" value="PLA WOOD" oninput="renderCardPreview()" />
         </div>
         <div>
-          <label for="colorInput">颜色名称 (第2行)</label>
+          <label for="colorInput" id="t_colorLabel">Color Name (Row 2)</label>
           <input type="text" id="colorInput" value="White Oak" oninput="renderCardPreview()" />
         </div>
       </div>
 
       <div class="grid-2">
         <div>
-          <label for="codeInput">编号 (第3行左侧)</label>
+          <label for="codeInput" id="t_codeLabel">Code (Row 3 Left)</label>
           <input type="text" id="codeInput" value="(13106)" oninput="renderCardPreview()" />
         </div>
         <div>
-          <label for="hexInput">HEX 色号 (第3行右侧与色块)</label>
+          <label for="hexInput" id="t_hexLabel">HEX Color (Row 3 Right & Swatch)</label>
           <div class="color-input-wrapper">
             <input type="color" id="colorPicker" value="#D6CCA3" oninput="onColorPickerChange(this.value)" />
             <input type="text" id="hexInput" value="#D6CCA3" oninput="onHexInputChange(this.value)" />
@@ -512,11 +591,11 @@
 
       <div class="grid-2">
         <div>
-          <label for="reliefInput">浮雕高度 (默认 0.5 mm 表面平齐嵌色; 1.2 mm 突出)</label>
+          <label for="reliefInput" id="t_reliefLabel">Relief Height (Default 0.5 mm flush; 1.2 mm raised)</label>
           <input type="number" id="reliefInput" value="0.5" step="0.1" min="0.2" max="3.0" oninput="renderCardPreview()" />
         </div>
         <div>
-          <label for="swatchDia">色块直径 (Swatch, 默认 7.0 mm)</label>
+          <label for="swatchDia" id="t_swatchLabel">Swatch Diameter (Default 7.0 mm)</label>
           <input type="number" id="swatchDia" value="7.0" step="0.5" min="4.0" max="10.0" oninput="renderCardPreview()" />
         </div>
       </div>
@@ -525,8 +604,8 @@
     <!-- Right panel: Live Preview & 3MF Generation -->
     <div class="panel" style="display:flex; flex-direction:column;">
       <div class="panel-title">
-        <span>实时矢量渲染 (Exact Pocket Layout)</span>
-        <span class="badge" id="strokeBadge">浮雕: 0.50 mm (齐平)</span>
+        <span id="t_previewTitle">Real-Time Vector Preview (Pocket Layout)</span>
+        <span class="badge" id="strokeBadge">Relief: 0.50 mm (Flush)</span>
       </div>
 
       <div class="preview-container">
@@ -536,33 +615,33 @@
       <div class="specs-list">
         <div class="spec-card">
           <div class="spec-val">40.4 × 30.4</div>
-          <div class="spec-lbl">凹槽尺寸 (mm)</div>
+          <div class="spec-lbl" id="t_specPocket">Pocket Size (mm)</div>
         </div>
         <div class="spec-card">
           <div class="spec-val" id="specTopZ">2.00 mm</div>
-          <div class="spec-lbl">卡面顶层 Z (齐平)</div>
+          <div class="spec-lbl" id="t_specTopZ">Top Surface Z (Flush)</div>
         </div>
         <div class="spec-card">
-          <div class="spec-val" style="color:#10b981;">100% 封闭</div>
-          <div class="spec-lbl">Watertight Mesh</div>
+          <div class="spec-val" style="color:#059669;" id="t_specWatertight">100% Watertight</div>
+          <div class="spec-lbl">Mesh Structure</div>
         </div>
       </div>
 
       <div class="download-section">
         <button id="downloadBtn" class="btn-primary" onclick="generateAndDownload()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>生成并下载 .3MF 文件</span>
+          <span id="t_downloadBtn">Generate & Download .3MF</span>
         </button>
       </div>
 
       <div class="cli-box" id="cliBox">
         <span id="cliText">python3 make_filament_card.py "PLA WOOD" "White Oak" "(13106)" "#D6CCA3" 0.5</span>
-        <button class="btn-secondary btn-small" onclick="copyCli()" style="padding:0.2rem 0.5rem; font-size:0.7rem;">复制命令</button>
+        <button class="btn-secondary btn-small" onclick="copyCli()" style="padding:0.2rem 0.5rem; font-size:0.7rem;" id="t_copyCliBtn">Copy CLI</button>
       </div>
     </div>
   </main>
 
-  <div class="toast" id="toast">提示信息</div>
+  <div class="toast" id="toast">Message</div>
 
   <!-- Inlined Mapbox Earcut for 100% Client-Side Polygon Triangulation -->
   <script>
@@ -820,8 +899,85 @@
     }
   </script>
 
-  <!-- Application Logic -->
+  <!-- Internationalization & Core App Logic -->
   <script>
+    const I18N = {
+      en: {
+        pageTitle: "Bambu Lab Filament Card Studio | Swatch & 3MF Generator",
+        brandTitle: "Bambu Lab Filament Card Studio",
+        brandSubtitle: "Parametric Swatch & 3MF Generator (GitHub Pages)",
+        badgeFlush: "● 0.5mm Flush Inlay",
+        badgeTower: "● Prime Tower Ready",
+        urlLabel: "1. Paste Bambu Lab Store URL (Auto Extract)",
+        urlPlaceholder: "https://us.store.bambulab.com/products/pla-wood?id=43075832086664",
+        extractBtn: "Extract URL",
+        quickFill: "Quick fill:",
+        dbLabel: "Or Search Official Bambu Filament Database (314 Colors)",
+        dbPlaceholder: "Enter code like 13106 or color like White Oak, Clay Brown, 白橡木...",
+        variantsLabel: "Detected Color Variants (Click to select):",
+        cardConfigTitle: "Card Typography & Parameters",
+        toggleCardText: (zh) => `Card Text: Chinese (${zh})`,
+        matLabel: "Material Type (Row 1)",
+        colorLabel: "Color Name (Row 2)",
+        codeLabel: "Code (Row 3 Left)",
+        hexLabel: "HEX Color (Row 3 Right & Swatch)",
+        reliefLabel: "Relief Height (Default 0.5 mm flush; 1.2 mm raised)",
+        swatchLabel: "Swatch Diameter (Default 7.0 mm)",
+        previewTitle: "Real-Time Vector Preview (Pocket Layout)",
+        badgeReliefFlush: (h) => `Relief: ${h} mm (Flush)`,
+        badgeReliefRaised: (h) => `Relief: ${h} mm (Raised)`,
+        specPocket: "Pocket Size (mm)",
+        specTopZ: "Top Surface Z (Flush)",
+        specWatertight: "100% Watertight",
+        downloadBtn: "Generate & Download .3MF",
+        downloadingBtn: "⚡ Generating 3MF Mesh...",
+        copyCliBtn: "Copy CLI",
+        toastCopied: "CLI command copied to clipboard!",
+        toastSuccess: "🎉 3MF swatch card generated and downloaded!",
+        toastNoUrl: "Please enter a Bambu Lab store product URL first",
+        toastVariantsFound: (n) => `Successfully parsed ${n} color variants!`,
+        toastMatchedDb: (n) => `Matched ${n} official colors from database!`,
+        toastNoVariants: "Could not auto-detect variants. Please use search below."
+      },
+      zh: {
+        pageTitle: "Bambu Lab 耗材样本卡生成器 | 3MF 在线生成工具",
+        brandTitle: "Bambu Lab 耗材样本卡生成器",
+        brandSubtitle: "参数化色卡与 3MF 在线生成工具 (GitHub Pages 纯静态版)",
+        badgeFlush: "● 0.5mm 表面平齐嵌色",
+        badgeTower: "● Prime Tower 擦料塔兼容",
+        urlLabel: "1. 粘贴 Bambu Lab 商城链接 (自动解析提取)",
+        urlPlaceholder: "https://us.store.bambulab.com/products/pla-wood?id=43075832086664",
+        extractBtn: "解析链接",
+        quickFill: "快速填充:",
+        dbLabel: "或直接搜索 Bambu 官方耗材库 (314种官方颜色)",
+        dbPlaceholder: "输入编号如 13106 或颜色名如 白橡木, 黑胡桃, White Oak...",
+        variantsLabel: "检测到的颜色变体 (点击快速切换):",
+        cardConfigTitle: "样本卡文字与参数配置",
+        toggleCardText: (en) => `切换卡片名称为英文 (${en})`,
+        matLabel: "材料类型 (第1行)",
+        colorLabel: "颜色名称 (第2行)",
+        codeLabel: "编号 (第3行左侧)",
+        hexLabel: "HEX 色号 (第3行右侧与色块)",
+        reliefLabel: "浮雕高度 (默认 0.5 mm 表面平齐嵌色; 1.2 mm 突出)",
+        swatchLabel: "色块直径 (默认 7.0 mm)",
+        previewTitle: "实时矢量渲染 (卡片凹槽排版)",
+        badgeReliefFlush: (h) => `浮雕: ${h} mm (齐平)`,
+        badgeReliefRaised: (h) => `浮雕: ${h} mm (突出)`,
+        specPocket: "凹槽尺寸 (mm)",
+        specTopZ: "卡面顶层 Z (齐平)",
+        specWatertight: "100% 封闭网格",
+        downloadBtn: "生成并下载 .3MF 文件",
+        downloadingBtn: "⚡ 正在生成 3MF 模型...",
+        copyCliBtn: "复制命令",
+        toastCopied: "已复制 CLI 执行命令到剪贴板！",
+        toastSuccess: "🎉 3MF 样本卡已生成并开始下载！",
+        toastNoUrl: "请先输入 Bambu Lab 商城网页链接",
+        toastVariantsFound: (n) => `成功解析 ${n} 个颜色变体！`,
+        toastMatchedDb: (n) => `匹配到 ${n} 款官方预设颜色！`,
+        toastNoVariants: "未能直接识别，您可在下方搜索框直接输入颜色或色号快速选定！"
+      }
+    };
+
     const POCKET_W = 40.4;
     const POCKET_H = 30.4;
     const POCKET_CX = -6.3;
@@ -829,18 +985,122 @@
     const POCKET_FLOOR_Z = 0.5;
     const MARGIN = 2.2;
 
+    let currentLang = 'en'; // default English
     let filamentDb = [];
     let currentZhName = "白橡木";
     let currentEnName = "White Oak";
-    let isZh = false;
+    let isCardZh = false;
     let cachedTemplateBuffer = null;
 
+    // Detect language preference from URL param or storage
+    const urlParams = new URLSearchParams(window.location.search);
+    const hash = window.location.hash.toLowerCase();
+    if (urlParams.get('lang') === 'zh' || hash === '#zh' || window.location.pathname.endsWith('zh.html')) {
+      currentLang = 'zh';
+    } else if (urlParams.get('lang') === 'en' || hash === '#en') {
+      currentLang = 'en';
+    } else {
+      const savedLang = localStorage.getItem('bambu_card_lang');
+      if (savedLang) currentLang = savedLang;
+    }
+
+    // Theme initialization (Light is default)
+    const savedTheme = localStorage.getItem('bambu_card_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
     window.addEventListener('DOMContentLoaded', async () => {
+      applyLanguage(currentLang);
+      updateThemeUI(savedTheme);
       await loadDatabase();
       renderCardPreview();
-      // Preload template buffer in background
       preloadTemplate();
     });
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('bambu_card_theme', next);
+      updateThemeUI(next);
+      renderCardPreview();
+    }
+
+    function updateThemeUI(theme) {
+      const icon = document.getElementById('themeIcon');
+      icon.textContent = theme === 'light' ? '☀️' : '🌙';
+    }
+
+    function toggleSiteLanguage() {
+      currentLang = currentLang === 'en' ? 'zh' : 'en';
+      localStorage.setItem('bambu_card_lang', currentLang);
+      applyLanguage(currentLang);
+
+      // Auto update card color name to match selected site language
+      const colInput = document.getElementById('colorInput');
+      if (currentLang === 'zh') {
+        colInput.value = currentZhName || colInput.value;
+        isCardZh = true;
+      } else {
+        colInput.value = currentEnName || colInput.value;
+        isCardZh = false;
+      }
+      renderCardPreview();
+    }
+
+    function applyLanguage(lang) {
+      const t = I18N[lang];
+      document.title = t.pageTitle;
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+      document.getElementById('t_brandTitle').textContent = t.brandTitle;
+      document.getElementById('t_brandSubtitle').textContent = t.brandSubtitle;
+      document.getElementById('t_badgeFlush').textContent = t.badgeFlush;
+      document.getElementById('t_badgeTower').textContent = t.badgeTower;
+
+      document.getElementById('t_urlLabel').textContent = t.urlLabel;
+      document.getElementById('bambuUrl').placeholder = t.urlPlaceholder;
+      document.getElementById('t_extractBtn').textContent = t.extractBtn;
+      document.getElementById('t_quickFill').textContent = t.quickFill;
+
+      document.getElementById('t_dbLabel').textContent = t.dbLabel;
+      document.getElementById('dbSearch').placeholder = t.dbPlaceholder;
+      document.getElementById('t_variantsLabel').textContent = t.variantsLabel;
+
+      document.getElementById('t_cardConfigTitle').textContent = t.cardConfigTitle;
+      document.getElementById('t_matLabel').textContent = t.matLabel;
+      document.getElementById('t_colorLabel').textContent = t.colorLabel;
+      document.getElementById('t_codeLabel').textContent = t.codeLabel;
+      document.getElementById('t_hexLabel').textContent = t.hexLabel;
+      document.getElementById('t_reliefLabel').textContent = t.reliefLabel;
+      document.getElementById('t_swatchLabel').textContent = t.swatchLabel;
+
+      document.getElementById('t_previewTitle').textContent = t.previewTitle;
+      document.getElementById('t_specPocket').textContent = t.specPocket;
+      document.getElementById('t_specTopZ').textContent = t.specTopZ;
+      document.getElementById('t_specWatertight').textContent = t.specWatertight;
+      document.getElementById('t_downloadBtn').textContent = t.downloadBtn;
+      document.getElementById('t_copyCliBtn').textContent = t.copyCliBtn;
+
+      // Header language button appearance
+      document.getElementById('langFlag').textContent = lang === 'en' ? '🇨🇳' : '🇺🇸';
+      document.getElementById('langSwitchText').textContent = lang === 'en' ? '中文' : 'English';
+
+      updateCardTextToggleBtn();
+    }
+
+    function updateCardTextToggleBtn() {
+      const t = I18N[currentLang];
+      const btn = document.getElementById('langToggleCardText');
+      btn.textContent = isCardZh ? t.toggleCardText(currentEnName) : t.toggleCardText(currentZhName);
+    }
+
+    function toggleCardTextLang() {
+      isCardZh = !isCardZh;
+      const colInput = document.getElementById('colorInput');
+      colInput.value = isCardZh ? (currentZhName || colInput.value) : (currentEnName || colInput.value);
+      updateCardTextToggleBtn();
+      renderCardPreview();
+    }
 
     async function loadDatabase() {
       try {
@@ -893,7 +1153,7 @@
 
     function copyCli() {
       navigator.clipboard.writeText(document.getElementById('cliText').textContent);
-      showToast('已复制 CLI 执行命令到剪贴板！');
+      showToast(I18N[currentLang].toastCopied);
     }
 
     // High fidelity 2D Canvas layout renderer
@@ -917,7 +1177,6 @@
       ctx.fillStyle = '#B39B84'; // Default card body tone
       ctx.fillRect(0, 0, w, h);
 
-      // Coordinate mapping: origin is pocket center, y goes up in mm
       function colX(x) { return Math.round((x + POCKET_W / 2) * ppm); }
       function rowY(y) { return Math.round((POCKET_H / 2 - y) * ppm); }
 
@@ -942,8 +1201,8 @@
       ctx.stroke();
       ctx.restore();
 
-      // Text drawing in White/Dark
-      ctx.fillStyle = '#262626'; // Text embossed dark relief color
+      // Text drawing in dark relief
+      ctx.fillStyle = '#262626';
 
       // Row 1: Material (Top-Left)
       const matSizePx = Math.round(3.2 * ppm);
@@ -958,20 +1217,17 @@
       const sepT = 0.8;
       const sepY = metaBaseY + 2.8 + 1.6;
 
-      // Separator line
       ctx.fillRect(colX(x0), rowY(sepY + sepT), usable * ppm, sepT * ppm);
 
-      // Code (Bottom-Left)
       ctx.font = `bold ${metaSizePx}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
       ctx.textBaseline = 'alphabetic';
       ctx.textAlign = 'left';
       ctx.fillText(code, colX(x0), rowY(metaBaseY));
 
-      // Hex (Bottom-Right)
       ctx.textAlign = 'right';
       ctx.fillText(hex.toUpperCase(), colX(x1), rowY(metaBaseY));
 
-      // Row 2: Color Name (Centered in middle band)
+      // Row 2: Color Name
       const bandTop = sw_cy - sw_r - 0.8;
       const bandBot = sepY + sepT + 1.4;
       const bandH = bandTop - bandBot;
@@ -982,7 +1238,6 @@
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
 
-      // Auto shrink if text is too wide
       const measured = ctx.measureText(col).width;
       if (measured > usable * ppm) {
         const scale = (usable * ppm) / measured;
@@ -991,32 +1246,20 @@
       }
       ctx.fillText(col, colX(x0), rowY(nameY));
 
-      // Update Top Z status
+      // Status indicator update
       const topZ = (POCKET_FLOOR_Z + relief + 1.0).toFixed(2);
       document.getElementById('specTopZ').textContent = `${topZ} mm`;
+      const t = I18N[currentLang];
       document.getElementById('strokeBadge').textContent = relief <= 0.5 ?
-        `浮雕: ${relief.toFixed(2)} mm (齐平)` : `浮雕: ${relief.toFixed(2)} mm (凸出)`;
-    }
-
-    // Toggle English <-> Chinese
-    function toggleLanguage() {
-      isZh = !isZh;
-      const colInput = document.getElementById('colorInput');
-      if (isZh) {
-        colInput.value = currentZhName || colInput.value;
-        document.getElementById('langToggleText').textContent = `切换为英文 (${currentEnName})`;
-      } else {
-        colInput.value = currentEnName || colInput.value;
-        document.getElementById('langToggleText').textContent = `切换为中文 (${currentZhName})`;
-      }
-      renderCardPreview();
+        t.badgeReliefFlush(relief.toFixed(2)) : t.badgeReliefRaised(relief.toFixed(2));
     }
 
     // URL Extractor
     document.getElementById('extractBtn').addEventListener('click', async () => {
       const url = document.getElementById('bambuUrl').value.trim();
+      const t = I18N[currentLang];
       if (!url) {
-        showToast('请先输入 Bambu Lab 商城网页链接');
+        showToast(t.toastNoUrl);
         return;
       }
 
@@ -1027,7 +1270,7 @@
 
       try {
         let extracted = false;
-        // 1. Try local backend if running locally
+        // 1. Try local backend if running
         try {
           const resp = await fetch('/api/extract', {
             method: 'POST',
@@ -1038,20 +1281,14 @@
             const data = await resp.json();
             if (data.success && data.variants && data.variants.length > 0) {
               renderVariants(data.variants, data.selected_index || 0);
-              showToast(`成功解析 ${data.variants.length} 个颜色变体！`);
+              showToast(t.toastVariantsFound(data.variants.length));
               extracted = true;
             }
           }
-        } catch (e) {
-          // not running local backend, proceed to client-side extractor
-        }
+        } catch (e) {}
 
         // 2. Client-side URL & database matching
         if (!extracted) {
-          const skuMatch = url.match(/[?&]id=(\d+)/);
-          const targetSku = skuMatch ? skuMatch[1] : null;
-
-          // Search filament_db.json
           let matchedVariants = [];
           if (url.includes('pla-wood')) {
             matchedVariants = filamentDb.filter(f => f.material.toLowerCase().includes('wood'));
@@ -1064,25 +1301,25 @@
           }
 
           if (matchedVariants.length > 0) {
-            const variants = matchedVariants.map((m, idx) => ({
+            const variants = matchedVariants.map((m) => ({
               material: m.material.toUpperCase(),
-              name: m.name_en,
+              name: currentLang === 'zh' ? (m.name_zh || m.name_en) : m.name_en,
               name_en: m.name_en,
               name_zh: m.name_zh,
               code: `(${m.code})`,
               hex: m.hex
             }));
             renderVariants(variants, 0);
-            showToast(`匹配到 ${variants.length} 款官方预设颜色！`);
+            showToast(t.toastMatchedDb(variants.length));
             extracted = true;
           }
         }
 
         if (!extracted) {
-          showToast('未能直接识别，您可在下方搜索框直接输入颜色或色号快速选定！');
+          showToast(t.toastNoVariants);
         }
       } catch (err) {
-        showToast('请求出错: ' + err.message);
+        showToast('Error: ' + err.message);
       } finally {
         btn.disabled = false;
         spinner.style.display = 'none';
@@ -1098,9 +1335,10 @@
       variants.forEach((v, idx) => {
         const chip = document.createElement('div');
         chip.className = 'variant-chip' + (idx === selectIdx ? ' active' : '');
+        const displayName = currentLang === 'zh' ? (v.name_zh || v.name_en || v.name) : (v.name_en || v.name);
         chip.innerHTML = `
           <span class="color-dot" style="background-color: ${v.hex};"></span>
-          <span>${v.name_en || v.name}</span>
+          <span>${displayName}</span>
           <span style="opacity:0.6; font-size:0.75rem;">${v.code}</span>
         `;
         chip.onclick = () => selectVariant(v, chip);
@@ -1118,14 +1356,15 @@
 
       currentEnName = v.name_en || v.name;
       currentZhName = v.name_zh || v.name;
-      isZh = false;
 
       document.getElementById('matInput').value = v.material || 'PLA';
-      document.getElementById('colorInput').value = currentEnName;
+      document.getElementById('colorInput').value = currentLang === 'zh' ? (currentZhName || currentEnName) : (currentEnName || currentZhName);
+      isCardZh = (currentLang === 'zh');
+      updateCardTextToggleBtn();
+
       document.getElementById('codeInput').value = v.code.startsWith('(') ? v.code : `(${v.code})`;
       document.getElementById('hexInput').value = v.hex;
       document.getElementById('colorPicker').value = v.hex;
-      document.getElementById('langToggleText').textContent = `切换为中文 (${currentZhName})`;
 
       renderCardPreview();
     }
@@ -1175,7 +1414,7 @@
       if (matches.length > 0) {
         renderVariants(matches.map(m => ({
           material: m.material.toUpperCase(),
-          name: m.name_en,
+          name: currentLang === 'zh' ? (m.name_zh || m.name_en) : m.name_en,
           name_en: m.name_en,
           name_zh: m.name_zh,
           code: `(${m.code})`,
@@ -1197,10 +1436,9 @@
       const btn = document.getElementById('downloadBtn');
       const origText = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = '<span>⚡ 正在生成 3MF 模型...</span>';
+      btn.innerHTML = `<span>${I18N[currentLang].downloadingBtn}</span>`;
 
       try {
-        // Check if local backend is running first
         let downloaded = false;
         try {
           const resp = await fetch('/api/generate', {
@@ -1220,19 +1458,16 @@
             saveBlob(blob, `耗材样本卡_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
             downloaded = true;
           }
-        } catch (e) {
-          // not running local backend, fall through to client-side JSZip generation!
-        }
+        } catch (e) {}
 
-        // Client-side pure JS generation for GitHub Pages
         if (!downloaded) {
           if (typeof JSZip === 'undefined') {
-            throw new Error('JSZip 依赖库加载中，请稍等或检查网络。');
+            throw new Error('JSZip library loading, please wait or refresh.');
           }
 
           if (!cachedTemplateBuffer) {
             const resp = await fetch('card_template.3mf');
-            if (!resp.ok) throw new Error('无法加载卡片模板 card_template.3mf');
+            if (!resp.ok) throw new Error('Could not load template card_template.3mf');
             cachedTemplateBuffer = await resp.arrayBuffer();
           }
 
@@ -1240,9 +1475,9 @@
           saveBlob(blob, `耗材样本卡_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
         }
 
-        showToast('🎉 3MF 样本卡已生成并开始下载！');
+        showToast(I18N[currentLang].toastSuccess);
       } catch (e) {
-        showToast('生成失败: ' + e.message);
+        showToast('Error: ' + e.message);
       } finally {
         btn.disabled = false;
         btn.innerHTML = origText;
@@ -1266,7 +1501,6 @@
       const W = Math.round(POCKET_W * ppm);
       const H = Math.round(POCKET_H * ppm);
 
-      // 1. Offscreen canvas to render text + separator
       const offCanvas = document.createElement('canvas');
       offCanvas.width = W;
       offCanvas.height = H;
@@ -1326,7 +1560,6 @@
       }
       ctx.fillText(color, colX(x0), rowY(nameY));
 
-      // 2. Trace contours using Marching Squares
       const imgData = ctx.getImageData(0, 0, W, H);
       const pixels = imgData.data;
       const grid = new Uint8Array(W * H);
@@ -1335,26 +1568,20 @@
       }
 
       const polygons = extractPolygons(grid, W, H, ppm);
-
-      // 3. Extrude text polygons in 3D
       const z0 = POCKET_FLOOR_Z;
       const z1 = POCKET_FLOOR_Z + relief;
       const textMesh = extrudePolygons(polygons, z0, z1, POCKET_CX, POCKET_CY);
 
-      // 4. Extrude swatch cylinder
       const swatchCircle = [makeCircle(sw_cx, sw_cy, sw_r, 96)];
       const swatchMesh = extrudePolygons([{ outer: swatchCircle[0], holes: [] }], z0, z1, POCKET_CX, POCKET_CY);
 
-      // 5. Build 3MF ZIP using JSZip
       const zip = await JSZip.loadAsync(templateBuffer);
-
       const centeredText = centerMesh(textMesh.vertices);
       const centeredSwatch = centerMesh(swatchMesh.vertices);
 
       const objModelXml = buildObject18Xml(centeredText.vertices, textMesh.triangles, centeredSwatch.vertices, swatchMesh.triangles);
       zip.file('3D/Objects/object_18.model', objModelXml);
 
-      // Update 3D/3dmodel.model
       let model3d = await zip.file('3D/3dmodel.model').async('string');
       model3d = model3d.replace(/(<component p:path="\/3D\/Objects\/object_18\.model" objectid="3"[^>]*transform=")[^"]*(")/,
         `$11 0 0 0 1 0 0 0 1 ${fmt(centeredText.center[0])} ${fmt(centeredText.center[1])} ${fmt(centeredText.center[2])}$2`);
@@ -1362,7 +1589,6 @@
         `$11 0 0 0 1 0 0 0 1 ${fmt(centeredSwatch.center[0])} ${fmt(centeredSwatch.center[1])} ${fmt(centeredSwatch.center[2])}$2`);
       zip.file('3D/3dmodel.model', model3d);
 
-      // Update Metadata/model_settings.config
       let modelCfg = await zip.file('Metadata/model_settings.config').async('string');
       modelCfg = modelCfg.replace(/<part id="3"[\s\S]*?<\/part>/, (m) => {
         let p = m.replace(/(<metadata key="matrix" value=")[^"]*(")/,
@@ -1382,7 +1608,6 @@
         `$1${3472 + textMesh.triangles.length + swatchMesh.triangles.length}`);
       zip.file('Metadata/model_settings.config', modelCfg);
 
-      // Update Metadata/project_settings.config with swatch hex
       let projCfgStr = await zip.file('Metadata/project_settings.config').async('string');
       let projCfg = JSON.parse(projCfgStr);
       if (projCfg.filament_colour && projCfg.filament_colour.length >= 3) {
@@ -1405,7 +1630,6 @@
     }
 
     function extractPolygons(grid, w, h, ppm) {
-      // Marching squares algorithm
       const segments = [];
       function getVal(x, y) {
         if (x < 0 || x >= w || y < 0 || y >= h) return 0;
@@ -1445,7 +1669,6 @@
         }
       }
 
-      // Link segments into rings
       const map = new Map();
       function ptKey(p) { return `${Math.round(p[0] * 2)},${Math.round(p[1] * 2)}`; }
 
@@ -1478,10 +1701,8 @@
             if (ptKey(curr) === ptKey(ring[0])) break;
           }
           if (ring.length >= 4) {
-            // Simplify with RDP
             const simplified = rdp(ring, 0.7);
             if (simplified.length >= 3) {
-              // Convert to pocket-local mm coordinates
               const mmRing = simplified.map(p => [
                 p[0] / ppm - POCKET_W / 2,
                 POCKET_H / 2 - p[1] / ppm
@@ -1492,7 +1713,6 @@
         }
       }
 
-      // Separate outer rings (CCW area > 0) from holes (CW area < 0)
       const outers = [];
       const holes = [];
       for (const r of rings) {
@@ -1502,7 +1722,6 @@
         else holes.push(r);
       }
 
-      // Match holes to enclosing outer ring
       const result = outers.map(outer => ({ outer: outer, holes: [] }));
       for (const hole of holes) {
         const pt = hole[0];
@@ -1580,10 +1799,8 @@
         const rings = [outer, ...holes];
         const n = count;
 
-        // Triangulate top face with earcut
         const earcutTris = earcut(flat, holeIndices, 2);
 
-        // Add bottom vertices (z0) and top vertices (z1)
         for (let i = 0; i < flat.length; i += 2) {
           verts.push([flat[i] + dx, flat[i + 1] + dy, z0]);
         }
@@ -1591,14 +1808,11 @@
           verts.push([flat[i] + dx, flat[i + 1] + dy, z1]);
         }
 
-        // Top face triangles
         for (let i = 0; i < earcutTris.length; i += 3) {
           tris.push([base + n + earcutTris[i], base + n + earcutTris[i + 1], base + n + earcutTris[i + 2]]);
-          // Bottom face triangles (reversed winding)
           tris.push([base + earcutTris[i], base + earcutTris[i + 2], base + earcutTris[i + 1]]);
         }
 
-        // Side wall quads along every ring
         let rOffset = 0;
         for (const ring of rings) {
           const m = ring.length;
@@ -1650,10 +1864,6 @@
         '   <mesh>\n    <vertices>\n';
       for (const [x, y, z] of swatchVerts) {
         out += `     <vertex x="${x.toFixed(5)}" y="${y.toFixed(5)}" z="${z.toFixed(5)}"/>\n`;
-      }
-      out += '    </vertices>\n    <triangles>\n';
-      for (const [a, b, c] of swatchTris) {
-        out += `     <triangle v1="${a}" v2="${b}" v3="${c}"/>\n`;
       }
       out += '    </triangles>\n   </mesh>\n  </object>\n </resources>\n <build/>\n</model>\n';
       return out;
