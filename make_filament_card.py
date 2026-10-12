@@ -588,7 +588,7 @@ def normalize_hex(h):
 
 
 class ArgsWrapper:
-    def __init__(self, material, color, code, hex_val, relief=1.2, swatch_d=7.0,
+    def __init__(self, material, color, code, hex_val, relief=0.5, swatch_d=7.0,
                  template=DEFAULT_TEMPLATE, thicken=False, min_stroke=0.8, min_gap=0.5,
                  font=None, font_index=0, preview=False, out=None,
                  base_hex="#B39B84", text_hex="#FFFFFF"):
@@ -653,7 +653,7 @@ def render_preview_image(material, color, code, hex_color, swatch_d=7.0,
     return prev, fr.warnings, stroke_info
 
 
-def generate_card(material, color, code, hex_color, relief=1.2, out_path=None,
+def generate_card(material, color, code, hex_color, relief=0.5, out_path=None,
                   template_path=DEFAULT_TEMPLATE, thicken=False, min_stroke=0.8,
                   min_gap=0.5, swatch_d=7.0, font_path=None, font_index=0,
                   preview=False, base_hex="#B39B84", text_hex="#FFFFFF"):
@@ -733,8 +733,8 @@ def main():
     ap.add_argument("color", help="颜色名, e.g. 'Iridium Gold'")
     ap.add_argument("code", help="编号, e.g. '(13008)'")
     ap.add_argument("hex", help="HEX色号, e.g. '#A2D312'")
-    ap.add_argument("relief", nargs="?", type=float, default=1.2,
-                    help="浮雕高度 mm above pocket floor (default 1.2; 0.5 = flush with card top)")
+    ap.add_argument("relief", nargs="?", type=float, default=0.5,
+                    help="浮雕高度 mm above pocket floor (default 0.5 = flush with card top; 1.2 = raised)")
     ap.add_argument("-o", "--out", help="output .3mf (default: 耗材样本卡_<颜色名>.3mf)")
     ap.add_argument("--template", default=DEFAULT_TEMPLATE)
     ap.add_argument("--base-hex", default="#B39B84", help="卡片底座HEX色号 (default: #B39B84)")

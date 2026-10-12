@@ -13,3 +13,5 @@ temp_test.3mf
 test_*.3mf
 slice_*/
 result.json
+scratch/
+vendor/

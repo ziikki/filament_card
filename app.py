@@ -920,19 +920,50 @@ class FilamentStudioHandler(BaseHTTPRequestHandler):
         path = parsed.path
 
         if path == "/" or path == "/index.html":
+            idx_file = os.path.join(HERE, "index.html")
+            if os.path.exists(idx_file):
+                with open(idx_file, "rb") as f:
+                    content = f.read()
+            else:
+                content = HTML_TEMPLATE.encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(content)))
             self.end_headers()
-            self.wfile.write(HTML_TEMPLATE.encode("utf-8"))
+            self.wfile.write(content)
             return
 
-        elif path == "/api/database":
-            db = extractor.load_db()
+        elif path in ["/filament_db.json", "/api/database"]:
+            db_path = os.path.join(HERE, "filament_db.json")
+            if os.path.exists(db_path):
+                with open(db_path, "rb") as f:
+                    content = f.read()
+            else:
+                content = b"[]"
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(content)))
             self.end_headers()
-            self.wfile.write(json.dumps(db, ensure_ascii=False).encode("utf-8"))
+            self.wfile.write(content)
             return
+
+        elif path in ["/card_template.3mf", "/template/card_template.3mf"]:
+            tmpl_path = os.path.join(HERE, "card_template.3mf")
+            if not os.path.exists(tmpl_path):
+                tmpl_path = os.path.join(HERE, "template", "card_template.3mf")
+            if os.path.exists(tmpl_path):
+                with open(tmpl_path, "rb") as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/vnd.ms-package.3dmanufacturing-3dmodel+xml")
+                self.send_header("Content-Length", str(len(content)))
+                self.end_headers()
+                self.wfile.write(content)
+                return
+            else:
+                self.send_response(404)
+                self.end_headers()
+                return
 
         else:
             self.send_response(404)

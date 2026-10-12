@@ -1,63 +1,74 @@
 # Bambu Lab Filament Card Studio (耗材样本卡生成器)
 
-一个专为 Bambu Lab 3D 打印机打造的耗材样本卡生成工具与 Web 应用。
+专为 Bambu Lab 3D 打印机打造的耗材样本卡生成工具与 Web 静态应用，已支持 **GitHub Pages 纯前端免服务器部署**！
 
-支持从 Bambu Lab 官方商城链接自动抓取材质、颜色名、色号与 HEX 颜色，提供亚毫米级高保真排版预览，并一键生成兼容 Bambu Studio（支持 Prime Tower 擦料塔、100% Watertight 封闭网格）的 `.3mf` 模型文件。
+🌐 **在线体验 (GitHub Pages)**: [https://ziikki.github.io/filament_card/](https://ziikki.github.io/filament_card/)
 
 ---
 
-## 特性亮点
+## 🌟 核心特性
 
-- **自动解析商城链接**：粘贴任何 Bambu Lab 耗材页面链接（如 `https://us.store.bambulab.com/products/pla-wood?id=43075832086664`），自动提取产品类型、定位目标变体，并提取全页所有颜色药丸供一键切换。
-- **内置 314 款官方耗材库**：无需联网抓取，直接搜索编号（如 `13106`）、中文名（如 `白橡木`）或英文名（如 `White Oak`）快速填入。
+- **100% 浏览器纯前端运行 (GitHub Pages)**：
+  - 无需安装 Python 或任何运行环境，直接在浏览器里读取模板、实时剖分网格、打包生成并下载 `.3mf` 文件。
+  - 零服务器成本，手机与电脑浏览器即开即用。
+- **默认 0.5mm 平齐嵌色（Flush Multi-color Inlay）**：
+  - 默认浮雕高度为 `0.5 mm`，打印出来的样本卡文字、色块与卡体表面完全平齐，触感平整丝滑。
+  - 也可自由调节为 `1.2 mm` 凸起立体浮雕。
+- **自动解析商城链接**：
+  - 粘贴任何 Bambu Lab 耗材页面链接（如 `https://us.store.bambulab.com/products/pla-wood?id=43075832086664`），自动识别产品类型与目标颜色，并列出全系列颜色药丸供一键切换。
+- **内置 314 款官方耗材库**：
+  - 无需联网抓取，直接搜索编号（如 `13106`）、中文名（如 `白橡木`）或英文名（如 `White Oak`）快速填入。
 - **即时中英文切换**：一键切换中英文排版。
-- **高保真矢量渲染预览**：采用系统原生 CJK 字体引擎（冬青黑体 / Arial Bold），精细自适应缩放与折行。
 - **Bambu Studio 深度兼容**：
   - 卡体与浮雕文字组合为单个复合对象，统一层高，完美支持擦料塔（Prime Tower）。
-  - 色块关联 AMS 换料槽。
-  - 针对 0.4mm 喷嘴（Arachne 引擎）优化，提供形态学笔画加粗选项。
+  - 100% Watertight 封闭网格，官方 0.4mm 喷嘴优化。
 
 ---
 
-## 快速上手
+## 🚀 推送到你的 GitHub 仓库并启用 GitHub Pages
 
-### 1. 本地启动 WebApp
+### 1. 推送代码到 GitHub
+在 GitHub 账号 [ziikki](https://github.com/ziikki) 下创建一个名为 **`filament_card`** 的公开仓库，然后在本地终端运行：
 
 ```bash
-# 安装依赖
-pip install -r requirements.txt
+git remote add origin https://github.com/ziikki/filament_card.git
+git branch -M main
+git push -u origin main
+```
 
-# 启动服务
+*(如果已配置 remote，直接运行 `git push -u origin main` 即可)*
+
+### 2. 启用 GitHub Pages
+推送完成后，只需在 GitHub 仓库页面简单开启：
+1. 进入仓库的 **Settings** -> 左侧菜单 **Pages**。
+2. 在 **Build and deployment** 下的 **Source**：
+   - 选择 **GitHub Actions**（本仓库已配置自动构建工作流 `.github/workflows/deploy.yml`，每次 push 自动发布），
+   - 或者选择 **Deploy from a branch** -> 分支选择 `main` -> 目录选择 `/ (root)` -> 点击 **Save**。
+3. 等待约 1 分钟，即可直接通过 **https://ziikki.github.io/filament_card/** 在线使用！
+
+---
+
+## 💻 本地运行与命令行 (CLI)
+
+如果你想在本地离线运行：
+
+### 本地启动 WebApp
+```bash
 ./start_webtool.sh
 # 或
 python3 app.py
 ```
-
 在浏览器中打开：**`http://localhost:8088`**
 
-### 2. 命令行直接生成 (CLI)
-
+### 命令行直接生成 (CLI)
 ```bash
-python3 make_filament_card.py "PLA WOOD" "White Oak" "(13106)" "#D6CCA3" 1.2 --preview
-python3 make_filament_card.py "PLA WOOD" "白橡木" "(13106)" "#D6CCA3" 1.2 --preview
+python3 make_filament_card.py "PLA WOOD" "White Oak" "(13106)" "#D6CCA3" 0.5 --preview
+python3 make_filament_card.py "PLA WOOD" "白橡木" "(13106)" "#D6CCA3" 0.5 --preview
 ```
-
 参数说明：
 - `材料类型`：如 `"PLA WOOD"`、`"PLA MATTE"`
 - `颜色名`：如 `"White Oak"`、`"白橡木"`
 - `编号`：如 `"(13106)"`
 - `HEX色号`：如 `"#D6CCA3"`
-- `[浮雕高度mm]`：默认 `1.2` mm（`0.5` mm 为表面齐平嵌色）
+- `[浮雕高度mm]`：默认 `0.5` mm（表面齐平嵌色；输入 `1.2` mm 为突出表面）
 - `--preview`：同时输出高清预览图
-
----
-
-## 部署到 GitHub
-
-本项目支持两种 GitHub 部署方式：
-
-### 选项 A：GitHub Pages 纯静态部署（推荐，零服务器成本）
-适合直接托管在 `https://<用户名>.github.io/<仓库名>`，依靠客户端浏览器直接解析、渲染并生成 3MF。
-
-### 选项 B：完整仓库开源 + 一键云端托管
-将仓库推送至 GitHub 后，可以一键部署到 Hugging Face Spaces / Vercel / Render 等平台，运行完整的 Python OpenCV 后端。
