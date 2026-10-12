@@ -42,7 +42,11 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_TEMPLATE = os.path.join(HERE, "template", "card_template.3mf")
+DEFAULT_TEMPLATE = (
+    os.path.join(HERE, "card_template.3mf")
+    if os.path.exists(os.path.join(HERE, "card_template.3mf"))
+    else os.path.join(HERE, "template", "card_template.3mf")
+)
 
 # ---------------------------------------------------------------- geometry --
 # Card-local coordinates (card mesh centred at origin, z -1..1).

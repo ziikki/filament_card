@@ -1,84 +1,185 @@
-# Bambu Lab Filament Card Studio (耗材样本卡生成器)
+# 🎨 Bambu Lab Filament Card Studio (耗材样本卡生成器)
 
-专为 Bambu Lab 3D 打印机打造的耗材样本卡生成工具与 Web 静态应用，已支持 **GitHub Pages 纯前端免服务器部署**！
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-2ea44f?logo=github)](https://ziikki.github.io/filament_card/)
+[![Bambu Lab](https://img.shields.io/badge/Bambu%20Studio-Compatible%203MF-00ae42)](https://bambulab.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Zero Server](https://img.shields.io/badge/Client--Side-100%25%20Static-brightgreen)](#)
 
-- 🌐 **English Page**: [https://ziikki.github.io/filament_card/](https://ziikki.github.io/filament_card/)
-- 🇨🇳 **中文页面**: [https://ziikki.github.io/filament_card/zh.html](https://ziikki.github.io/filament_card/zh.html)
+A modern, fast, and elegant web application & CLI suite to generate official-dimension 3D printable filament swatch cards for **Bambu Lab** 3D printers. 
 
----
+Runs **100% client-side** in your browser — zero backend required, free deployment on **GitHub Pages**!
 
-## 🌟 核心特性
-
-- **清爽高雅的浅色主题设计 (Light Color Scheme)**：
-  - 采用极简浅色系 UI 风格（Slate & Clean White），搭配 Bambu 品牌绿，视觉质感与 3D 打印实物卡片完美契合。
-  - 右上角同时提供主题切换按钮（☀️ / 🌙），兼顾深色模式偏好。
-- **全站中英文双语独立页面与实时切换**：
-  - 提供默认英文页面 (`index.html`) 与中文独立页面 (`zh.html`)。
-  - 页面右上角集成快捷双语切换按钮（`[ 🇨🇳 中文 / 🇺🇸 English ]`），随时一键热切换全站语言，无需重刷页面。
-- **100% 浏览器纯前端运行 (GitHub Pages)**：
-  - 无需安装 Python 或任何运行环境，直接在浏览器里读取模板、实时剖分网格、打包生成并下载 `.3mf` 文件。
-  - 零服务器成本，手机与电脑浏览器即开即用。
-- **默认 0.5mm 平齐嵌色（Flush Multi-color Inlay）**：
-  - 默认浮雕高度为 `0.5 mm`，打印出来的样本卡文字、色块与卡体表面完全平齐，触感平整丝滑。
-  - 也可自由调节为 `1.2 mm` 凸起立体浮雕。
-- **自动解析商城链接**：
-  - 粘贴任何 Bambu Lab 耗材页面链接（如 `https://us.store.bambulab.com/products/pla-wood?id=43075832086664`），自动识别产品类型与目标颜色，并列出全系列颜色药丸供一键切换。
-- **内置 314 款官方耗材库**：
-  - 无需联网抓取，直接搜索编号（如 `13106`）、中文名（如 `白橡木`）或英文名（如 `White Oak`）快速填入。
-- **Bambu Studio 深度兼容**：
-  - 卡体与浮雕文字组合为单个复合对象，统一层高，完美支持擦料塔（Prime Tower）。
-  - 100% Watertight 封闭网格，官方 0.4mm 喷嘴优化。
+专为 Bambu Lab 3D 打印机打造的现代化耗材样本卡生成工具与在线 Web 应用。**100% 纯前端浏览器运行**，已配置 **GitHub Pages** 免服务器一键部署！
 
 ---
 
-## 🚀 推送到你的 GitHub 仓库并启用 GitHub Pages
+## 🌐 Live Demos (在线体验)
 
-### 1. 推送代码到 GitHub
-在 GitHub 账号 [ziikki](https://github.com/ziikki) 下创建一个名为 **`filament_card`** 的公开仓库，然后在本地终端运行：
+- 🇺🇸 **English App**: [https://ziikki.github.io/filament_card/](https://ziikki.github.io/filament_card/)
+- 🇨🇳 **中文独立版**: [https://ziikki.github.io/filament_card/zh.html](https://ziikki.github.io/filament_card/zh.html)
+
+*(You can also switch languages dynamically via the top-right button on either page!)*
+
+---
+
+## 🖼️ Card Showcase (生成效果展示)
+
+| PLA Wood - White Oak (13106) | PLA Wood - 白橡木 (13106) |
+| :---: | :---: |
+| ![White Oak Preview](examples/耗材样本卡_White_Oak_preview.png) | ![白橡木 Preview](examples/耗材样本卡_白橡木_preview.png) |
+| 🪓 [Download 3MF](examples/耗材样本卡_White_Oak.3mf) | 🪓 [下载 3MF 文件](examples/耗材样本卡_白橡木.3mf) |
+
+---
+
+## ✨ Features (核心特性)
+
+1. **100% Static & Client-Side (纯前端生成)**
+   - All 3MF mesh generation, contour tracing (Marching Squares), triangulations (Mapbox Earcut), and ZIP archive packaging run directly in the browser via Web APIs.
+   - Zero server dependencies, zero cost, works completely offline on GitHub Pages or local browsers.
+
+2. **Clean Light Color Scheme (清爽高雅浅色主题)**
+   - Modern, clean slate and white aesthetic inspired by Bambu Lab's official industrial design.
+   - Includes a one-click dark theme toggle (☀️ / 🌙) for late-night printing sessions.
+
+3. **Bilingual Support (独立中英文页面 & 动态热切换)**
+   - English default (`index.html`) & Chinese default (`zh.html`).
+   - Integrated quick toggle `[ 🇨🇳 中文 / 🇺🇸 English ]` without page reload.
+
+4. **Default 0.5 mm Flush Inlay (默认 0.5mm 平齐嵌色)**
+   - Pocket floor is at Z = 0.5 mm, top surface is at Z = 1.0 mm. Default relief of **`0.5 mm`** creates text and swatch inlays that are completely flush with the card body for a smooth, seamless touch.
+   - Supports adjustable relief up to `1.2 mm` for tactile embossed text.
+
+5. **Official 314-Filament Database (内置 314 款官方耗材库)**
+   - Search by color code (e.g. `13106`), English name (`White Oak`), or Chinese name (`白橡木`).
+   - Accurate official Bambu Lab hex color codes automatically applied to 3MF metadata and slicer preview.
+
+6. **Store URL Auto-Parser (商城链接一键解析)**
+   - Paste any Bambu Lab filament store link (e.g. `https://us.store.bambulab.com/products/pla-wood?id=43075832086664`) to automatically extract material, series variants, and target color swatches.
+
+7. **Bambu Studio & Prime Tower Certified (Bambu Studio 深度兼容)**
+   - Watertight 3D mesh with unified layer heights.
+   - Fully compatible with the Bambu Studio prime tower (擦料塔) for crisp multi-color transitions without slicing errors.
+
+---
+
+## 📌 Which Repository to Push? (推送仓库目标)
+
+Your remote origin is configured for user **[`ziikki`](https://github.com/ziikki)**:
+
+| Item | Value |
+| :--- | :--- |
+| **GitHub User** | [`ziikki`](https://github.com/ziikki) |
+| **Repository Name** | `filament_card` |
+| **Repository URL** | `https://github.com/ziikki/filament_card` |
+| **Remote Git URL** | `https://github.com/ziikki/filament_card.git` |
+| **Target Branch** | `main` |
+
+### Step-by-Step Push Instructions:
+
+1. **Create the repository on GitHub** (if not created yet):
+   - Go to [https://github.com/new](https://github.com/new)
+   - Repository name: **`filament_card`**
+   - Visibility: **Public**
+   - Do **NOT** initialize with README, .gitignore, or license (they are already prepared locally).
+   - Click **Create repository**.
+
+2. **Push from your terminal**:
+   ```bash
+   git push -u origin main
+   ```
+
+3. **Enable GitHub Pages**:
+   - In your repo on GitHub, go to **Settings** -> **Pages** (in the left sidebar).
+   - Under **Build and deployment** -> **Source**:
+     - Option A (Recommended): Select **GitHub Actions** (The `.github/workflows/deploy.yml` workflow will automatically deploy on every push).
+     - Option B: Select **Deploy from a branch** -> branch: `main` -> folder: `/(root)` -> click **Save**.
+   - Your site will be live at:
+     - **`https://ziikki.github.io/filament_card/`** (English)
+     - **`https://ziikki.github.io/filament_card/zh.html`** (Chinese)
+
+---
+
+## 💻 Local Usage & CLI (本地运行与命令行)
+
+### 1. Run WebApp Locally (Python Server)
+If you want to run the webapp locally with offline API endpoints:
 
 ```bash
-git remote add origin https://github.com/ziikki/filament_card.git
-git branch -M main
-git push -u origin main
-```
+# Install dependencies (opencv-python, pillow, numpy)
+pip install -r requirements.txt
 
-*(如果已配置 remote，直接运行 `git push -u origin main` 即可)*
-
-### 2. 启用 GitHub Pages
-推送完成后，只需在 GitHub 仓库页面简单开启：
-1. 进入仓库的 **Settings** -> 左侧菜单 **Pages**。
-2. 在 **Build and deployment** 下的 **Source**：
-   - 选择 **GitHub Actions**（本仓库已配置自动构建工作流 `.github/workflows/deploy.yml`，每次 push 自动发布），
-   - 或者选择 **Deploy from a branch** -> 分支选择 `main` -> 目录选择 `/ (root)` -> 点击 **Save**。
-3. 等待约 1 分钟，即可直接通过在线地址访问：
-   - 英文主页：**https://ziikki.github.io/filament_card/**
-   - 中文主页：**https://ziikki.github.io/filament_card/zh.html**
-
----
-
-## 💻 本地运行与命令行 (CLI)
-
-如果你想在本地离线运行：
-
-### 本地启动 WebApp
-```bash
+# Start the local server
 ./start_webtool.sh
-# 或
+# or
 python3 app.py
 ```
-在浏览器中打开：
-- 英文版：**`http://localhost:8088`**
-- 中文版：**`http://localhost:8088/zh.html`**
 
-### 命令行直接生成 (CLI)
+Then visit:
+- English: `http://localhost:8088`
+- Chinese: `http://localhost:8088/zh.html`
+
+### 2. Generate via CLI (命令行直接生成)
+
 ```bash
+# Generate English PLA Wood - White Oak (13106) with 0.5mm flush inlay
 python3 make_filament_card.py "PLA WOOD" "White Oak" "(13106)" "#D6CCA3" 0.5 --preview
+
+# Generate Chinese PLA Wood - 白橡木 (13106) with 0.5mm flush inlay
 python3 make_filament_card.py "PLA WOOD" "白橡木" "(13106)" "#D6CCA3" 0.5 --preview
 ```
-参数说明：
-- `材料类型`：如 `"PLA WOOD"`、`"PLA MATTE"`
-- `颜色名`：如 `"White Oak"`、`"白橡木"`
-- `编号`：如 `"(13106)"`
-- `HEX色号`：如 `"#D6CCA3"`
-- `[浮雕高度mm]`：默认 `0.5` mm（表面齐平嵌色；输入 `1.2` mm 为突出表面）
-- `--preview`：同时输出高清预览图
+
+CLI Parameters:
+- `material`: Material name, e.g. `"PLA WOOD"`, `"PLA MATTE"`
+- `color`: Color name, e.g. `"White Oak"`, `"白橡木"`
+- `code`: Color code, e.g. `"(13106)"`
+- `hex`: Hex color code, e.g. `"#D6CCA3"`
+- `relief`: [Optional] Text/swatch relief height in mm (Default: `0.5` mm for flush surface, `1.2` mm for raised relief)
+- `--preview`: Output high-resolution PNG render alongside the `.3mf` file.
+
+---
+
+## 📂 Repository Structure (仓库目录结构)
+
+```text
+filament_card/
+├── .github/workflows/deploy.yml  # GitHub Actions automated Pages deployment
+├── .gitignore                    # Ignores temp files, STL/slice caches
+├── README.md                     # Bilingual documentation & guides
+├── index.html                    # English static web app (GitHub Pages)
+├── zh.html                       # Chinese static web app (GitHub Pages)
+├── card_template.3mf             # Official Bambu Lab sample card template
+├── filament_db.json              # 314 official filaments (names, codes, hex)
+├── app.py                        # Lightweight local server & API router
+├── make_filament_card.py         # Watertight mesh builder & CLI generator
+├── extractor.py                  # Bambu Lab store URL extractor
+├── requirements.txt              # Python dependencies
+├── start_webtool.sh              # One-click start script
+├── examples/                     # Pre-generated sample cards & preview images
+│   ├── 耗材样本卡_White_Oak.3mf
+│   ├── 耗材样本卡_White_Oak_preview.png
+│   ├── 耗材样本卡_白橡木.3mf
+│   ├── 耗材样本卡_白橡木_preview.png
+│   ├── 耗材样本卡_Iridium_Gold.3mf
+│   └── 耗材样本卡_Iridium_Gold_preview.png
+└── template/
+    └── card_template.3mf         # Clean template backup
+```
+
+---
+
+## 🖨️ Slicing Recommendations (Bambu Studio 切片设置建议)
+
+1. **Layer Height (层高)**: `0.20 mm Standard` (or `0.12 mm High Quality` for ultra-fine text).
+2. **First Layer Height (首层层高)**: `0.20 mm`.
+3. **Nozzle (喷嘴)**: `0.4 mm` (default) or `0.2 mm` for extreme detail.
+4. **Filament Assignment in Bambu Studio**:
+   - `Filament 1`: Card body (e.g., White or Light Grey PLA)
+   - `Filament 2`: Text color (e.g., Black or Charcoal PLA)
+   - `Filament 3`: Filament swatch sample (the target material being sampled)
+5. **Prime Tower (擦料塔)**: Supported and recommended.
+
+---
+
+## 📄 License
+
+MIT License. Designed with ❤️ for the 3D printing community.
