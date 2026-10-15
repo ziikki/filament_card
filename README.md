@@ -51,11 +51,14 @@ Open directly in your browser:
 - 💎 **Seamless 0.5 mm Flush Inlay · Flat Stacking (0.5mm 平齐嵌色 · 完美叠放不翘起)**  
   Text and color swatches are printed at the exact same height as the card surface (5 precise layers at 0.10 mm). With zero raised edges or protruding letters, your cards stack 100% flat in storage boxes, swatch drawers, and binders without tilting, catching, or wobbling. *(Custom raised embossing up to 1.2 mm also supported).*
 
-- 🏷️ **Official 314-Filament Database (内置 314 款拓竹官方耗材库)**  
-  Instant search by color code (e.g. `13106`), material, or bilingual name (`White Oak` / `白橡木`). Exact Bambu Lab official hex colors and metadata are baked right into your `.3mf` model and slicer preview.
+- 🏷️ **Official 314-Filament Database & Series Browser (内置 314 款拓竹官方耗材库与系列浏览)**  
+  Browse all 46 official Bambu Lab material series (`PLA Basic`, `PLA Matte`, `PLA Wood`, `PETG HF`, etc.) or search instantly by color code (`13106`), material, or bilingual name (`White Oak` / `白橡木`). Exact official hex colors and metadata are baked right into your `.3mf` models.
 
-- 🔗 **One-Click Store URL Auto-Parser (商城链接一键解析)**  
-  Paste any Bambu Lab filament store link to instantly pull the material series, all variants, and official color swatches in seconds — zero manual typing required.
+- 📦 **Multi-Card Batch Selection & One-Click ZIP Export (支持系列多选 · 纯前端一键导出 ZIP)**  
+  Select multiple cards, choose an entire series with **"Select All"**, or curate your custom queue. The client-side engine rapidly generates each watertight `.3mf` in your browser and packages them into a clean, ready-to-slice `.zip` bundle!
+
+- 🔗 **Smart Search & Store URL Auto-Parser (智能搜索与商城链接合一)**  
+  A unified input bar that instantly filters the catalog as you type or parses any pasted Bambu Lab store product link to extract the series and color variants automatically.
 
 - 🎯 **Bambu Studio & Prime Tower Certified (Bambu Studio 深度兼容 · 轻松双色打印)**  
   Watertight 3D geometry calibrated for **0.10 mm** layers with native Prime Tower (擦料塔) purging for crisp, bleed-free color transitions. Slices cleanly with zero warnings, and only needs 2 AMS slots to print!
@@ -86,6 +89,7 @@ Then visit:
 
 ### 2. Generate via CLI (命令行直接生成)
 
+#### A. Single Card Generation (单卡生成)
 ```bash
 # Generate English PLA Wood - White Oak (13106) with 0.5mm flush inlay
 python3 make_filament_card.py "PLA WOOD" "White Oak" "(13106)" "#D6CCA3" 0.5 --preview
@@ -94,12 +98,32 @@ python3 make_filament_card.py "PLA WOOD" "White Oak" "(13106)" "#D6CCA3" 0.5 --p
 python3 make_filament_card.py "PLA WOOD" "白橡木" "(13106)" "#D6CCA3" 0.5 --preview
 ```
 
+#### B. Batch Generation & ZIP Bundling (批量生成与打包)
+```bash
+# List all 46 official material series in the database
+python3 make_filament_card.py --list-series
+
+# Generate all 25 colors of PLA Matte and bundle them into a ZIP archive
+python3 make_filament_card.py --series "PLA Matte" --zip
+
+# Generate all PLA Wood cards in Chinese
+python3 make_filament_card.py --series "PLA Wood" --lang zh --zip
+
+# Generate all 314 official filaments into examples/
+python3 make_filament_card.py --all --zip
+```
+
 **CLI Parameters**:
 - `material`: Material name, e.g. `"PLA WOOD"`, `"PLA MATTE"`
 - `color`: Color name, e.g. `"White Oak"`, `"白橡木"`
 - `code`: Color code, e.g. `"(13106)"`
 - `hex`: Hex color code, e.g. `"#D6CCA3"`
 - `relief`: [Optional] Text/swatch relief height in mm (Default: `0.5` mm for flush surface, `1.2` mm for raised relief)
+- `--series <name>`: Batch generate cards for a specific filament series (e.g. `'PLA Matte'`)
+- `--all`, `--batch-all`: Batch generate all 314 filaments in the database
+- `--list-series`: Display all available series and their color count
+- `--lang {en, zh}`: Color name language for batch generation (Default: `en`)
+- `--zip`: Compress all generated `.3mf` files into a single `.zip` archive
 - `--base-hex`: [Optional] Base card color (Default: matches target filament `#HEX`)
 - `--text-hex`: [Optional] Inlay text color (Default: `"#FFFFFF"` pure white)
 - `--preview`: Output high-resolution PNG render alongside the `.3mf` file

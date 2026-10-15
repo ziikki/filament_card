@@ -177,22 +177,47 @@ def test_example_files():
 
 def main():
     print("Running automated 3MF integrity tests...")
-    
-    print("1. Checking index.html JS XML builder...", end=" ")
-    test_js_xml_builder("index.html")
-    print("PASSED")
+    failures = []
 
-    print("2. Checking zh.html JS XML builder...", end=" ")
-    test_js_xml_builder("zh.html")
-    print("PASSED")
+    print("1. Checking index.html JS XML builder...", end=" ", flush=True)
+    try:
+        test_js_xml_builder("index.html")
+        print("PASSED")
+    except Exception as e:
+        print("FAILED")
+        failures.append(f"index.html: {e}")
 
-    print("3. Checking Python CLI 3MF generator...", end=" ")
-    test_python_generator()
-    print("PASSED")
+    print("2. Checking zh.html JS XML builder...", end=" ", flush=True)
+    try:
+        test_js_xml_builder("zh.html")
+        print("PASSED")
+    except Exception as e:
+        print("FAILED")
+        failures.append(f"zh.html: {e}")
 
-    print("4. Checking pre-generated examples in examples/...", end=" ")
-    test_example_files()
-    print("PASSED")
+    print("3. Checking Python CLI 3MF generator...", end=" ", flush=True)
+    try:
+        test_python_generator()
+        print("PASSED")
+    except Exception as e:
+        import traceback
+        print("FAILED")
+        traceback.print_exc()
+        failures.append(f"Python generator: {e}")
+
+    print("4. Checking pre-generated examples in examples/...", end=" ", flush=True)
+    try:
+        test_example_files()
+        print("PASSED")
+    except Exception as e:
+        print("FAILED")
+        failures.append(f"Examples validation: {e}")
+
+    if failures:
+        print(f"\n❌ {len(failures)} test(s) failed:")
+        for f in failures:
+            print("  •", f)
+        sys.exit(1)
 
     print("\n✅ All 3MF integrity tests passed successfully!")
 

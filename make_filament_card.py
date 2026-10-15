@@ -35,6 +35,7 @@ import json
 import os
 import re
 import sys
+import time
 import zipfile
 
 import cv2
@@ -62,10 +63,22 @@ MARGIN = 2.2                            # keep-out from pocket wall
 
 # ------------------------------------------------------------------- fonts --
 FONT_CANDIDATES = [
+    # macOS
     ("/System/Library/Fonts/Hiragino Sans GB.ttc", 2),        # W6, Latin + CJK
     ("/System/Library/Fonts/STHeiti Medium.ttc", 1),
     ("/Library/Fonts/Arial Unicode.ttf", 0),
     ("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 0),
+    # Linux (Ubuntu/Debian standard packages)
+    ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 0),
+    ("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 0),
+    ("/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf", 0),
+    ("/usr/share/fonts/truetype/freefont/FreeSansBold.ttf", 0),
+    ("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", 0),
+    ("/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", 0),
+    # Windows
+    ("C:\\Windows\\Fonts\\msyh.ttc", 0),
+    ("C:\\Windows\\Fonts\\arialbd.ttf", 0),
+    ("C:\\Windows\\Fonts\\arial.ttf", 0),
 ]
 
 
@@ -75,6 +88,14 @@ def pick_font(path, index):
     for p, i in FONT_CANDIDATES:
         if os.path.exists(p):
             return p, i
+    # Search common font directories for any TTF/OTF/TTC
+    font_dirs = ["/usr/share/fonts", "/usr/local/share/fonts", os.path.expanduser("~/.fonts")]
+    for d in font_dirs:
+        if os.path.isdir(d):
+            for root, _, files in os.walk(d):
+                for f in files:
+                    if f.lower().endswith((".ttf", ".ttc", ".otf")):
+                        return os.path.join(root, f), 0
     sys.exit("No usable font found, pass --font")
 
 
@@ -938,12 +959,106 @@ def generate_card(material, color, code, hex_color, relief=0.5, out_path=None,
     }
 
 
+# ============================================================ batch runner ==
+def load_filament_db():
+    db_path = os.path.join(HERE, "filament_db.json")
+    if not os.path.exists(db_path):
+        raise FileNotFoundError(f"Database not found at {db_path}")
+    with open(db_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def list_series():
+    db = load_filament_db()
+    series_map = {}
+    for item in db:
+        mat = item.get("material", "Unknown")
+        series_map[mat] = series_map.get(mat, 0) + 1
+    print(f"📦 Total Filaments in Database: {len(db)}")
+    print(f"🏷️  Available Series ({len(series_map)}):")
+    for s, count in sorted(series_map.items()):
+        print(f"  • {s:25s} ({count} colors)")
+
+
+def run_batch(series=None, all_filaments=False, lang="en", relief=0.5, template_path=DEFAULT_TEMPLATE,
+              out_dir=None, create_zip=False, preview=False, base_hex=None, text_hex="#FFFFFF",
+              thicken=False, min_stroke=0.8, min_gap=0.5, swatch_d=7.0, font_path=None, font_index=0):
+    db = load_filament_db()
+    if all_filaments:
+        targets = db
+        batch_name = "All_314_Filaments"
+    elif series:
+        s_lower = series.strip().lower()
+        targets = [item for item in db if s_lower in item.get("material", "").lower()]
+        if not targets:
+            print(f"❌ No filaments found matching series: '{series}'")
+            print("Run with --list-series to view all valid series.")
+            return
+        clean_series = re.sub(r'[\\/:*?"<>|\s]+', '_', series).strip('_')
+        batch_name = f"{clean_series}_{len(targets)}pcs"
+    else:
+        print("❌ Please specify --series <name> or --all for batch generation.")
+        return
+
+    out_directory = out_dir or os.path.join(HERE, "examples")
+    os.makedirs(out_directory, exist_ok=True)
+
+    print(f"🚀 Starting batch generation for {len(targets)} cards (Lang: {lang.upper()}, Relief: {relief}mm)...")
+    generated_files = []
+    start_time = time.time()
+
+    for idx, item in enumerate(targets, 1):
+        mat = item.get("material", "").upper()
+        col = (item.get("name_zh") if lang == "zh" and item.get("name_zh") else item.get("name_en", "Unknown")).strip()
+        code = f"({item.get('code', '')})"
+        hex_val = item.get("hex", "#FFFFFF")
+        clean_col = re.sub(r'[\\/:*?"<>|\s]+', '_', col).strip('_')
+        out_3mf = os.path.join(out_directory, f"Filament_Card_{clean_col}.3mf")
+
+        t0 = time.time()
+        try:
+            generate_card(
+                material=mat,
+                color=col,
+                code=code,
+                hex_color=hex_val,
+                relief=relief,
+                out_path=out_3mf,
+                template_path=template_path,
+                thicken=thicken,
+                min_stroke=min_stroke,
+                min_gap=min_gap,
+                swatch_d=swatch_d,
+                font_path=font_path,
+                font_index=font_index,
+                preview=preview,
+                base_hex=base_hex or hex_val,
+                text_hex=text_hex or "#FFFFFF"
+            )
+            dt = time.time() - t0
+            generated_files.append(out_3mf)
+            print(f"  [{idx}/{len(targets)}] ✅ {col} ({item.get('code')}) -> {os.path.basename(out_3mf)} ({dt:.2f}s)")
+        except Exception as e:
+            print(f"  [{idx}/{len(targets)}] ❌ Failed {col}: {e}")
+
+    total_time = time.time() - start_time
+    print(f"✨ Successfully generated {len(generated_files)} / {len(targets)} cards in {total_time:.2f}s!")
+
+    if create_zip and generated_files:
+        zip_filename = f"Bambu_Filament_Cards_{batch_name}_{lang.upper()}.zip"
+        zip_path = os.path.join(out_directory, zip_filename)
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+            for f in generated_files:
+                zf.write(f, arcname=os.path.basename(f))
+        print(f"📦 Created batch ZIP archive: {zip_path} ({os.path.getsize(zip_path) / (1024*1024):.2f} MB)")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("material", help="材料类型, e.g. 'PLA MATTE'")
-    ap.add_argument("color", help="颜色名, e.g. 'Iridium Gold'")
-    ap.add_argument("code", help="编号, e.g. '(13008)'")
-    ap.add_argument("hex", help="HEX色号, e.g. '#A2D312'")
+    ap.add_argument("material", nargs="?", default=None, help="材料类型, e.g. 'PLA MATTE'")
+    ap.add_argument("color", nargs="?", default=None, help="颜色名, e.g. 'Iridium Gold'")
+    ap.add_argument("code", nargs="?", default=None, help="编号, e.g. '(13008)'")
+    ap.add_argument("hex", nargs="?", default=None, help="HEX色号, e.g. '#A2D312'")
     ap.add_argument("relief", nargs="?", type=float, default=0.5,
                     help="浮雕高度 mm above pocket floor (default 0.5 = flush with card top; 1.2 = raised)")
     ap.add_argument("-o", "--out", help="output .3mf path (default: filament_card/examples/Filament_Card_<color>.3mf)")
@@ -960,7 +1075,51 @@ def main():
     ap.add_argument("--font", help="font file (TTF/TTC/OTF)")
     ap.add_argument("--font-index", type=int, default=0, help="face index inside a .ttc")
     ap.add_argument("--preview", action="store_true", help="also write a PNG preview of the relief")
+
+    # Batch flags
+    ap.add_argument("--batch-all", "--all", action="store_true", dest="batch_all",
+                    help="Batch generate cards for all 314 filaments in official database")
+    ap.add_argument("--series", type=str, default=None,
+                    help="Batch generate cards for a specific filament series (e.g. 'PLA Matte', 'PLA Wood', 'PETG HF')")
+    ap.add_argument("--list-series", action="store_true",
+                    help="List all available filament series in database and exit")
+    ap.add_argument("--lang", choices=["en", "zh"], default="en",
+                    help="Language for color names in batch mode ('en' or 'zh', default 'en')")
+    ap.add_argument("--zip", action="store_true",
+                    help="Compress all generated .3mf files into a single .zip archive")
+    ap.add_argument("--out-dir", default=None,
+                    help="Directory to save generated .3mf and .zip files (default: examples/)")
+
     args = ap.parse_args()
+
+    if args.list_series:
+        list_series()
+        return
+
+    if args.batch_all or args.series:
+        run_batch(
+            series=args.series,
+            all_filaments=args.batch_all,
+            lang=args.lang,
+            relief=args.relief,
+            template_path=args.template,
+            out_dir=args.out_dir,
+            create_zip=args.zip,
+            preview=args.preview,
+            base_hex=args.base_hex,
+            text_hex=args.text_hex,
+            thicken=args.thicken,
+            min_stroke=args.min_stroke,
+            min_gap=args.min_gap,
+            swatch_d=args.swatch_d,
+            font_path=args.font,
+            font_index=args.font_index
+        )
+        return
+
+    if not args.material or not args.color or not args.code or not args.hex:
+        ap.error("Single card mode requires: material color code hex [relief]. "
+                 "Or use --series <name> / --all for batch mode, or --list-series.")
 
     info = generate_card(
         material=args.material,

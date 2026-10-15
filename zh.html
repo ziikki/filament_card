@@ -309,12 +309,41 @@
       border-color: var(--bambu-green);
     }
 
+    .batch-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .batch-actions {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .btn-micro {
+      padding: 0.2rem 0.55rem;
+      font-size: 0.72rem;
+      border-radius: 6px;
+      cursor: pointer;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+
+    .btn-micro:hover {
+      color: var(--bambu-green);
+      border-color: var(--bambu-green);
+    }
+
     .variants-container {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
       margin-top: 0.5rem;
-      max-height: 180px;
+      max-height: 200px;
       overflow-y: auto;
       padding: 0.5rem;
       background: var(--input-bg);
@@ -325,7 +354,7 @@
     .variant-chip {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.45rem;
       background: var(--chip-bg);
       border: 1px solid var(--chip-border);
       padding: 0.35rem 0.65rem;
@@ -333,6 +362,7 @@
       font-size: 0.8rem;
       cursor: pointer;
       transition: all 0.15s;
+      user-select: none;
     }
 
     .variant-chip:hover {
@@ -340,11 +370,116 @@
       transform: translateY(-1px);
     }
 
-    .variant-chip.active {
+    .variant-chip.selected {
       border-color: var(--bambu-green);
       background: rgba(0, 174, 66, 0.08);
-      font-weight: 600;
+    }
+
+    .variant-chip.active-preview {
       box-shadow: 0 0 0 2px var(--focus-ring);
+      font-weight: 700;
+    }
+
+    .variant-check {
+      cursor: pointer;
+      width: 14px;
+      height: 14px;
+      accent-color: var(--bambu-green);
+      margin-right: -2px;
+    }
+
+    .batch-tray {
+      margin-top: 0.75rem;
+      margin-bottom: 1.25rem;
+      background: var(--input-bg);
+      border: 1px dashed var(--input-border);
+      border-radius: 10px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .batch-tray-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .selected-pills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .selected-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--chip-bg);
+      border: 1px solid var(--card-border);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .selected-pill:hover {
+      border-color: var(--bambu-green);
+    }
+
+    .selected-pill.active-pill {
+      border-color: var(--bambu-green);
+      background: rgba(0, 174, 66, 0.12);
+      font-weight: 600;
+    }
+
+    .pill-remove {
+      color: var(--text-muted);
+      margin-left: 2px;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 0 2px;
+      border-radius: 4px;
+    }
+
+    .pill-remove:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .progress-box {
+      margin-top: 1rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: var(--input-border);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00ae42, #10b981);
+      border-radius: 9999px;
+      transition: width 0.15s ease-out;
+    }
+
+    .progress-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
     }
 
     .color-dot {
@@ -522,36 +657,53 @@
   <main>
     <!-- Left panel: URL extractor and card settings -->
     <div class="panel">
-      <!-- 1. URL Extractor -->
-      <div class="section-box">
-        <label for="bambuUrl" id="t_urlLabel">1. Paste Bambu Lab Store URL (Auto Extract)</label>
+      <!-- 1. Unified Smart Search & Store URL Bar -->
+      <div class="section-box" style="margin-bottom: 0.9rem;">
+        <label for="smartInput" id="t_smartLabel">Search 314 Official Colors or Paste Bambu Store URL</label>
         <div class="input-group">
-          <input type="text" id="bambuUrl" placeholder="https://us.store.bambulab.com/products/pla-wood?id=43075832086664" />
-          <button id="extractBtn" class="btn-primary">
-            <span id="extractSpinner" style="display:none;">⏳</span>
-            <span id="t_extractBtn">Extract URL</span>
+          <input type="text" id="smartInput" placeholder="Enter color, code (e.g. 13106), or paste Bambu store link..." oninput="onSmartInput(this.value)" onkeydown="if(event.key==='Enter')handleSmartAction()" />
+          <button id="smartActionBtn" class="btn-primary" onclick="handleSmartAction()" title="Extract Store Link or Search">
+            <span id="smartSpinner" style="display:none;">⏳</span>
+            <span id="t_smartActionBtn">Search / Extract</span>
           </button>
         </div>
-        <div class="quick-tags">
-          <span style="font-size:0.75rem; color:var(--text-muted); align-self:center;" id="t_quickFill">Quick fill:</span>
-          <button class="tag-btn" onclick="loadPreset('pla-wood')">PLA Wood (White Oak 13106)</button>
-          <button class="tag-btn" onclick="loadPreset('pla-matte-gold')">PLA Matte (Iridium Gold 13008)</button>
-          <button class="tag-btn" onclick="loadPreset('petg-hf-black')">PETG HF (Black 30101)</button>
-        </div>
       </div>
 
-      <!-- 2. Local database search -->
-      <div class="section-box">
-        <label for="dbSearch" id="t_dbLabel">Or Search Official Bambu Filament Database (314 Colors)</label>
-        <div class="input-group">
-          <input type="text" id="dbSearch" placeholder="Enter code like 13106 or color like White Oak, Clay Brown, 白橡木..." oninput="filterDatabase()" />
+      <!-- 2. Series Browser & Filter Dropdown -->
+      <div class="section-box" style="margin-bottom: 0.9rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+          <label for="seriesFilter" style="margin-bottom:0;" id="t_seriesLabel">Browse by Material Series</label>
+          <div class="quick-tags" style="margin-top:0;">
+            <button class="tag-btn" onclick="quickSelectSeries('PLA Basic')">PLA Basic</button>
+            <button class="tag-btn" onclick="quickSelectSeries('PLA Matte')">PLA Matte</button>
+            <button class="tag-btn" onclick="quickSelectSeries('PLA Wood')">PLA Wood</button>
+            <button class="tag-btn" onclick="quickSelectSeries('PETG HF')">PETG HF</button>
+          </div>
         </div>
+        <select id="seriesFilter" onchange="onSeriesFilterChange(this.value)">
+          <option value="ALL" id="opt_allSeries">🌟 All Material Series (314 Filaments)</option>
+        </select>
       </div>
 
-      <!-- 3. Variants list (chips) -->
-      <div class="section-box" id="variantsBox" style="display: none;">
-        <label id="t_variantsLabel">Detected Color Variants (Click to select):</label>
+      <!-- 3. Color Swatches Grid with Multi-Select Toolbar -->
+      <div class="section-box" id="variantsBox" style="margin-bottom: 0.9rem;">
+        <div class="batch-header">
+          <span style="font-weight:600; font-size:0.85rem;" id="t_variantsLabel">Available Colors (<span id="availableCount">0</span>):</span>
+          <div class="batch-actions">
+            <button class="btn-micro" onclick="selectAllCurrentSeries()" id="t_selectAllBtn" title="Select all colors currently shown">☑ Select All</button>
+            <button class="btn-micro" onclick="deselectAllCurrentSeries()" id="t_deselectAllBtn" title="Deselect all colors in this series">☐ Deselect</button>
+          </div>
+        </div>
         <div class="variants-container" id="variantsContainer"></div>
+      </div>
+
+      <!-- 4. Selected Batch Queue ("Cart") -->
+      <div class="batch-tray" id="batchTray" style="display: none;">
+        <div class="batch-tray-header">
+          <span id="t_selectedTitle">🛒 Selected for Export (<span id="selectedCountBadge">0</span> cards):</span>
+          <button class="btn-micro" onclick="clearAllSelected()" id="t_clearAllBtn" style="color:#ef4444;" title="Clear all selected items">✕ Clear All</button>
+        </div>
+        <div class="selected-pills-list" id="selectedPillsList"></div>
       </div>
 
       <hr style="border:0; border-top:1px solid var(--card-border); margin: 1.5rem 0;" />
@@ -648,6 +800,14 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span id="t_downloadBtn">Generate & Download .3MF</span>
         </button>
+      </div>
+
+      <!-- Progress bar for batch generation -->
+      <div class="progress-box" id="batchProgressWrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="batchProgressFill"></div>
+        </div>
+        <div class="progress-label" id="batchProgressLabel">Preparing batch export...</div>
       </div>
 
       <div class="cli-box" id="cliBox">
@@ -932,13 +1092,16 @@
         brandSubtitle: "Parametric Swatch & 3MF Generator (GitHub Pages)",
         badgeFlush: "● 0.5mm Flush Inlay",
         badgeTower: "● Prime Tower Ready",
-        urlLabel: "1. Paste Bambu Lab Store URL (Auto Extract)",
-        urlPlaceholder: "https://us.store.bambulab.com/products/pla-wood?id=43075832086664",
-        extractBtn: "Extract URL",
-        quickFill: "Quick fill:",
-        dbLabel: "Or Search Official Bambu Filament Database (314 Colors)",
-        dbPlaceholder: "Enter code like 13106 or color like White Oak, Clay Brown, 白橡木...",
-        variantsLabel: "Detected Color Variants (Click to select):",
+        smartLabel: "Search 314 Official Colors or Paste Bambu Store URL",
+        smartPlaceholder: "Enter color, code (e.g. 13106), or paste Bambu store link...",
+        smartActionBtn: "Search / Extract",
+        seriesLabel: "Browse by Material Series",
+        optAllSeries: (n) => `🌟 All Material Series (${n} Filaments)`,
+        variantsLabel: (n) => `Available Colors (${n}):`,
+        selectAllBtn: "☑ Select All",
+        deselectAllBtn: "☐ Deselect",
+        selectedTitle: (n) => `🛒 Selected for Export (${n} cards):`,
+        clearAllBtn: "✕ Clear All",
         cardConfigTitle: "Card Typography & Parameters",
         toggleCardText: (zh) => `Card Text: Chinese (${zh})`,
         matLabel: "Material Type (Row 1)",
@@ -959,14 +1122,21 @@
         specTopZ: "Top Surface Z (Flush)",
         specWatertight: "100% Watertight",
         downloadBtn: "Generate & Download .3MF",
+        downloadZipBtn: (n) => `⚡ Export ${n} Cards as ZIP`,
         downloadingBtn: "⚡ Generating 3MF Mesh...",
         copyCliBtn: "Copy CLI",
         toastCopied: "CLI command copied to clipboard!",
         toastSuccess: "🎉 3MF swatch card generated and downloaded!",
-        toastNoUrl: "Please enter a Bambu Lab store product URL first",
+        toastZipSuccess: (n) => `🎉 Successfully generated & exported ${n} swatch cards in ZIP!`,
+        toastNoUrl: "Please enter a search keyword or Bambu Lab store URL",
         toastVariantsFound: (n) => `Successfully parsed ${n} color variants!`,
         toastMatchedDb: (n) => `Matched ${n} official colors from database!`,
-        toastNoVariants: "Could not auto-detect variants. Please use search below."
+        toastNoVariants: "Could not auto-detect variants. Please use series browser or search.",
+        toastAllSelected: (n) => `Selected all ${n} colors in this series!`,
+        toastAllDeselected: "Deselected all colors in this series.",
+        progressLoadingTemplate: "Loading card template...",
+        progressGenerating: (curr, total, name, pct) => `Generating ${curr} of ${total}: ${name} (${pct}%)...`,
+        progressCompressing: "Compressing ZIP archive...",
       },
       zh: {
         pageTitle: "Bambu Lab 耗材样本卡生成器 | 3MF 在线生成工具",
@@ -974,13 +1144,16 @@
         brandSubtitle: "参数化色卡与 3MF 在线生成工具 (GitHub Pages 纯静态版)",
         badgeFlush: "● 0.5mm 表面平齐嵌色",
         badgeTower: "● Prime Tower 擦料塔兼容",
-        urlLabel: "1. 粘贴 Bambu Lab 商城链接 (自动解析提取)",
-        urlPlaceholder: "https://us.store.bambulab.com/products/pla-wood?id=43075832086664",
-        extractBtn: "解析链接",
-        quickFill: "快速填充:",
-        dbLabel: "或直接搜索 Bambu 官方耗材库 (314种官方颜色)",
-        dbPlaceholder: "输入编号如 13106 或颜色名如 白橡木, 黑胡桃, White Oak...",
-        variantsLabel: "检测到的颜色变体 (点击快速切换):",
+        smartLabel: "搜索 314 款官方耗材色号/名称，或粘贴商城链接",
+        smartPlaceholder: "输入编号如 13106、颜色名如 白橡木，或粘贴拓竹商城链接...",
+        smartActionBtn: "解析 / 搜索",
+        seriesLabel: "按材质系列浏览",
+        optAllSeries: (n) => `🌟 全部材质系列 (${n} 款耗材)`,
+        variantsLabel: (n) => `系列包含颜色 (${n}):`,
+        selectAllBtn: "☑ 全选本系列",
+        deselectAllBtn: "☐ 取消全选",
+        selectedTitle: (n) => `🛒 已选待导出 (${n} 款卡片):`,
+        clearAllBtn: "✕ 清空所选",
         cardConfigTitle: "样本卡文字与参数配置",
         toggleCardText: (en) => `切换卡片名称为英文 (${en})`,
         matLabel: "材料类型 (第1行)",
@@ -1001,14 +1174,21 @@
         specTopZ: "卡面顶层 Z (齐平)",
         specWatertight: "100% 封闭网格",
         downloadBtn: "生成并下载 .3MF 文件",
+        downloadZipBtn: (n) => `⚡ 打包导出 ${n} 款色卡 ZIP`,
         downloadingBtn: "⚡ 正在生成 3MF 模型...",
         copyCliBtn: "复制命令",
         toastCopied: "已复制 CLI 执行命令到剪贴板！",
         toastSuccess: "🎉 3MF 样本卡已生成并开始下载！",
-        toastNoUrl: "请先输入 Bambu Lab 商城网页链接",
+        toastZipSuccess: (n) => `🎉 成功打包导出 ${n} 款色卡 ZIP 文件！`,
+        toastNoUrl: "请输入搜索关键词或 Bambu Lab 商城网页链接",
         toastVariantsFound: (n) => `成功解析 ${n} 个颜色变体！`,
         toastMatchedDb: (n) => `匹配到 ${n} 款官方预设颜色！`,
-        toastNoVariants: "未能直接识别，您可在下方搜索框直接输入颜色或色号快速选定！"
+        toastNoVariants: "未能直接识别，您可在系列下拉框或输入框中快速选定！",
+        toastAllSelected: (n) => `已全选当前系列的全部 ${n} 款颜色！`,
+        toastAllDeselected: "已取消选择当前系列的全部颜色。",
+        progressLoadingTemplate: "正在加载基础卡体模板...",
+        progressGenerating: (curr, total, name, pct) => `正在生成 ${curr} / ${total}: ${name} (${pct}%)...`,
+        progressCompressing: "正在打包 ZIP 压缩包...",
       }
     };
 
@@ -1019,12 +1199,15 @@
     const POCKET_FLOOR_Z = 0.5;
     const MARGIN = 2.2;
 
-    let currentLang = 'zh'; // default English
+    let currentLang = 'zh'; // default Chinese
     let filamentDb = [];
     let currentZhName = "白橡木";
     let currentEnName = "White Oak";
-    let isCardZh = false;
+    let isCardZh = true;
     let cachedTemplateBuffer = null;
+    let selectedItems = []; // Multi-selected filament items
+    let activeCardItem = null; // Currently previewed card
+    let currentVisibleVariants = []; // Currently displayed swatches
 
     // Detect language preference from URL param or storage
     const urlParams = new URLSearchParams(window.location.search);
@@ -1091,14 +1274,17 @@
       document.getElementById('t_badgeFlush').textContent = t.badgeFlush;
       document.getElementById('t_badgeTower').textContent = t.badgeTower;
 
-      document.getElementById('t_urlLabel').textContent = t.urlLabel;
-      document.getElementById('bambuUrl').placeholder = t.urlPlaceholder;
-      document.getElementById('t_extractBtn').textContent = t.extractBtn;
-      document.getElementById('t_quickFill').textContent = t.quickFill;
+      document.getElementById('t_smartLabel').textContent = t.smartLabel;
+      document.getElementById('smartInput').placeholder = t.smartPlaceholder;
+      document.getElementById('t_smartActionBtn').textContent = t.smartActionBtn;
 
-      document.getElementById('t_dbLabel').textContent = t.dbLabel;
-      document.getElementById('dbSearch').placeholder = t.dbPlaceholder;
-      document.getElementById('t_variantsLabel').textContent = t.variantsLabel;
+      document.getElementById('t_seriesLabel').textContent = t.seriesLabel;
+      const allOpt = document.getElementById('opt_allSeries');
+      if (allOpt) allOpt.textContent = t.optAllSeries(filamentDb.length || 314);
+
+      document.getElementById('t_selectAllBtn').textContent = t.selectAllBtn;
+      document.getElementById('t_deselectAllBtn').textContent = t.deselectAllBtn;
+      document.getElementById('t_clearAllBtn').textContent = t.clearAllBtn;
 
       document.getElementById('t_cardConfigTitle').textContent = t.cardConfigTitle;
       document.getElementById('t_matLabel').textContent = t.matLabel;
@@ -1119,7 +1305,6 @@
       document.getElementById('t_specPocket').textContent = t.specPocket;
       document.getElementById('t_specTopZ').textContent = t.specTopZ;
       document.getElementById('t_specWatertight').textContent = t.specWatertight;
-      document.getElementById('t_downloadBtn').textContent = t.downloadBtn;
       document.getElementById('t_copyCliBtn').textContent = t.copyCliBtn;
 
       // Header language button appearance
@@ -1127,6 +1312,7 @@
       document.getElementById('langSwitchText').textContent = lang === 'en' ? '中文' : 'English';
 
       updateCardTextToggleBtn();
+      refreshSelectionUI();
     }
 
     function updateCardTextToggleBtn() {
@@ -1149,6 +1335,10 @@
         if (resp.ok) filamentDb = await resp.json();
       } catch (e) {
         console.warn('Could not load filament_db.json directly, fallback available.');
+      }
+      if (filamentDb && filamentDb.length > 0) {
+        populateSeriesDropdown();
+        quickSelectSeries('PLA Wood');
       }
     }
 
@@ -1351,23 +1541,90 @@
         t.badgeReliefFlush(relief.toFixed(2)) : t.badgeReliefRaised(relief.toFixed(2));
     }
 
-    // URL Extractor
-    document.getElementById('extractBtn').addEventListener('click', async () => {
-      const url = document.getElementById('bambuUrl').value.trim();
+    // ------------------------------------------------------------- series & batch UI --
+    function populateSeriesDropdown() {
+      const select = document.getElementById('seriesFilter');
+      if (!select) return;
+      select.innerHTML = '';
+
+      const counts = {};
+      filamentDb.forEach(f => {
+        counts[f.material] = (counts[f.material] || 0) + 1;
+      });
+
       const t = I18N[currentLang];
-      if (!url) {
+      const allOpt = document.createElement('option');
+      allOpt.value = 'ALL';
+      allOpt.id = 'opt_allSeries';
+      allOpt.textContent = t.optAllSeries(filamentDb.length);
+      select.appendChild(allOpt);
+
+      const sortedSeries = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+      sortedSeries.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = `${s} (${counts[s]})`;
+        select.appendChild(opt);
+      });
+    }
+
+    function onSeriesFilterChange(val) {
+      if (!filamentDb || !filamentDb.length) return;
+      if (val === 'ALL') {
+        currentVisibleVariants = [...filamentDb];
+      } else {
+        currentVisibleVariants = filamentDb.filter(f => f.material.toLowerCase() === val.toLowerCase());
+      }
+      renderVariants(currentVisibleVariants, 0);
+      updateCli();
+    }
+
+    function quickSelectSeries(seriesName) {
+      const select = document.getElementById('seriesFilter');
+      if (select) {
+        select.value = seriesName;
+        onSeriesFilterChange(seriesName);
+      }
+    }
+
+    function onSmartInput(val) {
+      const query = (val || '').trim();
+      if (!query) {
+        const currentSeries = document.getElementById('seriesFilter').value;
+        onSeriesFilterChange(currentSeries);
+        return;
+      }
+      if (query.startsWith('http://') || query.startsWith('https://') || query.includes('store.bambulab.com')) {
+        extractStoreUrl(query);
+      } else {
+        filterDatabase(query);
+      }
+    }
+
+    async function handleSmartAction() {
+      const input = document.getElementById('smartInput').value.trim();
+      const t = I18N[currentLang];
+      if (!input) {
         showToast(t.toastNoUrl);
         return;
       }
+      if (input.startsWith('http://') || input.startsWith('https://') || input.includes('store.bambulab.com')) {
+        await extractStoreUrl(input);
+      } else {
+        filterDatabase(input);
+      }
+    }
 
-      const btn = document.getElementById('extractBtn');
-      const spinner = document.getElementById('extractSpinner');
+    async function extractStoreUrl(url) {
+      const t = I18N[currentLang];
+      const spinner = document.getElementById('smartSpinner');
+      const btn = document.getElementById('smartActionBtn');
       btn.disabled = true;
       spinner.style.display = 'inline';
 
       try {
         let extracted = false;
-        // 1. Try local backend if running
+        // 1. Try local server API
         try {
           const resp = await fetch('/api/extract', {
             method: 'POST',
@@ -1377,6 +1634,7 @@
           if (resp.ok) {
             const data = await resp.json();
             if (data.success && data.variants && data.variants.length > 0) {
+              currentVisibleVariants = data.variants;
               renderVariants(data.variants, data.selected_index || 0);
               showToast(t.toastVariantsFound(data.variants.length));
               extracted = true;
@@ -1384,30 +1642,20 @@
           }
         } catch (e) {}
 
-        // 2. Client-side URL & database matching
+        // 2. Client-side URL keyword matching against database
         if (!extracted) {
-          let matchedVariants = [];
-          if (url.includes('pla-wood')) {
-            matchedVariants = filamentDb.filter(f => f.material.toLowerCase().includes('wood'));
-          } else if (url.includes('pla-matte')) {
-            matchedVariants = filamentDb.filter(f => f.material.toLowerCase().includes('matte'));
-          } else if (url.includes('petg-hf')) {
-            matchedVariants = filamentDb.filter(f => f.material.toLowerCase().includes('petg'));
-          } else if (url.includes('pla-basic')) {
-            matchedVariants = filamentDb.filter(f => f.material.toLowerCase().includes('basic'));
-          }
+          const urlLower = url.toLowerCase();
+          let matched = [];
+          if (urlLower.includes('pla-wood')) matched = filamentDb.filter(f => f.material.toLowerCase().includes('wood'));
+          else if (urlLower.includes('pla-matte')) matched = filamentDb.filter(f => f.material.toLowerCase().includes('matte'));
+          else if (urlLower.includes('petg-hf')) matched = filamentDb.filter(f => f.material.toLowerCase().includes('petg'));
+          else if (urlLower.includes('pla-basic')) matched = filamentDb.filter(f => f.material.toLowerCase().includes('basic'));
+          else if (urlLower.includes('pla-silk')) matched = filamentDb.filter(f => f.material.toLowerCase().includes('silk'));
 
-          if (matchedVariants.length > 0) {
-            const variants = matchedVariants.map((m) => ({
-              material: m.material.toUpperCase(),
-              name: currentLang === 'zh' ? (m.name_zh || m.name_en) : m.name_en,
-              name_en: m.name_en,
-              name_zh: m.name_zh,
-              code: `(${m.code})`,
-              hex: m.hex
-            }));
-            renderVariants(variants, 0);
-            showToast(t.toastMatchedDb(variants.length));
+          if (matched.length > 0) {
+            currentVisibleVariants = matched;
+            renderVariants(matched, 0);
+            showToast(t.toastMatchedDb(matched.length));
             extracted = true;
           }
         }
@@ -1421,36 +1669,72 @@
         btn.disabled = false;
         spinner.style.display = 'none';
       }
-    });
+    }
 
-    function renderVariants(variants, selectIdx) {
-      const box = document.getElementById('variantsBox');
-      const container = document.getElementById('variantsContainer');
-      container.innerHTML = '';
-      box.style.display = 'block';
+    function filterDatabase(query) {
+      const q = (query || '').toLowerCase().trim();
+      if (!q || !filamentDb.length) return;
 
-      variants.forEach((v, idx) => {
-        const chip = document.createElement('div');
-        chip.className = 'variant-chip' + (idx === selectIdx ? ' active' : '');
-        const displayName = currentLang === 'zh' ? (v.name_zh || v.name_en || v.name) : (v.name_en || v.name);
-        chip.innerHTML = `
-          <span class="color-dot" style="background-color: ${v.hex};"></span>
-          <span>${displayName}</span>
-          <span style="opacity:0.6; font-size:0.75rem;">${v.code}</span>
-        `;
-        chip.onclick = () => selectVariant(v, chip);
-        container.appendChild(chip);
+      const matches = filamentDb.filter(item => {
+        return (item.code || '').toLowerCase().includes(q) ||
+               (item.name_en || '').toLowerCase().includes(q) ||
+               (item.name_zh || '').toLowerCase().includes(q) ||
+               (item.material || '').toLowerCase().includes(q);
       });
 
-      if (variants[selectIdx]) {
-        selectVariant(variants[selectIdx], container.children[selectIdx]);
+      if (matches.length > 0) {
+        currentVisibleVariants = matches;
+        renderVariants(matches, 0);
       }
     }
 
-    function selectVariant(v, chipElem) {
-      document.querySelectorAll('.variant-chip').forEach(c => c.classList.remove('active'));
-      if (chipElem) chipElem.classList.add('active');
+    function getItemCode(item) {
+      return (item && item.code ? String(item.code).replace(/[()]/g, '') : '');
+    }
 
+    function isItemSelected(item) {
+      const code = getItemCode(item);
+      return selectedItems.some(s => getItemCode(s) === code);
+    }
+
+    function toggleSelect(item) {
+      const code = getItemCode(item);
+      const idx = selectedItems.findIndex(s => getItemCode(s) === code);
+      if (idx >= 0) {
+        selectedItems.splice(idx, 1);
+      } else {
+        selectedItems.push(item);
+      }
+      refreshSelectionUI();
+    }
+
+    function selectAllCurrentSeries() {
+      if (!currentVisibleVariants || currentVisibleVariants.length === 0) return;
+      currentVisibleVariants.forEach(v => {
+        const code = getItemCode(v);
+        if (!selectedItems.some(s => getItemCode(s) === code)) {
+          selectedItems.push(v);
+        }
+      });
+      refreshSelectionUI();
+      showToast(I18N[currentLang].toastAllSelected(currentVisibleVariants.length));
+    }
+
+    function deselectAllCurrentSeries() {
+      if (!currentVisibleVariants || currentVisibleVariants.length === 0) return;
+      const codesToRemove = new Set(currentVisibleVariants.map(v => getItemCode(v)));
+      selectedItems = selectedItems.filter(s => !codesToRemove.has(getItemCode(s)));
+      refreshSelectionUI();
+      showToast(I18N[currentLang].toastAllDeselected);
+    }
+
+    function clearAllSelected() {
+      selectedItems = [];
+      refreshSelectionUI();
+    }
+
+    function setActiveCard(v) {
+      activeCardItem = v;
       currentEnName = v.name_en || v.name;
       currentZhName = v.name_zh || v.name;
 
@@ -1464,63 +1748,164 @@
       document.getElementById('colorPicker').value = v.hex;
 
       renderCardPreview();
+      updateCli();
+
+      // Highlight active preview chip
+      document.querySelectorAll('.variant-chip').forEach(c => {
+        const chipCode = c.getAttribute('data-code');
+        if (chipCode === getItemCode(v)) {
+          c.classList.add('active-preview');
+        } else {
+          c.classList.remove('active-preview');
+        }
+      });
+
+      // Update active pill in tray
+      document.querySelectorAll('.selected-pill').forEach(p => {
+        if (p.getAttribute('data-code') === getItemCode(v)) {
+          p.classList.add('active-pill');
+        } else {
+          p.classList.remove('active-pill');
+        }
+      });
     }
 
-    function loadPreset(key) {
-      if (key === 'pla-wood') {
-        selectVariant({
-          material: 'PLA WOOD',
-          name: 'White Oak',
-          name_en: 'White Oak',
-          name_zh: '白橡木',
-          code: '(13106)',
-          hex: '#D6CCA3'
-        }, null);
-      } else if (key === 'pla-matte-gold') {
-        selectVariant({
-          material: 'PLA MATTE',
-          name: 'Iridium Gold',
-          name_en: 'Iridium Gold',
-          name_zh: '铱金',
-          code: '(13008)',
-          hex: '#A2D312'
-        }, null);
-      } else if (key === 'petg-hf-black') {
-        selectVariant({
-          material: 'PETG HF',
-          name: 'Black',
-          name_en: 'Black',
-          name_zh: '黑色',
-          code: '(30101)',
-          hex: '#000000'
-        }, null);
+    function renderVariants(variants, selectIdx) {
+      currentVisibleVariants = variants || [];
+      const box = document.getElementById('variantsBox');
+      const container = document.getElementById('variantsContainer');
+      container.innerHTML = '';
+      box.style.display = 'block';
+
+      document.getElementById('availableCount').textContent = currentVisibleVariants.length;
+      document.getElementById('t_variantsLabel').textContent = I18N[currentLang].variantsLabel(currentVisibleVariants.length);
+
+      currentVisibleVariants.forEach((v, idx) => {
+        const chip = document.createElement('div');
+        const codeClean = getItemCode(v);
+        chip.setAttribute('data-code', codeClean);
+        const isSelected = isItemSelected(v);
+        const isActive = activeCardItem && getItemCode(activeCardItem) === codeClean;
+        chip.className = 'variant-chip' + (isSelected ? ' selected' : '') + (isActive ? ' active-preview' : '');
+
+        const displayName = currentLang === 'zh' ? (v.name_zh || v.name_en || v.name) : (v.name_en || v.name_zh || v.name);
+        const cleanCode = v.code.startsWith('(') ? v.code : `(${v.code})`;
+
+        chip.innerHTML = `
+          <input type="checkbox" class="variant-check" ${isSelected ? 'checked' : ''} />
+          <span class="color-dot" style="background-color: ${v.hex};"></span>
+          <span>${displayName}</span>
+          <span style="opacity:0.6; font-size:0.75rem;">${cleanCode}</span>
+        `;
+
+        const chk = chip.querySelector('.variant-check');
+        chk.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleSelect(v);
+        });
+
+        chip.addEventListener('click', () => {
+          setActiveCard(v);
+          if (!isItemSelected(v)) {
+            toggleSelect(v);
+          }
+        });
+
+        container.appendChild(chip);
+      });
+
+      if (variants[selectIdx]) {
+        setActiveCard(variants[selectIdx]);
+      }
+      refreshSelectionUI();
+    }
+
+    function refreshSelectionUI() {
+      const t = I18N[currentLang];
+      const count = selectedItems.length;
+      document.getElementById('selectedCountBadge').textContent = count;
+      document.getElementById('t_selectedTitle').textContent = t.selectedTitle(count);
+
+      const tray = document.getElementById('batchTray');
+      const pillsContainer = document.getElementById('selectedPillsList');
+      pillsContainer.innerHTML = '';
+
+      if (count === 0) {
+        tray.style.display = 'none';
+      } else {
+        tray.style.display = 'flex';
+        selectedItems.forEach(item => {
+          const pill = document.createElement('div');
+          const itemCode = getItemCode(item);
+          pill.setAttribute('data-code', itemCode);
+          const isAct = activeCardItem && getItemCode(activeCardItem) === itemCode;
+          pill.className = 'selected-pill' + (isAct ? ' active-pill' : '');
+          const displayName = currentLang === 'zh' ? (item.name_zh || item.name_en || item.name) : (item.name_en || item.name_zh || item.name);
+          const cleanCode = item.code.startsWith('(') ? item.code : `(${item.code})`;
+
+          pill.innerHTML = `
+            <span class="color-dot" style="background-color: ${item.hex}; width:10px; height:10px;"></span>
+            <span>${displayName} ${cleanCode}</span>
+            <span class="pill-remove" title="Remove">×</span>
+          `;
+
+          pill.querySelector('.pill-remove').addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSelect(item);
+          });
+
+          pill.addEventListener('click', () => {
+            setActiveCard(item);
+          });
+
+          pillsContainer.appendChild(pill);
+        });
+      }
+
+      // Sync checkbox state and class on chips
+      document.querySelectorAll('.variant-chip').forEach(c => {
+        const chipCode = c.getAttribute('data-code');
+        const chk = c.querySelector('.variant-check');
+        const isSel = selectedItems.some(s => getItemCode(s) === chipCode);
+        if (chk) chk.checked = isSel;
+        if (isSel) c.classList.add('selected');
+        else c.classList.remove('selected');
+      });
+
+      // Update Download Button text
+      const btn = document.getElementById('downloadBtn');
+      const btnSpan = btn.querySelector('span');
+      if (count > 1) {
+        btnSpan.textContent = t.downloadZipBtn(count);
+      } else {
+        btnSpan.textContent = t.downloadBtn;
+      }
+
+      updateCli();
+    }
+
+    function updateCli() {
+      const mat = document.getElementById('matInput').value;
+      const col = document.getElementById('colorInput').value;
+      const code = document.getElementById('codeInput').value;
+      const hex = document.getElementById('hexInput').value;
+      const relief = document.getElementById('reliefInput').value;
+      const seriesVal = document.getElementById('seriesFilter').value;
+
+      const cliText = document.getElementById('cliText');
+      if (!cliText) return;
+      if (selectedItems.length > 1) {
+        if (seriesVal && seriesVal !== 'ALL') {
+          cliText.textContent = `python3 make_filament_card.py --series "${seriesVal}" --zip --relief ${relief}`;
+        } else {
+          cliText.textContent = `python3 make_filament_card.py --all --zip --relief ${relief}`;
+        }
+      } else {
+        cliText.textContent = `python3 make_filament_card.py "${mat}" "${col}" "${code}" "${hex}" ${relief}`;
       }
     }
 
-    function filterDatabase() {
-      const q = document.getElementById('dbSearch').value.trim().toLowerCase();
-      if (!q || !filamentDb.length) return;
-
-      const matches = filamentDb.filter(item => {
-        return item.code.includes(q) ||
-               item.name_en.toLowerCase().includes(q) ||
-               item.name_zh.includes(q) ||
-               item.material.toLowerCase().includes(q);
-      }).slice(0, 15);
-
-      if (matches.length > 0) {
-        renderVariants(matches.map(m => ({
-          material: m.material.toUpperCase(),
-          name: currentLang === 'zh' ? (m.name_zh || m.name_en) : m.name_en,
-          name_en: m.name_en,
-          name_zh: m.name_zh,
-          code: `(${m.code})`,
-          hex: m.hex
-        })), 0);
-      }
-    }
-
-    // 100% In-Browser 3MF Generation & Download
+    // 100% In-Browser 3MF & ZIP Generation & Download
     async function generateAndDownload() {
       const mat = document.getElementById('matInput').value;
       const col = document.getElementById('colorInput').value;
@@ -1533,9 +1918,84 @@
       const btn = document.getElementById('downloadBtn');
       const origText = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = `<span>${I18N[currentLang].downloadingBtn}</span>`;
+      const t = I18N[currentLang];
 
       try {
+        if (selectedItems.length > 1) {
+          // Batch export as ZIP
+          const progressWrap = document.getElementById('batchProgressWrap');
+          const progressFill = document.getElementById('batchProgressFill');
+          const progressLabel = document.getElementById('batchProgressLabel');
+          progressWrap.style.display = 'flex';
+          progressFill.style.width = '0%';
+          btn.innerHTML = `<span>${t.downloadingBtn}</span>`;
+
+          if (typeof JSZip === 'undefined') {
+            throw new Error('JSZip library loading, please wait or refresh.');
+          }
+
+          if (!cachedTemplateBuffer) {
+            progressLabel.textContent = t.progressLoadingTemplate;
+            const resp = await fetch('card_template.3mf');
+            if (!resp.ok) throw new Error('Could not load card_template.3mf (' + resp.status + ')');
+            cachedTemplateBuffer = await resp.arrayBuffer();
+          }
+
+          const batchZip = new JSZip();
+          const total = selectedItems.length;
+
+          for (let i = 0; i < total; i++) {
+            const item = selectedItems[i];
+            const itemMat = (item.material || mat || 'PLA').toUpperCase();
+            const itemCol = isCardZh ? (item.name_zh || item.name_en || item.name) : (item.name_en || item.name_zh || item.name);
+            const itemCode = item.code.startsWith('(') ? item.code : `(${item.code})`;
+            const itemHex = item.hex.startsWith('#') ? item.hex : '#' + item.hex;
+            const itemTextHex = getTextColor(itemHex);
+
+            const pct = Math.round((i / total) * 100);
+            progressFill.style.width = pct + '%';
+            progressLabel.textContent = t.progressGenerating(i + 1, total, itemCol, pct);
+
+            await new Promise(r => setTimeout(r, 10));
+
+            const cardBlob = await generateClientSide3mf(
+              itemMat,
+              itemCol,
+              itemCode,
+              itemHex,
+              relief,
+              swatchD,
+              cachedTemplateBuffer,
+              itemHex,
+              itemTextHex
+            );
+
+            const cleanName = itemCol.replace(/[/\\?%*:|"<> ]/g, '_');
+            batchZip.file(`Filament_Card_${cleanName}.3mf`, cardBlob);
+          }
+
+          progressFill.style.width = '100%';
+          progressLabel.textContent = t.progressCompressing;
+          await new Promise(r => setTimeout(r, 20));
+
+          const zipBlob = await batchZip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+          const seriesVal = document.getElementById('seriesFilter').value;
+          let zipName = 'Bambu_Filament_Cards_Batch.zip';
+          if (seriesVal && seriesVal !== 'ALL') {
+            const cleanSeries = seriesVal.replace(/[/\\?%*:|"<> ]/g, '_');
+            zipName = `Bambu_Filament_Cards_${cleanSeries}_${total}pcs.zip`;
+          } else {
+            zipName = `Bambu_Filament_Cards_${total}_Selected.zip`;
+          }
+
+          saveBlob(zipBlob, zipName);
+          progressWrap.style.display = 'none';
+          showToast(t.toastZipSuccess(total));
+          return;
+        }
+
+        // Single card generation
+        btn.innerHTML = `<span>${t.downloadingBtn}</span>`;
         let downloaded = false;
         const isLocalServer = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         if (isLocalServer) {
@@ -1578,7 +2038,7 @@
           saveBlob(blob, `Filament_Card_${col.replace(/[/\\?%*:|"<> ]/g, '_')}.3mf`);
         }
 
-        showToast(I18N[currentLang].toastSuccess);
+        showToast(t.toastSuccess);
       } catch (e) {
         showToast('Error: ' + e.message);
       } finally {
