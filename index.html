@@ -593,9 +593,9 @@
         <div>
           <label for="textColorMode" id="t_textColorLabel">Text Inlay Color</label>
           <select id="textColorMode" onchange="onTextColorModeChange()">
-            <option value="auto" id="opt_textAuto">Auto Contrast (Black/White)</option>
+            <option value="#FFFFFF" id="opt_textWhite" selected>White (#FFFFFF - Standard)</option>
             <option value="#1A1A1A" id="opt_textBlack">Dark Black (#1A1A1A)</option>
-            <option value="#FFFFFF" id="opt_textWhite">Pure White (#FFFFFF)</option>
+            <option value="auto" id="opt_textAuto">Auto Contrast (Black/White)</option>
             <option value="custom" id="opt_textCustom">Custom HEX...</option>
           </select>
           <div id="customTextColorWrap" style="display:none; margin-top:8px;" class="color-input-wrapper">
@@ -1230,9 +1230,9 @@
       const code = document.getElementById('codeInput').value;
       const hex = document.getElementById('hexInput').value;
       const relief = document.getElementById('reliefInput').value;
-      const mode = document.getElementById('textColorMode')?.value || 'auto';
+      const mode = document.getElementById('textColorMode')?.value || '#FFFFFF';
       let cmd = `python3 make_filament_card.py "${mat}" "${col}" "${code}" "${hex}" ${relief}`;
-      if (mode !== 'auto') {
+      if (mode !== '#FFFFFF') {
         const textColor = getTextColor(hex);
         cmd += ` --text-hex "${textColor}"`;
       }
@@ -1554,7 +1554,7 @@
           });
           if (resp.ok) {
             const blob = await resp.blob();
-            saveBlob(blob, `耗材样本卡_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
+            saveBlob(blob, `Filament_Card_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
             downloaded = true;
           }
         } catch (e) {}
@@ -1571,7 +1571,7 @@
           }
 
           const blob = await generateClientSide3mf(mat, col, code, hex, relief, swatchD, cachedTemplateBuffer);
-          saveBlob(blob, `耗材样本卡_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
+          saveBlob(blob, `Filament_Card_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
         }
 
         showToast(I18N[currentLang].toastSuccess);

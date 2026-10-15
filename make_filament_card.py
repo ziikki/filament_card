@@ -481,7 +481,7 @@ def fmt(v):
 def write_3mf(template, out_path, text_mesh, swatch_mesh, hex_color, base_hex=None, text_hex=None):
     hex_color = normalize_hex(hex_color)
     base_hex = normalize_hex(base_hex) if base_hex else hex_color
-    text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(base_hex)
+    text_hex = normalize_hex(text_hex) if text_hex else "#FFFFFF"
     (Vt, Tt), (Vs, Ts) = text_mesh, swatch_mesh
     Vt, ct = center_mesh(Vt)
     Vs, cs = center_mesh(Vs)
@@ -622,7 +622,7 @@ class ArgsWrapper:
         self.preview = preview
         self.out = out
         self.base_hex = normalize_hex(base_hex) if base_hex else self.hex
-        self.text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(self.base_hex)
+        self.text_hex = normalize_hex(text_hex) if text_hex else "#FFFFFF"
 
 
 def render_preview_image(material, color, code, hex_color, swatch_d=7.0,
@@ -632,7 +632,7 @@ def render_preview_image(material, color, code, hex_color, swatch_d=7.0,
     """Render 2D preview image of the card pocket. Returns (bgr_img, warnings, stroke_info)."""
     hex_color = normalize_hex(hex_color)
     base_hex = normalize_hex(base_hex) if base_hex else hex_color
-    text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(base_hex)
+    text_hex = normalize_hex(text_hex) if text_hex else "#FFFFFF"
     font_path, font_index = pick_font(font_path, font_index)
     fr = TextRenderer(font_path, font_index)
 
@@ -676,7 +676,7 @@ def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
     """Render high-resolution 2D preview image of the ENTIRE card (75x36mm) matching MakerWorld #70155."""
     hex_color = normalize_hex(hex_color)
     base_hex = normalize_hex(base_hex) if base_hex else hex_color
-    text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(base_hex)
+    text_hex = normalize_hex(text_hex) if text_hex else "#FFFFFF"
 
     hex_clean = hex_color.lstrip('#')
     h_rgb = tuple(int(hex_clean[i:i+2], 16) for i in (0, 2, 4))
@@ -878,12 +878,14 @@ def generate_card(material, color, code, hex_color, relief=0.5, out_path=None,
     """Generate 3MF filament card and optional preview PNG. Returns metadata dict."""
     hex_color = normalize_hex(hex_color)
     base_hex = normalize_hex(base_hex) if base_hex else hex_color
-    text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(base_hex)
+    text_hex = normalize_hex(text_hex) if text_hex else "#FFFFFF"
     if relief < 0.2:
         raise ValueError("relief must be >= 0.2 mm")
 
-    out = out_path or os.path.join(
-        os.getcwd(), "耗材样本卡_%s.3mf" % re.sub(r'[\\/:*?"<>|\s]+', "_", color).strip("_"))
+    clean_name = re.sub(r'[\\/:*?"<>|\s]+', "_", color).strip("_")
+    default_out_dir = os.path.join(HERE, "examples")
+    os.makedirs(default_out_dir, exist_ok=True)
+    out = out_path or os.path.join(default_out_dir, f"Filament_Card_{clean_name}.3mf")
 
     font_path, font_index = pick_font(font_path, font_index)
     fr = TextRenderer(font_path, font_index)
@@ -944,10 +946,10 @@ def main():
     ap.add_argument("hex", help="HEX色号, e.g. '#A2D312'")
     ap.add_argument("relief", nargs="?", type=float, default=0.5,
                     help="浮雕高度 mm above pocket floor (default 0.5 = flush with card top; 1.2 = raised)")
-    ap.add_argument("-o", "--out", help="output .3mf (default: 耗材样本卡_<颜色名>.3mf)")
+    ap.add_argument("-o", "--out", help="output .3mf path (default: filament_card/examples/Filament_Card_<color>.3mf)")
     ap.add_argument("--template", default=DEFAULT_TEMPLATE)
     ap.add_argument("--base-hex", default=None, help="卡片底座HEX色号 (default: 同选中的耗材HEX色号)")
-    ap.add_argument("--text-hex", default=None, help="文字HEX色号 (default: 自动计算黑/白高对比度)")
+    ap.add_argument("--text-hex", default="#FFFFFF", help="文字HEX色号 (default: #FFFFFF 白色)")
     ap.add_argument("--thicken", action="store_true",
                     help="启用细笔画形态学加粗 (默认关闭，直接使用平整平滑的字体原生外形)")
     ap.add_argument("--min-stroke", type=float, default=0.8,

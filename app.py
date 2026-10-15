@@ -148,7 +148,7 @@ class FilamentStudioHandler(BaseHTTPRequestHandler):
             code = body.get("code", "(13106)")
             hex_color = body.get("hex", "#D6CCA3")
             base_hex = body.get("base_hex")
-            text_hex = body.get("text_hex")
+            text_hex = body.get("text_hex", "#FFFFFF")
             swatch_d = float(body.get("swatch_d", 7.0))
             thicken = bool(body.get("thicken", False))
 
@@ -190,7 +190,7 @@ class FilamentStudioHandler(BaseHTTPRequestHandler):
             code = body.get("code", "(13106)")
             hex_color = body.get("hex", "#D6CCA3")
             base_hex = body.get("base_hex")
-            text_hex = body.get("text_hex")
+            text_hex = body.get("text_hex", "#FFFFFF")
             relief = float(body.get("relief", 0.5))
             swatch_d = float(body.get("swatch_d", 7.0))
             thicken = bool(body.get("thicken", False))
@@ -222,7 +222,7 @@ class FilamentStudioHandler(BaseHTTPRequestHandler):
                     pass
 
                 clean_col = re.sub(r'[\\/:*?"<>|\s]+', '_', color).strip('_')
-                filename = f"耗材样本卡_{clean_col}.3mf"
+                filename = f"Filament_Card_{clean_col}.3mf"
                 # UTF-8 encoded filename in RFC 5987 format
                 quoted_fn = urllib.parse.quote(filename)
 
