@@ -48,8 +48,8 @@ Open directly in your browser:
 
 ## 💡 Highlights (核心亮点)
 
-- 💎 **Seamless 0.5 mm Flush Inlay (默认 0.5mm 丝滑平齐嵌色)**  
-  Text and color swatches sit completely flush with the card body (engineered as 5 precise layers at 0.10 mm), delivering a smooth, injection-molded touch with zero rough ridges. *(Custom embossed relief up to 1.2 mm also supported).*
+- 💎 **Seamless 0.5 mm Flush Inlay · Flat Stacking (0.5mm 平齐嵌色 · 完美叠放不翘起)**  
+  Text and color swatches are printed at the exact same height as the card surface (5 precise layers at 0.10 mm). With zero raised edges or protruding letters, your cards stack 100% flat in storage boxes, swatch drawers, and binders without tilting, catching, or wobbling. *(Custom raised embossing up to 1.2 mm also supported).*
 
 - 🏷️ **Official 314-Filament Database (内置 314 款拓竹官方耗材库)**  
   Instant search by color code (e.g. `13106`), material, or bilingual name (`White Oak` / `白橡木`). Exact Bambu Lab official hex colors and metadata are baked right into your `.3mf` model and slicer preview.
@@ -115,7 +115,7 @@ The generated `.3mf` file is pre-configured for Bambu Studio according to our 3-
    - **Crucial Setting**: Both the 3MF template and slicer metadata are pre-calibrated to **`0.10 mm`**.
    - **Why `0.10 mm`?** 
      - The card's 5-step light transmission test ladder has stepped thicknesses of `0.1 mm`, `0.2 mm`, `0.4 mm`, `0.6 mm`, and `0.8 mm`. A `0.10 mm` layer height ensures that every step maps to an exact integer layer count (1, 2, 4, 6, and 8 layers), ensuring accurate translucency evaluation.
-     - The 0.50 mm flush inlay corresponds to exactly **5 layers**, providing razor-sharp text contours and a perfectly smooth top surface.
+     - The 0.50 mm flush inlay corresponds to exactly **5 layers**, delivering razor-sharp text contours, a perfectly smooth surface, and 100% flat stacking with zero wobbling.
 2. **First Layer Height (首层层高)**: **`0.10 mm`** (pre-set in 3MF project settings).
 3. **Nozzle (喷嘴)**: `0.4 mm` (standard) or `0.2 mm` (ultra detail).
 4. **Filament Assignment in Bambu Studio (3-Color Standard)**:

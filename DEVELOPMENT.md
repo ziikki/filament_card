@@ -93,7 +93,7 @@ The project maintains two parallel implementations of the watertight 3MF generat
 - The card features:
   - 5-step light transmission stairs: **`0.8 mm`**, **`0.6 mm`**, **`0.4 mm`**, **`0.2 mm`**, **`0.1 mm`**.
   - Recessed pocket floor at `Z = 0.5 mm`, card top surface at `Z = 1.0 mm`.
-  - Default text inlay relief: **`0.5 mm`** (from `Z = 0.5 mm` to `Z = 1.0 mm`, perfectly flush).
+  - Default text inlay relief: **`0.5 mm`** (from `Z = 0.5 mm` to `Z = 1.0 mm`, perfectly flush with the card surface so stacked cards lie 100% flat with zero wobble).
 - **Why 0.1 mm layer height is required**:
   - The smallest step (`0.1 mm`) is exactly **1 layer**.
   - The other steps (`0.2, 0.4, 0.6, 0.8 mm`) are exactly **2, 4, 6, 8 layers**.
