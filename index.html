@@ -1537,27 +1537,30 @@
 
       try {
         let downloaded = false;
-        try {
-          const resp = await fetch('/api/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              material: mat,
-              color: col,
-              code: code,
-              hex: hex,
-              relief: relief,
-              swatch_d: swatchD,
-              base_hex: hex,
-              text_hex: getTextColor(hex)
-            })
-          });
-          if (resp.ok) {
-            const blob = await resp.blob();
-            saveBlob(blob, `Filament_Card_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
-            downloaded = true;
-          }
-        } catch (e) {}
+        const isLocalServer = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        if (isLocalServer) {
+          try {
+            const resp = await fetch('/api/generate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                material: mat,
+                color: col,
+                code: code,
+                hex: hex,
+                relief: relief,
+                swatch_d: swatchD,
+                base_hex: hex,
+                text_hex: getTextColor(hex)
+              })
+            });
+            if (resp.ok) {
+              const blob = await resp.blob();
+              saveBlob(blob, `Filament_Card_${col.replace(/[/\\?%*:|"<> ]/g, '_')}.3mf`);
+              downloaded = true;
+            }
+          } catch (e) {}
+        }
 
         if (!downloaded) {
           if (typeof JSZip === 'undefined') {
@@ -1566,12 +1569,13 @@
 
           if (!cachedTemplateBuffer) {
             const resp = await fetch('card_template.3mf');
-            if (!resp.ok) throw new Error('Could not load template card_template.3mf');
+            if (!resp.ok) throw new Error('Could not load template card_template.3mf (' + resp.status + ')');
             cachedTemplateBuffer = await resp.arrayBuffer();
           }
 
-          const blob = await generateClientSide3mf(mat, col, code, hex, relief, swatchD, cachedTemplateBuffer);
-          saveBlob(blob, `Filament_Card_${col.replace(/[/\\\\?%*:|"<> ]/g, '_')}.3mf`);
+          const textColor = getTextColor(hex);
+          const blob = await generateClientSide3mf(mat, col, code, hex, relief, swatchD, cachedTemplateBuffer, hex, textColor);
+          saveBlob(blob, `Filament_Card_${col.replace(/[/\\?%*:|"<> ]/g, '_')}.3mf`);
         }
 
         showToast(I18N[currentLang].toastSuccess);
@@ -1595,7 +1599,7 @@
     }
 
     // Client-side 3MF mesh generator
-    async function generateClientSide3mf(material, color, code, hexColor, relief, swatchD, templateBuffer) {
+    async function generateClientSide3mf(material, color, code, hexColor, relief, swatchD, templateBuffer, baseHex, textHex) {
       const ppm = 30; // Resolution px per mm
       const W = Math.round(POCKET_W * ppm);
       const H = Math.round(POCKET_H * ppm);
@@ -1623,7 +1627,7 @@
 
       // Row 1: Material
       const matSizePx = Math.round(3.2 * ppm);
-      ctx.font = `bold ${matSizePx}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      ctx.font = `bold ${matSizePx}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'left';
       ctx.fillText(material.toUpperCase(), colX(x0), rowY(sw_cy - 0.2));
@@ -1635,7 +1639,7 @@
       const sepY = metaBaseY + 2.8 + 1.6;
       ctx.fillRect(colX(x0), rowY(sepY + sepT), usable * ppm, sepT * ppm);
 
-      ctx.font = `bold ${metaSizePx}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      ctx.font = `bold ${metaSizePx}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
       ctx.textBaseline = 'alphabetic';
       ctx.textAlign = 'left';
       ctx.fillText(code, colX(x0), rowY(metaBaseY));
@@ -1649,13 +1653,13 @@
       const nameY = bandBot + bandH / 2;
 
       let nameFontSize = Math.min(6.2 * ppm, bandH * ppm * 0.75);
-      ctx.font = `bold ${nameFontSize}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+      ctx.font = `bold ${nameFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
       const measured = ctx.measureText(color).width;
       if (measured > usable * ppm) {
         nameFontSize = Math.round(nameFontSize * (usable * ppm) / measured);
-        ctx.font = `bold ${nameFontSize}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
+        ctx.font = `bold ${nameFontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif`;
       }
       ctx.fillText(color, colX(x0), rowY(nameY));
 
@@ -1692,11 +1696,13 @@
       modelCfg = modelCfg.replace(/<part id="3"[\s\S]*?<\/part>/, (m) => {
         let p = m.replace(/(<metadata key="matrix" value=")[^"]*(")/,
           `$11 0 0 ${fmt(centeredText.center[0])} 0 1 0 ${fmt(centeredText.center[1])} 0 0 1 ${fmt(centeredText.center[2])} 0 0 0 1$2`);
+        p = p.replace(/(<metadata key="extruder" value=")\d+(")/, `$12$2`);
         return p.replace(/(<mesh_stat face_count=")\d+/, `$1${textMesh.triangles.length}`);
       });
       modelCfg = modelCfg.replace(/<part id="4"[\s\S]*?<\/part>/, (m) => {
         let p = m.replace(/(<metadata key="matrix" value=")[^"]*(")/,
           `$11 0 0 ${fmt(centeredSwatch.center[0])} 0 1 0 ${fmt(centeredSwatch.center[1])} 0 0 1 ${fmt(centeredSwatch.center[2])} 0 0 0 1$2`);
+        p = p.replace(/(<metadata key="extruder" value=")\d+(")/, `$13$2`);
         return p.replace(/(<mesh_stat face_count=")\d+/, `$1${swatchMesh.triangles.length}`);
       });
       modelCfg = modelCfg.replace(/(<assemble_item object_id="2" volume_id="1" transform=")[^"]*(")/,
@@ -1705,16 +1711,23 @@
         `$11 0 0 0 1 0 0 0 1 ${fmt(centeredSwatch.center[0])} ${fmt(centeredSwatch.center[1])} ${fmt(centeredSwatch.center[2])}$2`);
       modelCfg = modelCfg.replace(/(<object id="2">[\s\S]*?<metadata face_count=")\d+/,
         `$1${3472 + textMesh.triangles.length + swatchMesh.triangles.length}`);
+      modelCfg = modelCfg.replace(/(<metadata key="filament_maps" value=")[^"]*(")/, `$11 1 1$2`);
+      modelCfg = modelCfg.replace(/(<metadata key="filament_volume_maps" value=")[^"]*(")/, `$10 0 0$2`);
       zip.file('Metadata/model_settings.config', modelCfg);
 
       let projCfgStr = await zip.file('Metadata/project_settings.config').async('string');
       let projCfg = JSON.parse(projCfgStr);
-      const textColor = getTextColor(hexColor);
+      const norm = (h) => (h ? (h.startsWith('#') ? h : '#' + h).toUpperCase() : '');
+      const baseHexVal = norm(baseHex || hexColor);
+      const textHexVal = norm(textHex || getTextColor(hexColor));
+      const swatchHexVal = norm(hexColor);
       if (projCfg.filament_colour && projCfg.filament_colour.length >= 3) {
-        projCfg.filament_colour[0] = hexColor.toUpperCase();
-        projCfg.filament_colour[1] = textColor.toUpperCase();
-        projCfg.filament_colour[2] = hexColor.toUpperCase();
+        projCfg.filament_colour[0] = baseHexVal;
+        projCfg.filament_colour[1] = textHexVal;
+        projCfg.filament_colour[2] = swatchHexVal;
       }
+      projCfg['initial_layer_print_height'] = '0.1';
+      projCfg['layer_height'] = '0.1';
       zip.file('Metadata/project_settings.config', JSON.stringify(projCfg, null, 4));
 
       return await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
@@ -1933,6 +1946,9 @@
     }
 
     function centerMesh(verts) {
+      if (!verts || verts.length === 0) {
+        return { vertices: [], center: [0, 0, 0] };
+      }
       let minX = Infinity, minY = Infinity, minZ = Infinity;
       let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
       for (const [x, y, z] of verts) {
@@ -1966,6 +1982,10 @@
         '   <mesh>\n    <vertices>\n';
       for (const [x, y, z] of swatchVerts) {
         out += `     <vertex x="${x.toFixed(5)}" y="${y.toFixed(5)}" z="${z.toFixed(5)}"/>\n`;
+      }
+      out += '    </vertices>\n    <triangles>\n';
+      for (const [a, b, c] of swatchTris) {
+        out += `     <triangle v1="${a}" v2="${b}" v3="${c}"/>\n`;
       }
       out += '    </triangles>\n   </mesh>\n  </object>\n </resources>\n <build/>\n</model>\n';
       return out;
