@@ -581,7 +581,7 @@
           <input type="text" id="codeInput" value="(13106)" oninput="renderCardPreview()" />
         </div>
         <div>
-          <label for="hexInput" id="t_hexLabel">HEX Color (Row 3 Right & Swatch)</label>
+          <label for="hexInput" id="t_hexLabel">Card Base & Swatch Color (HEX)</label>
           <div class="color-input-wrapper">
             <input type="color" id="colorPicker" value="#D6CCA3" oninput="onColorPickerChange(this.value)" />
             <input type="text" id="hexInput" value="#D6CCA3" oninput="onHexInputChange(this.value)" />
@@ -591,9 +591,25 @@
 
       <div class="grid-2">
         <div>
+          <label for="textColorMode" id="t_textColorLabel">Text Inlay Color</label>
+          <select id="textColorMode" onchange="onTextColorModeChange()">
+            <option value="auto" id="opt_textAuto">Auto Contrast (Black/White)</option>
+            <option value="#1A1A1A" id="opt_textBlack">Dark Black (#1A1A1A)</option>
+            <option value="#FFFFFF" id="opt_textWhite">Pure White (#FFFFFF)</option>
+            <option value="custom" id="opt_textCustom">Custom HEX...</option>
+          </select>
+          <div id="customTextColorWrap" style="display:none; margin-top:8px;" class="color-input-wrapper">
+            <input type="color" id="customTextColorPicker" value="#1A1A1A" oninput="onCustomTextColorPickerChange(this.value)" />
+            <input type="text" id="customTextInput" value="#1A1A1A" oninput="onCustomTextInputChange(this.value)" />
+          </div>
+        </div>
+        <div>
           <label for="reliefInput" id="t_reliefLabel">Relief Height (Default 0.5 mm flush; 1.2 mm raised)</label>
           <input type="number" id="reliefInput" value="0.5" step="0.1" min="0.2" max="3.0" oninput="renderCardPreview()" />
         </div>
+      </div>
+
+      <div class="grid-2">
         <div>
           <label for="swatchDia" id="t_swatchLabel">Swatch Diameter (Default 7.0 mm)</label>
           <input type="number" id="swatchDia" value="7.0" step="0.5" min="4.0" max="10.0" oninput="renderCardPreview()" />
@@ -928,7 +944,12 @@
         matLabel: "Material Type (Row 1)",
         colorLabel: "Color Name (Row 2)",
         codeLabel: "Code (Row 3 Left)",
-        hexLabel: "HEX Color (Row 3 Right & Swatch)",
+        hexLabel: "Card Base & Swatch Color (HEX)",
+        textColorLabel: "Text Inlay Color",
+        optTextAuto: "Auto Contrast (Black/White)",
+        optTextBlack: "Dark Black (#1A1A1A)",
+        optTextWhite: "Pure White (#FFFFFF)",
+        optTextCustom: "Custom HEX...",
         reliefLabel: "Relief Height (Default 0.5 mm flush; 1.2 mm raised)",
         swatchLabel: "Swatch Diameter (Default 7.0 mm)",
         previewTitle: "Real-Time Vector Preview (Pocket Layout)",
@@ -965,7 +986,12 @@
         matLabel: "材料类型 (第1行)",
         colorLabel: "颜色名称 (第2行)",
         codeLabel: "编号 (第3行左侧)",
-        hexLabel: "HEX 色号 (第3行右侧与色块)",
+        hexLabel: "卡片底色与色板 (HEX)",
+        textColorLabel: "文字嵌色颜色",
+        optTextAuto: "自动高对比度 (黑/白)",
+        optTextBlack: "深黑色 (#1A1A1A)",
+        optTextWhite: "纯白色 (#FFFFFF)",
+        optTextCustom: "自定义 HEX...",
         reliefLabel: "浮雕高度 (默认 0.5 mm 表面平齐嵌色; 1.2 mm 突出)",
         swatchLabel: "色块直径 (默认 7.0 mm)",
         previewTitle: "实时矢量渲染 (卡片凹槽排版)",
@@ -1079,6 +1105,13 @@
       document.getElementById('t_colorLabel').textContent = t.colorLabel;
       document.getElementById('t_codeLabel').textContent = t.codeLabel;
       document.getElementById('t_hexLabel').textContent = t.hexLabel;
+      if (document.getElementById('t_textColorLabel')) {
+        document.getElementById('t_textColorLabel').textContent = t.textColorLabel;
+        document.getElementById('opt_textAuto').textContent = t.optTextAuto;
+        document.getElementById('opt_textBlack').textContent = t.optTextBlack;
+        document.getElementById('opt_textWhite').textContent = t.optTextWhite;
+        document.getElementById('opt_textCustom').textContent = t.optTextCustom;
+      }
       document.getElementById('t_reliefLabel').textContent = t.reliefLabel;
       document.getElementById('t_swatchLabel').textContent = t.swatchLabel;
 
@@ -1149,13 +1182,60 @@
       renderCardPreview();
     }
 
+    function onTextColorModeChange() {
+      const mode = document.getElementById('textColorMode').value;
+      const wrap = document.getElementById('customTextColorWrap');
+      wrap.style.display = (mode === 'custom') ? 'flex' : 'none';
+      renderCardPreview();
+    }
+
+    function onCustomTextColorPickerChange(val) {
+      document.getElementById('customTextInput').value = val.toUpperCase();
+      renderCardPreview();
+    }
+
+    function onCustomTextInputChange(val) {
+      let h = val.trim();
+      if (!h.startsWith('#')) h = '#' + h;
+      if (/^#[0-9A-Fa-f]{6}$/.test(h)) {
+        document.getElementById('customTextColorPicker').value = h;
+      }
+      renderCardPreview();
+    }
+
+    function getLuminance(hex) {
+      const clean = hex.replace('#', '');
+      const r = parseInt(clean.substring(0, 2), 16) || 0;
+      const g = parseInt(clean.substring(2, 4), 16) || 0;
+      const b = parseInt(clean.substring(4, 6), 16) || 0;
+      return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    }
+
+    function getTextColor(baseHex) {
+      const select = document.getElementById('textColorMode');
+      const mode = select ? select.value : 'auto';
+      if (mode === 'auto') {
+        return getLuminance(baseHex) > 0.5 ? '#1A1A1A' : '#FFFFFF';
+      } else if (mode === 'custom') {
+        let c = document.getElementById('customTextInput')?.value.trim() || '#1A1A1A';
+        if (!c.startsWith('#')) c = '#' + c;
+        return c;
+      }
+      return mode;
+    }
+
     function updateCliBox() {
       const mat = document.getElementById('matInput').value;
       const col = document.getElementById('colorInput').value;
       const code = document.getElementById('codeInput').value;
       const hex = document.getElementById('hexInput').value;
       const relief = document.getElementById('reliefInput').value;
+      const mode = document.getElementById('textColorMode')?.value || 'auto';
       let cmd = `python3 make_filament_card.py "${mat}" "${col}" "${code}" "${hex}" ${relief}`;
+      if (mode !== 'auto') {
+        const textColor = getTextColor(hex);
+        cmd += ` --text-hex "${textColor}"`;
+      }
       document.getElementById('cliText').textContent = cmd;
     }
 
@@ -1181,9 +1261,17 @@
       const relief = parseFloat(document.getElementById('reliefInput').value) || 0.5;
       const swatchD = parseFloat(document.getElementById('swatchDia').value) || 7.0;
 
-      // Card pocket floor background
-      ctx.fillStyle = '#B39B84'; // Default card body tone
+      // Card pocket floor background: matches selected filament color
+      ctx.fillStyle = hex;
       ctx.fillRect(0, 0, w, h);
+
+      const textColor = getTextColor(hex);
+      const isLight = getLuminance(hex) > 0.5;
+
+      // Subtle pocket border to show 3D inset
+      ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.10)' : 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(0, 0, w, h);
 
       function colX(x) { return Math.round((x + POCKET_W / 2) * ppm); }
       function rowY(y) { return Math.round((POCKET_H / 2 - y) * ppm); }
@@ -1204,13 +1292,14 @@
       ctx.arc(colX(sw_cx), rowY(sw_cy), sw_r * ppm, 0, Math.PI * 2);
       ctx.fillStyle = hex;
       ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+      // Outer stroke to clearly distinguish 3D swatch feature
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.22)' : 'rgba(255, 255, 255, 0.35)';
       ctx.stroke();
       ctx.restore();
 
-      // Text drawing in dark relief
-      ctx.fillStyle = '#262626';
+      // Text drawing in high-contrast text color
+      ctx.fillStyle = textColor;
 
       // Row 1: Material (Top-Left)
       const matSizePx = Math.round(3.2 * ppm);
@@ -1458,7 +1547,9 @@
               code: code,
               hex: hex,
               relief: relief,
-              swatch_d: swatchD
+              swatch_d: swatchD,
+              base_hex: hex,
+              text_hex: getTextColor(hex)
             })
           });
           if (resp.ok) {
@@ -1618,7 +1709,10 @@
 
       let projCfgStr = await zip.file('Metadata/project_settings.config').async('string');
       let projCfg = JSON.parse(projCfgStr);
+      const textColor = getTextColor(hexColor);
       if (projCfg.filament_colour && projCfg.filament_colour.length >= 3) {
+        projCfg.filament_colour[0] = hexColor.toUpperCase();
+        projCfg.filament_colour[1] = textColor.toUpperCase();
         projCfg.filament_colour[2] = hexColor.toUpperCase();
       }
       zip.file('Metadata/project_settings.config', JSON.stringify(projCfg, null, 4));

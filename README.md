@@ -175,7 +175,9 @@ filament_card/
 │   ├── 耗材样本卡_白橡木.3mf
 │   ├── 耗材样本卡_白橡木_preview.png
 │   ├── 耗材样本卡_Iridium_Gold.3mf
-│   └── 耗材样本卡_Iridium_Gold_preview.png
+│   ├── 耗材样本卡_Iridium_Gold_preview.png
+│   ├── 耗材样本卡_Lemon_Yellow.3mf
+│   └── 耗材样本卡_Lemon_Yellow_preview.png
 └── template/
     └── card_template.3mf         # Clean template backup
 ```
@@ -188,9 +190,10 @@ filament_card/
 2. **First Layer Height (首层层高)**: `0.20 mm`.
 3. **Nozzle (喷嘴)**: `0.4 mm` (default) or `0.2 mm` for extreme detail.
 4. **Filament Assignment in Bambu Studio**:
-   - `Filament 1`: Card body (e.g., White or Light Grey PLA)
-   - `Filament 2`: Text color (e.g., Black or Charcoal PLA)
-   - `Filament 3`: Filament swatch sample (the target material being sampled)
+   - `Filament 1`: **Card Base & Step Tests** (自动设为选中耗材颜色，打印整张卡体)
+   - `Filament 2`: **Text Inlay** (自动设为黑/白高对比度文字色)
+   - `Filament 3`: **Color Swatch** (设为选中耗材颜色，与卡体一致)
+   > 💡 卡体底色（Filament 1）与色板（Filament 3）均自动匹配样品色号，因此在 AMS 中只需将槽位 1 和 3 都映射为样品耗材，槽位 2 映射为对比文字耗材，即可进行轻松的 2 色混色打印！
 5. **Prime Tower (擦料塔)**: Supported and recommended.
 
 ---

@@ -478,7 +478,10 @@ def fmt(v):
     return "%.6f" % v
 
 
-def write_3mf(template, out_path, text_mesh, swatch_mesh, hex_color, base_hex="#B39B84", text_hex="#FFFFFF"):
+def write_3mf(template, out_path, text_mesh, swatch_mesh, hex_color, base_hex=None, text_hex=None):
+    hex_color = normalize_hex(hex_color)
+    base_hex = normalize_hex(base_hex) if base_hex else hex_color
+    text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(base_hex)
     (Vt, Tt), (Vs, Ts) = text_mesh, swatch_mesh
     Vt, ct = center_mesh(Vt)
     Vs, cs = center_mesh(Vs)
@@ -591,11 +594,19 @@ def normalize_hex(h):
     return "#" + s
 
 
+def auto_contrast_color(hex_color):
+    """Return '#1A1A1A' for light backgrounds, '#FFFFFF' for dark backgrounds."""
+    s = normalize_hex(hex_color).lstrip("#")
+    r, g, b = int(s[0:2], 16), int(s[2:4], 16), int(s[4:6], 16)
+    lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255.0
+    return "#1A1A1A" if lum > 0.5 else "#FFFFFF"
+
+
 class ArgsWrapper:
     def __init__(self, material, color, code, hex_val, relief=0.5, swatch_d=7.0,
                  template=DEFAULT_TEMPLATE, thicken=False, min_stroke=0.8, min_gap=0.5,
                  font=None, font_index=0, preview=False, out=None,
-                 base_hex="#B39B84", text_hex="#FFFFFF"):
+                 base_hex=None, text_hex=None):
         self.material = material
         self.color = color
         self.code = code
@@ -610,18 +621,18 @@ class ArgsWrapper:
         self.font_index = font_index
         self.preview = preview
         self.out = out
-        self.base_hex = normalize_hex(base_hex)
-        self.text_hex = normalize_hex(text_hex)
+        self.base_hex = normalize_hex(base_hex) if base_hex else self.hex
+        self.text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(self.base_hex)
 
 
 def render_preview_image(material, color, code, hex_color, swatch_d=7.0,
                          thicken=False, min_stroke=0.8, min_gap=0.5,
                          font_path=None, font_index=0,
-                         base_hex="#B39B84", text_hex="#FFFFFF"):
+                         base_hex=None, text_hex=None):
     """Render 2D preview image of the card pocket. Returns (bgr_img, warnings, stroke_info)."""
     hex_color = normalize_hex(hex_color)
-    base_hex = normalize_hex(base_hex)
-    text_hex = normalize_hex(text_hex)
+    base_hex = normalize_hex(base_hex) if base_hex else hex_color
+    text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(base_hex)
     font_path, font_index = pick_font(font_path, font_index)
     fr = TextRenderer(font_path, font_index)
 
@@ -648,6 +659,9 @@ def render_preview_image(material, color, code, hex_color, swatch_d=7.0,
     cvs = Canvas()
     rgb = tuple(int(hex_color[i:i + 2], 16) for i in (1, 3, 5))
     cv2.circle(prev, (cvs.col(sw_cx), cvs.row(sw_cy)), int(sw_r * PPM), rgb[::-1], -1, cv2.LINE_AA)
+    # Subtle outline ring so the circular swatch has clear 3D definition even when base == swatch
+    ring_col = (40, 40, 40) if auto_contrast_color(hex_color) == "#1A1A1A" else (220, 220, 220)
+    cv2.circle(prev, (cvs.col(sw_cx), cvs.row(sw_cy)), int(sw_r * PPM), ring_col, 2, cv2.LINE_AA)
 
     stroke_info = {
         "before": before,
@@ -658,10 +672,19 @@ def render_preview_image(material, color, code, hex_color, swatch_d=7.0,
 
 
 def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
-                     base_hex="#B39B84", text_hex="#282828"):
+                     base_hex=None, text_hex=None):
     """Render high-resolution 2D preview image of the ENTIRE card (75x36mm) matching MakerWorld #70155."""
-    hex_clean = normalize_hex(hex_color).lstrip('#')
+    hex_color = normalize_hex(hex_color)
+    base_hex = normalize_hex(base_hex) if base_hex else hex_color
+    text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(base_hex)
+
+    hex_clean = hex_color.lstrip('#')
     h_rgb = tuple(int(hex_clean[i:i+2], 16) for i in (0, 2, 4))
+    base_clean = base_hex.lstrip('#')
+    card_base_rgb = tuple(int(base_clean[i:i+2], 16) for i in (0, 2, 4))
+    clean_t_hex = text_hex.lstrip('#')
+    txt_rgb = tuple(int(clean_t_hex[i:i+2], 16) for i in (0, 2, 4))
+    is_light = (0.299 * card_base_rgb[0] + 0.587 * card_base_rgb[1] + 0.114 * card_base_rgb[2]) > 128
 
     pad_mm = 4.0
     W_mm = 75.0 + pad_mm * 2
@@ -670,10 +693,6 @@ def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
     H_px = int(H_mm * ppm)
     ox = W_px // 2
     oy = H_px // 2
-
-    card_base_rgb = (236, 233, 227)
-    clean_t_hex = normalize_hex(text_hex).lstrip('#')
-    txt_rgb = tuple(int(clean_t_hex[i:i+2], 16) for i in (0, 2, 4))
 
     rendered_from_mesh = False
     if os.path.exists(DEFAULT_TEMPLATE):
@@ -710,24 +729,22 @@ def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
                 if z_mean >= 0.95:
                     c = card_base_rgb
                 elif z_mean >= 0.45:
-                    c = (245, 243, 240)
+                    c = tuple(int(card_base_rgb[i] * 0.96) for i in range(3))
                 elif z_mean >= -0.05:
-                    c = (226, 222, 215)
-                elif z_mean >= -0.25:
-                    op = 0.92
-                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
-                elif z_mean >= -0.45:
-                    op = 0.76
-                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
-                elif z_mean >= -0.65:
-                    op = 0.58
-                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
-                elif z_mean >= -0.85:
-                    op = 0.42
-                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
+                    c = tuple(int(card_base_rgb[i] * 0.90) for i in range(3))
                 else:
-                    op = 0.28
-                    c = tuple(int(h_rgb[i] * op + card_base_rgb[i] * (1.0 - op)) for i in range(3))
+                    white = (255, 255, 255)
+                    if z_mean >= -0.25:
+                        op = 0.92
+                    elif z_mean >= -0.45:
+                        op = 0.80
+                    elif z_mean >= -0.65:
+                        op = 0.65
+                    elif z_mean >= -0.85:
+                        op = 0.45
+                    else:
+                        op = 0.28
+                    c = tuple(int(card_base_rgb[i] * op + white[i] * (1.0 - op)) for i in range(3))
 
                 col_bgr = (int(c[2] * shade), int(c[1] * shade), int(c[0] * shade), 255)
                 cv2.fillConvexPoly(card_img, pts, col_bgr, lineType=cv2.LINE_AA)
@@ -744,12 +761,14 @@ def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
         y0 = int(oy - 18.0 * ppm)
         x1 = int(ox + 37.5 * ppm)
         y1 = int(oy + 18.0 * ppm)
-        d.rounded_rectangle([x0, y0, x1, y1], radius=int(4.0 * ppm), fill=(*card_base_rgb, 255), outline=(195, 190, 182, 255), width=int(0.4*ppm))
+        border_col = (140, 140, 140, 180) if is_light else (220, 220, 220, 180)
+        d.rounded_rectangle([x0, y0, x1, y1], radius=int(4.0 * ppm), fill=(*card_base_rgb, 255), outline=border_col, width=int(0.4*ppm))
         px0 = int(ox + (-6.3 - 40.4/2) * ppm)
         py0 = int(oy - 15.2 * ppm)
         px1 = int(ox + (-6.3 + 40.4/2) * ppm)
         py1 = int(oy + 15.2 * ppm)
-        d.rounded_rectangle([px0, py0, px1, py1], radius=int(2.0*ppm), fill=(245, 243, 240, 255), outline=(190, 185, 178, 255), width=int(0.4*ppm))
+        pocket_fill = tuple(int(card_base_rgb[i] * 0.96) for i in range(3))
+        d.rounded_rectangle([px0, py0, px1, py1], radius=int(2.0*ppm), fill=(*pocket_fill, 255), outline=border_col, width=int(0.4*ppm))
 
     # Cut out lanyard slot hole cleanly: X in [-34.5, -28.5], Y in [-13.0, 13.0]
     sx0 = int(ox - 34.5 * ppm)
@@ -774,9 +793,11 @@ def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
     ns_x1 = int(ox + 21.5 * ppm)
     ns_y0 = int(oy - 15.0 * ppm)
     ns_y1 = int(oy + 15.0 * ppm)
-    draw.rectangle([ns_x0, ns_y0, ns_x1, ns_y1], fill=(225, 221, 214, 255))
-    draw.line([ns_x0, ns_y0, ns_x0, ns_y1], fill=(195, 190, 182, 255), width=1)
-    draw.line([ns_x1, ns_y0, ns_x1, ns_y1], fill=(205, 200, 192, 255), width=1)
+    strip_fill = tuple(int(card_base_rgb[i] * 0.92) for i in range(3))
+    draw.rectangle([ns_x0, ns_y0, ns_x1, ns_y1], fill=(*strip_fill, 255))
+    line_col = (110, 110, 110, 160) if is_light else (210, 210, 210, 160)
+    draw.line([ns_x0, ns_y0, ns_x0, ns_y1], fill=line_col, width=1)
+    draw.line([ns_x1, ns_y0, ns_x1, ns_y1], fill=line_col, width=1)
 
     num_x = int(ox + 18.5 * ppm)
     step_ys = [12.0, 6.0, 0.0, -6.0, -12.0]
@@ -786,21 +807,24 @@ def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
     except Exception:
         font_num = ImageFont.load_default()
 
+    num_col = (35, 35, 35, 240) if is_light else (245, 245, 245, 240)
+    shadow_col = (255, 255, 255, 180) if is_light else (0, 0, 0, 180)
     for y_mm, label in zip(step_ys, step_labels):
         ny = int(oy - y_mm * ppm)
-        draw.text((num_x + 1, ny + 1), label, font=font_num, fill=(255, 255, 255, 200), anchor='mm')
-        draw.text((num_x, ny), label, font=font_num, fill=(115, 110, 102, 255), anchor='mm')
+        draw.text((num_x + 1, ny + 1), label, font=font_num, fill=shadow_col, anchor='mm')
+        draw.text((num_x, ny), label, font=font_num, fill=num_col, anchor='mm')
 
     for y_div in [9.0, 3.0, -3.0, -9.0]:
         dy = int(oy - y_div * ppm)
         step_x_start = int(ox + 21.5 * ppm)
         step_x_end = int(ox + 34.5 * ppm)
-        draw.line([step_x_start, dy, step_x_end, dy], fill=(185, 180, 172, 180), width=1)
+        draw.line([step_x_start, dy, step_x_end, dy], fill=line_col, width=1)
 
     # Composite pocket text and swatch
     font_path, font_idx = pick_font(None, 0)
     fr = TextRenderer(font_path, font_idx)
-    args = ArgsWrapper(material=material, color=color, code=code, hex_val=hex_color, swatch_d=7.0)
+    args = ArgsWrapper(material=material, color=color, code=code, hex_val=hex_color, swatch_d=7.0,
+                       base_hex=base_hex, text_hex=text_hex)
     raw_pocket, (sw_cx, sw_cy, sw_r) = build_layout(args, fr)
 
     px0 = int(ox + (-6.3 - 40.4/2) * ppm)
@@ -824,8 +848,9 @@ def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
     sw_px = int(ox + (-6.3 + sw_cx) * ppm)
     sw_py = int(oy - (0.0 + sw_cy) * ppm)
     sw_r_px = int(sw_r * ppm)
+    sw_outline = (35, 35, 35, 180) if is_light else (235, 235, 235, 200)
     draw.ellipse([sw_px - sw_r_px, sw_py - sw_r_px, sw_px + sw_r_px, sw_py + sw_r_px],
-                 fill=(*h_rgb, 255), outline=(175, 170, 162, 255), width=int(0.35 * ppm))
+                 fill=(*h_rgb, 255), outline=sw_outline, width=int(0.4 * ppm))
 
     # Drop shadow
     shadow_img = Image.new('RGBA', pil_img.size, (0, 0, 0, 0))
@@ -849,11 +874,11 @@ def render_full_card(material, color, code, hex_color, out_path=None, ppm=25,
 def generate_card(material, color, code, hex_color, relief=0.5, out_path=None,
                   template_path=DEFAULT_TEMPLATE, thicken=False, min_stroke=0.8,
                   min_gap=0.5, swatch_d=7.0, font_path=None, font_index=0,
-                  preview=False, base_hex="#B39B84", text_hex="#FFFFFF"):
+                  preview=False, base_hex=None, text_hex=None):
     """Generate 3MF filament card and optional preview PNG. Returns metadata dict."""
     hex_color = normalize_hex(hex_color)
-    base_hex = normalize_hex(base_hex)
-    text_hex = normalize_hex(text_hex)
+    base_hex = normalize_hex(base_hex) if base_hex else hex_color
+    text_hex = normalize_hex(text_hex) if text_hex else auto_contrast_color(base_hex)
     if relief < 0.2:
         raise ValueError("relief must be >= 0.2 mm")
 
@@ -890,7 +915,7 @@ def generate_card(material, color, code, hex_color, relief=0.5, out_path=None,
     preview_path = None
     if preview:
         preview_path = os.path.splitext(out)[0] + "_preview.png"
-        render_full_card(material, color, code, hex_color, out_path=preview_path)
+        render_full_card(material, color, code, hex_color, out_path=preview_path, base_hex=base_hex, text_hex=text_hex)
 
     return {
         "out_path": out,
@@ -921,8 +946,8 @@ def main():
                     help="浮雕高度 mm above pocket floor (default 0.5 = flush with card top; 1.2 = raised)")
     ap.add_argument("-o", "--out", help="output .3mf (default: 耗材样本卡_<颜色名>.3mf)")
     ap.add_argument("--template", default=DEFAULT_TEMPLATE)
-    ap.add_argument("--base-hex", default="#B39B84", help="卡片底座HEX色号 (default: #B39B84)")
-    ap.add_argument("--text-hex", default="#FFFFFF", help="文字HEX色号 (default: #FFFFFF)")
+    ap.add_argument("--base-hex", default=None, help="卡片底座HEX色号 (default: 同选中的耗材HEX色号)")
+    ap.add_argument("--text-hex", default=None, help="文字HEX色号 (default: 自动计算黑/白高对比度)")
     ap.add_argument("--thicken", action="store_true",
                     help="启用细笔画形态学加粗 (默认关闭，直接使用平整平滑的字体原生外形)")
     ap.add_argument("--min-stroke", type=float, default=0.8,

@@ -147,6 +147,8 @@ class FilamentStudioHandler(BaseHTTPRequestHandler):
             color = body.get("color", "White Oak")
             code = body.get("code", "(13106)")
             hex_color = body.get("hex", "#D6CCA3")
+            base_hex = body.get("base_hex")
+            text_hex = body.get("text_hex")
             swatch_d = float(body.get("swatch_d", 7.0))
             thicken = bool(body.get("thicken", False))
 
@@ -157,7 +159,9 @@ class FilamentStudioHandler(BaseHTTPRequestHandler):
                     code=code,
                     hex_color=hex_color,
                     swatch_d=swatch_d,
-                    thicken=thicken
+                    thicken=thicken,
+                    base_hex=base_hex,
+                    text_hex=text_hex
                 )
                 ret, buf = cv2.imencode(".png", bgr_img)
                 b64 = base64.b64encode(buf).decode("ascii")
@@ -185,6 +189,8 @@ class FilamentStudioHandler(BaseHTTPRequestHandler):
             color = body.get("color", "White Oak")
             code = body.get("code", "(13106)")
             hex_color = body.get("hex", "#D6CCA3")
+            base_hex = body.get("base_hex")
+            text_hex = body.get("text_hex")
             relief = float(body.get("relief", 0.5))
             swatch_d = float(body.get("swatch_d", 7.0))
             thicken = bool(body.get("thicken", False))
@@ -202,7 +208,9 @@ class FilamentStudioHandler(BaseHTTPRequestHandler):
                     out_path=tmp_out,
                     swatch_d=swatch_d,
                     thicken=thicken,
-                    preview=False
+                    preview=False,
+                    base_hex=base_hex,
+                    text_hex=text_hex
                 )
 
                 with open(tmp_out, "rb") as f:
