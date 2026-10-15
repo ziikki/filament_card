@@ -46,25 +46,22 @@ Open directly in your browser:
 
 ---
 
-## ✨ Features (核心特性)
+## 💡 Highlights (核心亮点)
 
-1. **100% Static & Client-Side (纯前端浏览器生成)**
-   - All 3MF mesh generation, contour tracing (Marching Squares), triangulations (Mapbox Earcut), and ZIP archive packaging run directly in the browser via Web APIs.
-   - Zero server dependencies, zero cost, works completely offline on GitHub Pages or local browsers.
+- 💎 **Seamless 0.5 mm Flush Inlay (默认 0.5mm 丝滑平齐嵌色)**  
+  Text and color swatches sit completely flush with the card body (engineered as 5 precise layers at 0.10 mm), delivering a smooth, injection-molded touch with zero rough ridges. *(Custom embossed relief up to 1.2 mm also supported).*
 
-2. **Default 0.5 mm Flush Inlay (默认 0.5mm 平齐嵌色)**
-   - Pocket floor is at Z = 0.5 mm, top surface is at Z = 1.0 mm. Default relief of **`0.5 mm`** creates text and swatch inlays that are completely flush with the card body for a smooth, seamless touch.
-   - Supports adjustable relief up to `1.2 mm` for tactile embossed text.
+- 🏷️ **Official 314-Filament Database (内置 314 款拓竹官方耗材库)**  
+  Instant search by color code (e.g. `13106`), material, or bilingual name (`White Oak` / `白橡木`). Exact Bambu Lab official hex colors and metadata are baked right into your `.3mf` model and slicer preview.
 
-3. **Official 314-Filament Database (内置 314 款官方耗材库)**
-   - Search by color code (e.g. `13106`), English name (`White Oak`), or Chinese name (`白橡木`).
-   - Official Bambu Lab hex color codes automatically applied to 3MF metadata and slicer preview.
+- 🔗 **One-Click Store URL Auto-Parser (商城链接一键解析)**  
+  Paste any Bambu Lab filament store link to instantly pull the material series, all variants, and official color swatches in seconds — zero manual typing required.
 
-4. **Store URL Auto-Parser (商城链接一键解析)**
-   - Paste any Bambu Lab filament store link (e.g. `https://us.store.bambulab.com/products/pla-wood?id=43075832086664`) to automatically extract material, series variants, and target color swatches.
+- 🎯 **Bambu Studio & Prime Tower Certified (Bambu Studio 深度兼容 · 轻松双色打印)**  
+  Watertight 3D geometry calibrated for **0.10 mm** layers with native Prime Tower (擦料塔) purging for crisp, bleed-free color transitions. Slices cleanly with zero warnings, and only needs 2 AMS slots to print!
 
-5. **Clean Light / Dark Theme (浅色/深色主题自由切换)**
-   - Modern, clean slate and white aesthetic inspired by Bambu Lab's official industrial design, with one-click dark theme toggle (☀️ / 🌙).
+- ⚡ **100% Client-Side & Zero Setup (纯前端免安装 · 即开即用)**  
+  Runs entirely in your browser via Web APIs — no software to install, no backend servers, and instant real-time `.3mf` downloads.
 
 ---
 
